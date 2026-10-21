@@ -1,0 +1,35 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "lib": ["ES2023", "DOM"],
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@workspace/domain": ["./packages/domain/src/index.ts"],
+      "@workspace/domain/*": ["./packages/domain/src/*"],
+      "@workspace/data-access": ["./packages/data-access/src/index.ts"],
+      "@workspace/data-access/*": ["./packages/data-access/src/*"],
+      "@workspace/ui": ["./packages/ui/src/index.ts"],
+      "@workspace/ui/*": ["./packages/ui/src/*"],
+      "@workspace/core": ["./packages/core/src/index.ts"],
+      "@workspace/core/*": ["./packages/core/src/*"],
+      "@workspace/domain/contracts/*": ["./packages/domain/src/domain/*"]
+    },
+    "rootDir": "."
+  },
+  "angularCompilerOptions": {
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}

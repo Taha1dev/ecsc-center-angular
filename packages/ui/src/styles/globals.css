@@ -1,0 +1,242 @@
+/*
+ * Service Center Workspace — shared light-only styles.
+ * Target: packages/ui/src/styles/globals.css (existing @workspace/ui/globals.css export).
+ * Compiled once by each application src/index.css through Tailwind v4.
+ * Shared UI owns these imports; add its Alexandria Fontsource dependency.
+ * data-center is applied to <html> by the app CenterProvider, including login/portals.
+ * Common semantics stay fixed. Only center brand/surface/chart tokens are overridden.
+ */
+@import 'tw-animate-css';
+@import '@angular/cdk/overlay-prebuilt.css';
+@import '@fontsource/alexandria/400.css';
+@import '@fontsource/alexandria/500.css';
+@import '@fontsource/alexandria/600.css';
+@import '@fontsource/alexandria/700.css';
+
+:root {
+  color-scheme: light;
+
+  --foreground: #20293e;
+  --card: #ffffff;
+  --card-foreground: #20293e;
+  --popover: #ffffff;
+  --popover-foreground: #20293e;
+  --primary-foreground: #ffffff;
+  --primary-hover: var(--brand-800);
+  --primary-soft: var(--brand-50);
+  --primary-soft-foreground: var(--brand-800);
+  --secondary-foreground: var(--highlight-950);
+  --secondary-hover: var(--highlight-500);
+  --secondary-soft: var(--highlight-50);
+  --secondary-soft-foreground: var(--highlight-800);
+  --muted-foreground: #606c80;
+  --accent: var(--brand-50);
+  --accent-foreground: var(--brand-800);
+  --destructive: #be3d48;
+  --destructive-foreground: #ffffff;
+  --ring: var(--brand-600);
+  --radius: 0.75rem;
+
+  /* Additional working surfaces. */
+  --surface-raised: #ffffff;
+  --surface-selected: var(--brand-50);
+  --foreground-subtle: var(--muted-foreground);
+  --border-strong: #bbc5d5;
+
+  /* One semantic set shared by badges, alerts, timelines and charts. */
+  --success: #137a57;
+  --success-soft: #eaf7f0;
+  --success-foreground: #126445;
+  --success-border: #badfcd;
+  --warning: #96610b;
+  --warning-soft: #fff4dc;
+  --warning-foreground: #81500b;
+  --warning-border: #e9d29e;
+  --info: #2f63a7;
+  --info-soft: #edf3fc;
+  --info-foreground: #28558e;
+  --info-border: #c5d7ef;
+  --danger: #be3d48;
+  --danger-soft: #fff0f1;
+  --danger-foreground: #a32d39;
+  --danger-border: #edc3c7;
+  --neutral: #586578;
+  --neutral-soft: #eff2f6;
+  --neutral-foreground: #4d596c;
+  --neutral-border: #d2d9e4;
+
+  /* Categorical charts only. Status charts use the status tokens above. */
+  /* The deeper secondary ramp step keeps data marks distinct on white panels. */
+  --chart-grid: #e7ebf2;
+  --chart-axis: #606c80;
+
+  /* A branded navigation region is not a second / dark color theme. */
+  --sidebar: var(--brand-950);
+  --sidebar-foreground: #f6f8fb;
+  --sidebar-primary: var(--highlight-500);
+  --sidebar-primary-foreground: var(--highlight-950);
+  --sidebar-accent: var(--brand-900);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: var(--brand-700);
+  --sidebar-ring: var(--brand-200);
+  --sidebar-muted: var(--brand-200);
+  --sidebar-selected: #ffffff;
+  --sidebar-selected-foreground: var(--brand-800);
+}
+
+@theme inline {
+  --font-sans: 'Alexandria', 'Segoe UI', Tahoma, Arial, sans-serif;
+  --font-mono: 'Alexandria', 'Segoe UI', Tahoma, Arial, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-soft-foreground: var(--primary-soft-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-soft: var(--secondary-soft);
+  --color-secondary-soft-foreground: var(--secondary-soft-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-selected: var(--surface-selected);
+  --color-foreground-subtle: var(--foreground-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-divider: var(--divider);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-border: var(--success-border);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-border: var(--warning-border);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-border: var(--info-border);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-danger-border: var(--danger-border);
+  --color-neutral: var(--neutral);
+  --color-neutral-soft: var(--neutral-soft);
+  --color-neutral-foreground: var(--neutral-foreground);
+  --color-neutral-border: var(--neutral-border);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-axis: var(--chart-axis);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-selected: var(--sidebar-selected);
+  --color-sidebar-selected-foreground: var(--sidebar-selected-foreground);
+
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+  --color-brand-950: var(--brand-950);
+  --color-highlight-50: var(--highlight-50);
+  --color-highlight-100: var(--highlight-100);
+  --color-highlight-200: var(--highlight-200);
+  --color-highlight-300: var(--highlight-300);
+  --color-highlight-400: var(--highlight-400);
+  --color-highlight-500: var(--highlight-500);
+  --color-highlight-600: var(--highlight-600);
+  --color-highlight-700: var(--highlight-700);
+  --color-highlight-800: var(--highlight-800);
+  --color-highlight-900: var(--highlight-900);
+  --color-highlight-950: var(--highlight-950);
+
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: var(--radius);
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-workspace: 1.75rem;
+  --radius-panel: 1.25rem;
+  --radius-inset: 0.875rem;
+  --radius-control: 0.75rem;
+  --shadow-panel: 0 2px 8px rgb(23 32 62 / 0.04);
+  --shadow-metric-icon: inset 0 -1px 2px rgb(23 32 62 / 0.12), 0 3px 6px rgb(23 32 62 / 0.16);
+  --shadow-float: 0 12px 32px -8px rgb(23 32 62 / 0.16);
+  --text-page-title: 1.75rem;
+  --text-page-title--line-height: 1.6;
+  --text-section-title: 1.125rem;
+  --text-section-title--line-height: 1.55;
+  --text-ui: 0.875rem;
+  --text-ui--line-height: 1.75;
+  --text-sm--line-height: 1.75;
+  --text-xs--line-height: 1.7;
+  --text-metric: 2rem;
+  --text-metric--line-height: 1.25;
+}
+
+/* Only a minimal global reset. No page, component or utility selectors. */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply font-sans antialiased;
+  }
+  body {
+    @apply m-0 min-h-svh bg-background text-base leading-relaxed text-foreground;
+  }
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    @apply cursor-pointer;
+  }
+  ::selection {
+    @apply bg-brand-100 text-brand-950;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+.app-dialog-backdrop {
+  background: color-mix(in oklab, var(--foreground) 45%, transparent);
+}

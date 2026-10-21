@@ -1,0 +1,37 @@
+:root[data-center='m3'] {
+  --brand-50: #f0f8f4;
+  --brand-100: #dbefe8;
+  --brand-200: #bcded4;
+  --brand-300: #9dc8bc;
+  --brand-400: #77afa1;
+  --brand-500: #59998c;
+  --brand-600: #41827a;
+  --brand-700: #397b73;
+  --brand-800: #2c625b;
+  --brand-900: #244f49;
+  --brand-950: #163731;
+  --highlight-50: #faf7ef;
+  --highlight-100: #f3ebd6;
+  --highlight-200: #e4d9b5;
+  --highlight-300: #d3c298;
+  --highlight-400: #c9b98f;
+  --highlight-500: #c3b184;
+  --highlight-600: #baa97d;
+  --highlight-700: #988655;
+  --highlight-800: #786840;
+  --highlight-900: #5b4e30;
+  --highlight-950: #352c1b;
+  --background: #f3f9f7;
+  --primary: #397b73;
+  --secondary: #baa97d;
+  --muted: #edf2ef;
+  --border: #dde6e1;
+  --input: #7c938c;
+  --surface-subtle: #f8faf9;
+  --divider: #e5ece8;
+  --chart-1: #268a7c;
+  --chart-2: #aa8c42;
+  --chart-3: #089cb4;
+  --chart-4: #8358df;
+  --chart-5: #d84685;
+}

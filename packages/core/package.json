@@ -1,0 +1,29 @@
+{
+  "name": "@workspace/core",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "ng build core",
+    "typecheck": "ngc -p tsconfig.lib.json --noEmit"
+  },
+  "dependencies": {
+    "@workspace/domain": "*",
+    "@workspace/data-access": "*",
+    "@workspace/ui": "*",
+    "@angular/core": "22.2.3",
+    "@angular/common": "22.2.3",
+    "@angular/forms": "22.2.3",
+    "@angular/router": "22.2.3",
+    "@angular/platform-browser": "22.2.3",
+    "@angular/cdk": "22.2.3",
+    "@spartan-ng/brain": "1.8.0",
+    "rxjs": "7.8.2"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ]
+}

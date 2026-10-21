@@ -1,0 +1,185 @@
+<div class="min-w-0 rounded-panel border bg-card shadow-panel">
+  <div
+    class="flex flex-wrap items-center justify-between gap-3 rounded-t-panel border-b bg-surface-subtle/60 p-4"
+  >
+    <p class="text-sm text-muted-foreground">
+      {{ totalRows() ?? data().length }} سجل
+      @if (selected().length) {
+        · {{ selected().length }} محددة
+      }
+    </p>
+    <div class="flex flex-wrap gap-2">
+      @if (selection() && bulkActionLabel()) {
+        <button
+          hlmBtn
+          variant="outline"
+          type="button"
+          [disabled]="!selected().length"
+          [title]="!selected().length ? 'حدد سجلات أولاً' : ''"
+          (click)="bulk.emit(selected())"
+        >
+          {{ bulkActionLabel() }}
+        </button>
+      }
+      <button
+        hlmBtn
+        variant="outline"
+        type="button"
+        (click)="compact.set(!compact())"
+        [attr.aria-pressed]="compact()"
+      >
+        {{ compact() ? 'كثافة مريحة' : 'كثافة مدمجة' }}</button
+      ><app-action-menu text="الأعمدة" label="إظهار الأعمدة" [actions]="columnActions()" />
+    </div>
+  </div>
+  <div class="w-full overflow-x-auto" tabindex="0" role="region" aria-label="جدول السجلات">
+    <table class="w-full min-w-160 text-start text-sm">
+      <thead class="bg-surface-subtle">
+        @for (group of table.getHeaderGroups(); track group.id) {
+          <tr>
+            @if (selection()) {
+              <th class="px-4 py-3">
+                <input
+                  class="size-4 accent-primary"
+                  type="checkbox"
+                  aria-label="تحديد الصفحة"
+                  [checked]="table.getIsAllPageRowsSelected()"
+                  [indeterminate]="table.getIsSomePageRowsSelected()"
+                  (change)="table.toggleAllPageRowsSelected()"
+                />
+              </th>
+            }
+            @for (header of group.headers; track header.id) {
+              <th
+                class="px-4 py-3 text-start font-medium text-muted-foreground"
+                [attr.aria-sort]="
+                  header.column.getIsSorted() === 'asc'
+                    ? 'ascending'
+                    : header.column.getIsSorted() === 'desc'
+                      ? 'descending'
+                      : 'none'
+                "
+              >
+                <button
+                  type="button"
+                  class="flex items-center gap-2 rounded outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  [disabled]="!header.column.getCanSort()"
+                  (click)="header.column.toggleSorting()"
+                >
+                  {{ column(header.column.id).label }}
+                  @if (header.column.getCanSort()) {
+                    <app-icon name="phosphorArrowsDownUp" size="16px" />
+                  }
+                </button>
+              </th>
+            }
+            @if (showActions()) {
+              <th class="px-4 py-3 text-start font-medium text-muted-foreground">
+                {{ actionsHeader() }}
+              </th>
+            }
+          </tr>
+        }
+      </thead>
+      <tbody>
+        @for (row of table.getRowModel().rows; track row.id) {
+          <tr [class]="'border-t hover:bg-surface-subtle'">
+            @if (selection()) {
+              <td class="px-4 py-3">
+                <input
+                  type="checkbox"
+                  class="size-4 accent-primary"
+                  [attr.aria-label]="'تحديد السجل ' + row.id"
+                  [checked]="row.getIsSelected()"
+                  (change)="row.toggleSelected()"
+                />
+              </td>
+            }
+            @for (cell of row.getVisibleCells(); track cell.id) {
+              @let col = column(cell.column.id);
+              <td [class]="'px-4 ' + (compact() ? 'py-2' : 'py-4')">
+                @if (col.template) {
+                  <ng-container
+                    [ngTemplateOutlet]="col.template"
+                    [ngTemplateOutletContext]="{ $implicit: row.original }"
+                  />
+                } @else if (col.badge) {
+                  @let badge = col.badge(row.original);
+                  <app-status-badge [label]="badge.label" [intent]="badge.intent" />
+                } @else if (col.onClick) {
+                  <button
+                    type="button"
+                    class="font-medium text-primary hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+                    (click)="col.onClick(row.original)"
+                  >
+                    <bdi>{{ col.value?.(row.original) }}</bdi>
+                  </button>
+                } @else {
+                  <bdi class="break-words">{{ col.value?.(row.original) }}</bdi>
+                }
+              </td>
+            }
+            @if (showActions()) {
+              <td [class]="'px-4 ' + (compact() ? 'py-2' : 'py-4')">
+                @if (actionTemplate(); as action) {
+                  <ng-container
+                    [ngTemplateOutlet]="action"
+                    [ngTemplateOutletContext]="{ $implicit: row.original }"
+                  />
+                } @else {
+                  @let rowActions = actions()!;
+                  <app-action-menu [actions]="rowActions(row.original)" />
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (!data().length) {
+      <app-empty-state description="جرّب تعديل معايير البحث أو إزالة المرشحات." />
+    }
+  </div>
+  <div
+    class="flex flex-wrap items-center justify-between gap-3 rounded-b-panel border-t bg-surface-subtle/60 p-4 text-sm"
+  >
+    <label class="flex items-center gap-2"
+      >صفوف الصفحة<select
+        class="h-10 rounded-control border border-input bg-card px-2 focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label="صفوف الصفحة"
+        [value]="pagination().pageSize"
+        (change)="pageSize($event)"
+      >
+        @for (size of [10, 25, 50]; track size) {
+          <option [value]="size">{{ size }}</option>
+        }
+      </select></label
+    >
+    <div class="flex items-center gap-2">
+      <button
+        hlmBtn
+        variant="outline"
+        size="icon"
+        type="button"
+        aria-label="الصفحة السابقة"
+        [disabled]="!table.getCanPreviousPage()"
+        (click)="table.previousPage()"
+      >
+        <app-icon name="phosphorCaretRight" size="16px" /></button
+      ><span
+        >{{ (totalRows() ?? data().length) ? pagination().pageIndex + 1 : 0 }} /
+        {{ table.getPageCount() }}</span
+      ><button
+        hlmBtn
+        variant="outline"
+        size="icon"
+        type="button"
+        aria-label="الصفحة التالية"
+        [disabled]="!table.getCanNextPage()"
+        (click)="table.nextPage()"
+      >
+        <app-icon name="phosphorCaretLeft" size="16px" />
+      </button>
+    </div>
+  </div>
+</div>

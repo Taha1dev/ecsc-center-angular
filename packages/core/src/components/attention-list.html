@@ -1,0 +1,90 @@
+<app-panel class="self-start p-4"
+  ><div class="flex items-center justify-between gap-3">
+    <h2 class="flex items-center gap-2 text-section-title font-semibold">
+      <app-icon name="phosphorWarningCircle" size="20px" class="text-warning-foreground" />يحتاج
+      انتباهك
+    </h2>
+    <button hlmBtn variant="link" size="sm" type="button" (click)="allAttention()">عرض الكل</button>
+  </div>
+  <div class="my-3 flex flex-wrap gap-2">
+    <button
+      hlmBtn
+      size="sm"
+      type="button"
+      [variant]="kind() === 'all' ? 'secondary' : 'ghost'"
+      (click)="kind.set('all')"
+    >
+      الكل · {{ number(attentionCount('all')) }}
+    </button>
+    @for (k of kinds; track k) {
+      <button
+        hlmBtn
+        size="sm"
+        type="button"
+        [variant]="kind() === k ? 'secondary' : 'outline'"
+        [attr.aria-pressed]="kind() === k"
+        (click)="kind.set(k)"
+      >
+        {{ attention[k].label }} · {{ number(attentionCount(k)) }}
+      </button>
+    }
+  </div>
+  @if (attentionRows().length) {
+    <ul class="divide-y">
+      @for (item of attentionRows().slice(0, 5); track item.t.id) {
+        <li class="py-3" [attr.data-attention-id]="item.t.id">
+          <div class="flex items-start gap-3">
+            <span
+              [class]="
+                'flex size-8 shrink-0 items-center justify-center rounded-control bg-linear-to-tr text-white shadow-metric-icon ' +
+                (primary(item.reasons) === 'overdue'
+                  ? 'from-danger to-danger-foreground'
+                  : primary(item.reasons) === 'unassigned'
+                    ? 'from-info to-info-foreground'
+                    : 'from-warning to-warning-foreground')
+              "
+              ><app-icon [name]="attention[primary(item.reasons)].icon" size="18px"
+            /></span>
+            <div class="min-w-0 flex-1 sm:flex sm:items-center sm:justify-between sm:gap-3">
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-medium">
+                  <bdi>#{{ item.t.id }}</bdi> · {{ item.t.type }}
+                </p>
+                <p class="mt-1 flex flex-wrap gap-x-2 text-xs text-muted-foreground">
+                  <span>{{ item.t.applicant }}</span
+                  ><span>الموعد: {{ date(item.t.deadline) }}</span>
+                </p>
+                <p class="mt-1 text-xs text-muted-foreground">
+                  @for (reason of item.reasons; track reason) {
+                    {{ attention[reason].reason }}{{ $last ? '' : ' · ' }}
+                  }
+                </p>
+              </div>
+              <div class="mt-2 flex shrink-0 flex-wrap gap-2 sm:mt-0 sm:flex-col">
+                <a
+                  hlmBtn
+                  size="sm"
+                  variant="outline"
+                  [routerLink]="['/centers', center.id, 'transactions', item.t.id]"
+                  >فتح المعاملة</a
+                >
+                @if (canClaim(item.t)) {
+                  <button hlmBtn size="sm" type="button" (click)="claim.set(item.t)">استلام</button>
+                }
+              </div>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="py-4 text-sm text-muted-foreground">لا توجد معاملات تحتاج انتباهك في هذه الفترة.</p>
+  }
+</app-panel>
+@if (claim(); as transaction) {
+  <app-transaction-flow
+    [transaction]="transaction"
+    [flow]="{ action: 'claim' }"
+    (closed)="claim.set(null)"
+  />
+}

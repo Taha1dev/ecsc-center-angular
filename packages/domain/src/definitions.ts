@@ -1,0 +1,110 @@
+import type { Status, TransactionSectionDefinition } from './domain/model';
+export type Intent =
+  'neutral' | 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'danger';
+export const statuses: Record<Status, { label: string; intent: Intent }> = {
+  received: { label: 'واردة', intent: 'info' },
+  processing: { label: 'قيد المعالجة', intent: 'info' },
+  waiting: { label: 'بانتظار الاستكمال', intent: 'warning' },
+  completed: { label: 'منجزة', intent: 'success' },
+  rejected: { label: 'مرفوضة', intent: 'danger' },
+};
+export const sections: TransactionSectionDefinition[] = [
+  {
+    id: 'overview',
+    title: 'نظرة عامة',
+    group: 'بيانات الطلب',
+    view: 'summary',
+    actions: ['status'],
+  },
+  {
+    id: 'applicants',
+    title: 'مقدّمو الطلب',
+    group: 'بيانات الطلب',
+    view: 'cards',
+    actions: ['applicant'],
+  },
+  {
+    id: 'parties',
+    title: 'الأطراف والوكالات',
+    group: 'بيانات الطلب',
+    view: 'cards',
+    actions: [],
+  },
+  {
+    id: 'fields',
+    title: 'حقول المعاملة',
+    group: 'بيانات الطلب',
+    view: 'fields',
+    actions: ['field'],
+  },
+  {
+    id: 'requirements',
+    title: 'الوثائق المطلوبة',
+    group: 'المستندات',
+    view: 'checklist',
+    actions: ['document'],
+  },
+  {
+    id: 'attachments',
+    title: 'المرفقات',
+    group: 'المستندات',
+    view: 'cards',
+    actions: ['document'],
+  },
+  {
+    id: 'payments',
+    title: 'الدفعات',
+    group: 'الشؤون المالية',
+    view: 'table',
+    actions: ['payment'],
+  },
+  {
+    id: 'fees',
+    title: 'الرسوم',
+    group: 'الشؤون المالية',
+    view: 'table',
+    actions: ['fee'],
+  },
+  {
+    id: 'refunds',
+    title: 'المبالغ المعادة',
+    group: 'الشؤون المالية',
+    view: 'cards',
+    actions: ['refund'],
+  },
+  {
+    id: 'decisions',
+    title: 'القرارات',
+    group: 'المعالجة والمتابعة',
+    view: 'cards',
+    actions: ['decision'],
+  },
+  {
+    id: 'actions',
+    title: 'الإجراءات',
+    group: 'المعالجة والمتابعة',
+    view: 'cards',
+    actions: [],
+  },
+  {
+    id: 'notes',
+    title: 'الملاحظات',
+    group: 'المعالجة والمتابعة',
+    view: 'timeline',
+    actions: ['note'],
+  },
+  {
+    id: 'activity',
+    title: 'سجل النشاط والتحويلات',
+    group: 'المعالجة والمتابعة',
+    view: 'timeline',
+    actions: [],
+  },
+  {
+    id: 'output',
+    title: 'الطباعة والمخرجات',
+    group: 'المعالجة والمتابعة',
+    view: 'cards',
+    actions: ['print'],
+  },
+];

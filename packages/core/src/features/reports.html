@@ -1,0 +1,142 @@
+<app-page-header
+  title="التقارير"
+  [description]="module.profile.name + ' · دليل تقارير توضيحية قابلة للمعاينة'"
+/>
+@if (!chosen()) {
+  <app-combobox label="ابحث واختر تقريراً…" [options]="options" (selected)="choose($event)" />
+  <div class="my-5 grid gap-3 sm:grid-cols-[1fr_220px]">
+    <input
+      hlmInput
+      aria-label="تصفية دليل التقارير"
+      placeholder="تصفية التقارير بالاسم أو الكلمات المفتاحية"
+      [value]="query()"
+      (input)="search($event)"
+    /><app-field
+      [hideLabel]="true"
+      label="فئة التقرير"
+      kind="select"
+      [options]="categories"
+      [formControl]="category"
+    />
+  </div>
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    @for (r of filtered(); track r.id) {
+      <app-entity-card [title]="r.title" [description]="r.description" [actions]="false"
+        ><div class="mb-4 flex items-center justify-between">
+          <app-status-badge [label]="r.category" /><app-icon
+            name="phosphorFileText"
+            size="24px"
+            class="text-primary"
+          />
+        </div>
+        <button hlmBtn variant="outline" type="button" class="w-full" (click)="choose(r.id)">
+          اختيار التقرير<app-icon name="phosphorArrowLeft" /></button
+      ></app-entity-card>
+    } @empty {
+      <app-empty-state description="لا يوجد تقرير يطابق البحث."
+        ><button hlmBtn variant="outline" (click)="clear()">إزالة المرشحات</button></app-empty-state
+      >
+    }
+  </div>
+} @else {
+  <div class="space-y-5">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 class="text-section-title font-semibold">{{ chosen()!.title }}</h2>
+        <p class="text-sm text-muted-foreground">{{ chosen()!.description }}</p>
+      </div>
+      <button hlmBtn variant="outline" (click)="back()">العودة إلى الدليل</button>
+    </div>
+    @switch (phase()) {
+      @case ('parameters') {
+        <app-panel
+          ><form class="space-y-6" (submit)="$event.preventDefault(); preview()">
+            <div class="grid gap-5 sm:grid-cols-2">
+              <app-dynamic-fields
+                [fields]="parameters()"
+                [values]="values()"
+                [errors]="errors()"
+                (changed)="change($event)"
+              />
+            </div>
+            <div class="grid gap-5 border-t pt-5 sm:grid-cols-2">
+              <app-field
+                label="نوع ملف التقرير"
+                kind="select"
+                [options]="formats"
+                [formControl]="formatControl"
+              /><app-field
+                label="اسم الملف"
+                [formControl]="filenameControl"
+                [error]="errors()['filename'] || ''"
+              />
+            </div>
+            <button hlmBtn type="submit">إنشاء معاينة</button>
+            <p class="text-xs text-muted-foreground">
+              النتائج محلية توضيحية. اختيار الصيغة لا يعني إنشاء ملف رسمي.
+            </p>
+          </form></app-panel
+        >
+      }
+      @case ('pending') {
+        <app-panel><app-loading /></app-panel>
+      }
+      @case ('error') {
+        <app-panel
+          ><app-empty-state
+            title="تعذّر إنشاء المعاينة"
+            description="خطأ تجريبي مؤقت. بياناتك محفوظة، يمكنك إعادة المحاولة."
+            ><button hlmBtn variant="outline" (click)="preview(true)">
+              إعادة المحاولة
+            </button></app-empty-state
+          ></app-panel
+        >
+      }
+      @case ('ready') {
+        <app-panel
+          ><div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <app-status-badge label="المعاينة جاهزة · بيانات توضيحية" intent="success" /><button
+              hlmBtn
+              variant="outline"
+              (click)="phase.set('parameters')"
+            >
+              تعديل المعايير
+            </button>
+          </div>
+          <app-key-values [items]="summary()" />
+          @if (values()['format'] !== 'PDF' && output().length) {
+            <button hlmBtn class="mt-5" [disabled]="exporting()" (click)="export()">
+              {{
+                exporting()
+                  ? 'جارٍ التصدير…'
+                  : values()['format'] === 'Excel'
+                    ? 'تنزيل ملف Excel محلي توضيحي'
+                    : 'تنزيل ملف CSV محلي توضيحي'
+              }}
+            </button>
+          }
+          @if (values()['format'] === 'PDF') {
+            <p class="mt-5 text-sm text-muted-foreground">
+              PDF للمعاينة فقط. للتنزيل المحلي اختر CSV أو Excel من المعايير.
+            </p>
+          }
+        </app-panel>
+        @if (groups().length) {
+          <app-data-table [data]="groups()" [columns]="groupColumns" [getRowId]="id" />
+        } @else if (output().length) {
+          <app-data-table [data]="output()" [columns]="columns()" [getRowId]="id" />
+        } @else {
+          <app-panel
+            ><app-empty-state
+              title="لا توجد نتائج لهذه المعايير"
+              description="هذا مثال لحالة فارغة. يمكنك العودة لتعديل المعايير أو اختيار تقرير آخر."
+              ><button hlmBtn variant="outline" (click)="phase.set('parameters')">
+                تعديل المعايير
+              </button></app-empty-state
+            ></app-panel
+          >
+        }
+      }
+    }
+  </div>
+}

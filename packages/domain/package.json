@@ -1,0 +1,19 @@
+{
+  "name": "@workspace/domain",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "ng build domain",
+    "typecheck": "ngc -p tsconfig.lib.json --noEmit"
+  },
+  "dependencies": {
+    "zod": "4.6.5"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ]
+}

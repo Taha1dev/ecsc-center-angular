@@ -1,0 +1,20 @@
+{
+  "name": "@workspace/data-access",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "ng build data-access",
+    "typecheck": "ngc -p tsconfig.lib.json --noEmit"
+  },
+  "dependencies": {
+    "@workspace/domain": "*",
+    "@angular/core": "22.2.3"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ]
+}

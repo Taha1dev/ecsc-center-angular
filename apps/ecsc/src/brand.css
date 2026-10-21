@@ -1,0 +1,37 @@
+:root[data-center='ecsc'] {
+  --brand-50: #f0f2fc;
+  --brand-100: #e2e7f8;
+  --brand-200: #c6cff0;
+  --brand-300: #a0ade3;
+  --brand-400: #7487d1;
+  --brand-500: #5266b6;
+  --brand-600: #3e509f;
+  --brand-700: #33418c;
+  --brand-800: #293674;
+  --brand-900: #222d5d;
+  --brand-950: #17203e;
+  --highlight-50: #fff7ec;
+  --highlight-100: #ffebcf;
+  --highlight-200: #ffd49d;
+  --highlight-300: #fbbc6b;
+  --highlight-400: #f4a544;
+  --highlight-500: #ee952d;
+  --highlight-600: #e78927;
+  --highlight-700: #b86417;
+  --highlight-800: #914c17;
+  --highlight-900: #743f18;
+  --highlight-950: #3b2610;
+  --background: #f5f7ff;
+  --primary: #2a3887;
+  --secondary: #f88f1f;
+  --muted: #edf0f6;
+  --border: #dde3ed;
+  --input: #7e8ba3;
+  --surface-subtle: #f8f9fc;
+  --divider: #e7ebf2;
+  --chart-1: #4055d8;
+  --chart-2: #e88113;
+  --chart-3: #089cb4;
+  --chart-4: #8358df;
+  --chart-5: #d84685;
+}

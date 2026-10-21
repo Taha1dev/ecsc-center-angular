@@ -1,0 +1,15 @@
+# Service Center Angular Workspace
+
+Read DESIGN.md, docs/ARCHITECTURE.md, docs/VALIDATION.md and docs/angular-migration.md before editing. The separate React reference is authoritative for product appearance and behavior. Preserve all three independent apps: ECSC (مركز البوابة), M3 (مركز المصالح العقارية), JUS (مركز العدل). Hader/حاضر is an upstream source, not the application's identity. Do not redesign screens or invent justice-service rules.
+
+Use stable Angular 22 standalone APIs, native template control flow, Signals/computed state, zoneless-compatible components, typed Reactive Forms/CVAs, Router/RxJS and strict TypeScript/templates. Use Tailwind v4, owned Helm components over Spartan Brain/CDK, TanStack Angular Table v9, modular ECharts/ngx-echarts, ng-icons Phosphor, Zod and lazy ExcelJS. Angular 22 defaults to standalone and OnPush; do not add explicit standalone:true or changeDetection:OnPush. Check the installed-version Angular/Spartan MCP and Context7 documentation before uncertain API work.
+
+Keep npm 12, one lockfile, Turbo and Angular CLI multi-project orchestration. Do not introduce Nx, pnpm, React, Vite project configuration or another component stack. Each application is a thin composition root with its own assets, brand values, catalogs, demo settings, reports and targeted overrides. Shared code never imports applications, branches on center IDs or requires a global center union.
+
+Keep domain framework independent. Data-access owns adapters and client/store state. UI owns generic controls, tokens and font imports; it imports domain only for generic date utilities. Core owns product features/layouts/routes/transaction sections and typed rendering registration. Use public package entry points. Run automatic import-boundary checks.
+
+Preserve authentic logos, Alexandria 400/500/600/700, Arabic text/demo content, semantic tokens, light surfaces, both shells, responsive layouts and all fourteen transaction sections. Shared status colors remain fixed across brands. Portals must inherit center tokens and RTL. Author appearance through semantic Tailwind utilities; no ::ng-deep, duplicated page themes or arbitrary business-color branches.
+
+Preserve registry add/override/conflict behavior, capabilities, typed commands, validation and adapter abstraction. Forms remain open with drafts intact after rejection. Reads preserve loading/error/retry and stale-response safety. Data stays center-scoped; foreign routes/operations reject. Blank demo login remains valid. Reload/reset and deterministic samples match the source. No production authentication, backend or payments. CSV/Excel remain real local exports; PDF keeps preview/print semantics. Calendar-only dates must never shift through UTC serialization.
+
+Validate changes with root typecheck, lint, Vitest and all library/application production builds. Browser checks cover every center, both shells, 390/768/1280/1536px, reflow, keyboard/focus, overlays and workflows. Compare reference renderings where appearance changes; only claim parity where checked. Preserve valid project skills and unrelated changes. Do not push, deploy or publish.

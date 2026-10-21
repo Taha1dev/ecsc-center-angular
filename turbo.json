@@ -1,0 +1,77 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": [
+        "^typecheck"
+      ],
+      "outputs": []
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "@workspace/domain#build": {
+      "outputs": [
+        "../../dist/domain/**"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "@workspace/data-access#build": {
+      "outputs": [
+        "../../dist/data-access/**"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "@workspace/ui#build": {
+      "outputs": [
+        "../../dist/ui/**"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "@workspace/core#build": {
+      "outputs": [
+        "../../dist/core/**"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "ecsc#build": {
+      "outputs": [
+        "../../dist/apps/ecsc/**"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "m3#build": {
+      "outputs": [
+        "../../dist/apps/m3/**"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "jus#build": {
+      "outputs": [
+        "../../dist/apps/jus/**"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
+    }
+  }
+}

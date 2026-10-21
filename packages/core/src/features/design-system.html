@@ -1,0 +1,246 @@
+<app-page-header
+  title="نظام التصميم"
+  [description]="module.profile.name + ' · المكونات المستخدمة فعلياً في التطبيق'"
+/>
+<div class="space-y-5">
+  <app-panel
+    ><h2 class="text-section-title font-semibold">الأسطح والمسافات</h2>
+    <p class="mt-2 text-sm text-muted-foreground">
+      إطار عمل داخلي، بطاقات مرتفعة بهدوء، ومناطق فرعية واضحة؛ تتشارك المراكز الشكل والمسافات مع
+      الاحتفاظ بهوية كل مركز.
+    </p>
+    <div class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div class="rounded-workspace border bg-surface-subtle p-5">
+        <p class="text-sm font-medium">إطار مساحة العمل</p>
+        <p class="mt-1 text-xs text-muted-foreground">استدارة ٢٨ بكسل</p>
+      </div>
+      <div class="rounded-panel border bg-card p-5 shadow-panel">
+        <p class="text-sm font-medium">البطاقة الرئيسية</p>
+        <p class="mt-1 text-xs text-muted-foreground">استدارة ٢٠ بكسل</p>
+      </div>
+      <div class="rounded-inset bg-muted p-5">
+        <p class="text-sm font-medium">منطقة فرعية</p>
+        <p class="mt-1 text-xs text-muted-foreground">استدارة ١٤ بكسل</p>
+      </div>
+      <div class="space-y-3 p-2">
+        <input
+          hlmInput
+          aria-label="مثال حقل مستدير"
+          placeholder="حقل باستدارة ١٢ بكسل"
+        /><app-status-badge label="شارة بشكل كبسولة" intent="info" />
+      </div></div
+  ></app-panel>
+  @if (sample(); as t) {
+    <app-panel
+      ><h2 class="mb-4 text-section-title font-semibold">مساحة المعاملة</h2>
+      <div class="grid min-w-0 gap-5 xl:grid-cols-[286px_minmax(0,1fr)]">
+        <app-transaction-navigation
+          [transaction]="t"
+          [sections]="sections"
+          [active]="selected()"
+          (selected)="selected.set($event)"
+        /><ng-template #person let-p
+          ><app-entity-card [title]="p.name" [description]="p.kind" icon="phosphorUsers"
+            ><p class="text-sm">
+              رقم الهوية: <bdi>{{ p.identifier }}</bdi>
+            </p>
+            <a
+              card-actions
+              hlmBtn
+              variant="outline"
+              [routerLink]="['/centers', module.profile.id, 'transactions', t.id]"
+              [queryParams]="{ section: 'applicants' }"
+              >فتح المعاملة</a
+            ></app-entity-card
+          ></ng-template
+        ><app-collection-view
+          label="مقدمو الطلب"
+          [data]="t.people"
+          [columns]="peopleColumns"
+          [getRowId]="id"
+          [card]="person"
+        /></div
+    ></app-panel>
+  }
+  <app-attention-list [rows]="scoped()" (viewAll)="viewAttention($event)" />
+  <app-panel
+    ><h2 class="text-section-title font-semibold">قائمة إجراءات مجمّعة</h2>
+    <p class="my-3 text-sm text-muted-foreground">
+      أفعال المعاملة الأولى في المركز، بنفس الإتاحة والتأكيدات المستخدمة في البريد. لا تظهر
+      المجموعات الفارغة.
+    </p>
+    <div class="flex flex-wrap gap-3">
+      <app-action-menu
+        label="نموذج الإجراءات المجمّعة"
+        [text]="'إجراءات المعاملة #' + sample().id"
+        [actions]="actions()"
+      /><app-action-menu
+        label="إجراءات بيانات العرض"
+        text="بيانات العرض"
+        [actions]="resetActions"
+      />
+    </div>
+    <p class="mt-3 text-xs text-muted-foreground">
+      التنقل باللون الأساسي، الأفعال المالية والحذرة بالتحذير، وإعادة الضبط بالأحمر مع تأكيد مستقل.
+      الأفعال العادية محايدة.
+    </p></app-panel
+  >
+  <section aria-label="تركيب لوحة المؤشرات" class="space-y-4">
+    <h2 class="text-section-title font-semibold">تركيب لوحة المؤشرات</h2>
+    <p class="text-sm text-muted-foreground">
+      أربع بطاقات سريعة مضغوطة، رسم رئيسي بعرض المحتوى، رسوم مساندة بعمودين، ثم ملخص إضافي ونشاط
+      بعرض كامل. القيم أدناه من سجلات المركز لفترة العرض الافتراضية.
+    </p>
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      @for (m of metrics(); track m.label) {
+        <app-metric-card
+          [label]="m.label"
+          [value]="number(m.value)"
+          [tone]="m.tone"
+          [icon]="m.icon"
+          caption="١–٦ تشرين الأول · بيانات توضيحية"
+        />
+      }
+    </div>
+    <div class="grid gap-5 xl:grid-cols-2">
+      <app-panel class="self-start md:p-6 xl:col-span-2"
+        ><div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+          <div class="min-w-0">
+            <h2 class="flex items-center gap-2 text-section-title font-semibold">
+              <span
+                class="flex size-8 shrink-0 items-center justify-center rounded-control bg-linear-to-tr from-primary to-primary-hover text-primary-foreground shadow-metric-icon"
+                ><app-icon name="phosphorChartLine" size="18px" /></span
+              >الرسم الرئيسي · عرض المحتوى الكامل
+            </h2>
+            <p class="mt-2 max-w-2xl text-xs leading-loose text-muted-foreground">
+              مساحة رسم واسعة مع سياق الفترة والتصدير وعرض البيانات والتوسيع.
+            </p>
+          </div>
+          <a hlmBtn variant="outline" [routerLink]="['/centers', module.profile.id]"
+            >فتح لوحة المؤشرات</a
+          >
+        </div>
+        <p class="rounded-lg bg-primary-soft p-5 text-sm text-primary-soft-foreground">
+          البطاقات والرسوم والنشاط يستخدمون نفس مركز البيانات والفترة. افتح اللوحة لتجربة الرسم
+          الحقيقي وأدواته.
+        </p></app-panel
+      >
+    </div>
+  </section>
+  <app-panel
+    ><h2 class="mb-4 text-section-title font-semibold">فترة تاريخ عربية</h2>
+    <app-date-range-picker
+      label="فترة العرض"
+      [value]="period()"
+      (valueChange)="period.set($event)"
+    />
+    <p class="mt-3 text-xs text-muted-foreground">
+      التحديد مسودة حتى تطبيق الفترة؛ التواريخ المحلية لا تتحول إلى توقيت UTC.
+    </p></app-panel
+  >
+  <app-panel
+    ><h2 class="mb-4 text-section-title font-semibold">الهوية والألوان الدلالية</h2>
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      @for (s of swatches; track s.label) {
+        <div [class]="'rounded-lg p-5 text-sm font-medium ' + s.className">{{ s.label }}</div>
+      }
+    </div></app-panel
+  >
+  <app-panel
+    ><h2 class="mb-4 text-section-title font-semibold">خط الإسكندرية · Alexandria</h2>
+    <p class="text-page-title font-semibold">عنوان صفحة · ٢٨ بكسل</p>
+    <p class="mt-3 text-section-title font-semibold">عنوان قسم · ١٨ بكسل</p>
+    <p class="mt-3 text-base">المحتوى الرئيسي · ١٦ بكسل</p>
+    <p class="mt-3 text-sm">الجداول والحقول والأزرار · ١٤ بكسل</p>
+    <p class="mt-3 text-xs text-muted-foreground">بيانات ثانوية · ١٢ بكسل</p></app-panel
+  >
+  <app-panel
+    ><h2 class="mb-4 text-section-title font-semibold">الأزرار والتفاعلات</h2>
+    <div class="flex flex-wrap gap-3">
+      @for (v of variants; track v.variant) {
+        <button hlmBtn [variant]="v.variant" (click)="feedback.set('تم اختبار الزر محلياً')">
+          {{ v.label }}
+        </button>
+      }
+      <span title="إجراء غير متاح في النسخة التجريبية"
+        ><button hlmBtn disabled>غير متاح</button></span
+      >
+    </div>
+    <p role="status" class="mt-3 text-sm text-success-foreground">{{ feedback() }}</p>
+    <div class="mt-5 grid gap-4 sm:grid-cols-2">
+      <app-field label="حقل قياسي" placeholder="أدخل قيمة توضيحية" [formControl]="test" /><app-field
+        label="حقل بحالة خطأ"
+        [formControl]="invalid"
+        error="هذا مثال لتوضيح التحقق المحلي"
+      /></div
+  ></app-panel>
+  <app-panel
+    ><h2 class="mb-4 text-section-title font-semibold">الحالات والأولوية</h2>
+    <div class="flex flex-wrap gap-3">
+      @for (s of statuses; track s.label) {
+        <app-status-badge [label]="s.label" [intent]="s.intent" />
+      }
+    </div>
+    <p
+      role="note"
+      class="mt-5 rounded-lg border border-info-border bg-info-soft p-4 text-sm text-info-foreground"
+    >
+      تبقى ألوان الحالات الدلالية نفسها في المركزين.
+    </p></app-panel
+  >
+  <app-data-table [data]="rows" [columns]="columns" [getRowId]="id" />
+  <div class="grid gap-5 md:grid-cols-2">
+    <app-panel
+      ><app-empty-state description="مثال لحالة فارغة قابلة للاستخدام."
+        ><button hlmBtn variant="outline" (click)="feedback.set('تم اختبار إجراء الحالة الفارغة')">
+          اختبار الإجراء
+        </button></app-empty-state
+      ></app-panel
+    ><app-panel
+      ><app-loading /><app-empty-state
+        title="تعذّر إنشاء المعاينة"
+        description="خطأ تجريبي مؤقت. بياناتك محفوظة، يمكنك إعادة المحاولة."
+        ><button hlmBtn (click)="feedback.set('تم اختبار إعادة المحاولة')">
+          إعادة المحاولة
+        </button></app-empty-state
+      ></app-panel
+    >
+  </div>
+  <app-panel
+    ><h2 class="mb-4 text-section-title font-semibold">الأسطح المنبثقة</h2>
+    <div class="flex flex-wrap gap-3">
+      <button hlmBtn (click)="sheet.set(false); open.set(true)">فتح حوار</button
+      ><button hlmBtn variant="outline" (click)="sheet.set(true); open.set(true)">فتح درج</button>
+    </div></app-panel
+  >
+</div>
+<app-dialog
+  [open]="open()"
+  (closed)="open.set(false)"
+  [sheet]="sheet()"
+  [title]="sheet() ? 'درج توضيحي' : 'حوار توضيحي'"
+  ><app-field
+    label="حقل لاختبار التركيز"
+    placeholder="استخدم لوحة المفاتيح"
+    [formControl]="focus"
+  /><button hlmBtn class="mt-5" (click)="open.set(false)">إغلاق</button></app-dialog
+>
+@if (flow(); as f) {
+  @if (sample(); as t) {
+    <app-transaction-flow [transaction]="t" [flow]="f" (closed)="flow.set(null)" />
+  }
+}
+<app-dialog
+  [open]="reset()"
+  (closed)="reset.set(false)"
+  title="إعادة ضبط بيانات المركز"
+  [description]="
+    'سيُعاد ' +
+    module.profile.name +
+    ' إلى سجلات العرض الأصلية وتُحذف تعديلات الجلسة لهذا المركز فقط.'
+  "
+  ><div class="flex gap-2">
+    <button hlmBtn variant="destructive" (click)="resetData()">تأكيد إعادة الضبط</button
+    ><button hlmBtn variant="outline" (click)="reset.set(false)">إلغاء</button>
+  </div></app-dialog
+>

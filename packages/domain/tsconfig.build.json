@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.lib.json",
+  "compilerOptions": {
+    "paths": {
+      "@workspace/data-access": ["../../dist/data-access/types/workspace-data-access.d.ts"],
+      "@workspace/ui": ["../../dist/ui/types/workspace-ui.d.ts"],
+      "@workspace/core": ["../../dist/core/types/workspace-core.d.ts"]
+    }
+  }
+}

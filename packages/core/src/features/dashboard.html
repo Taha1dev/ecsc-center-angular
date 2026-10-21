@@ -1,0 +1,234 @@
+<app-page-header
+  [compact]="true"
+  title="الرئيسية"
+  [description]="center.name + ' · ' + referenceLabel"
+  ><div class="w-full sm:w-auto sm:min-w-72">
+    <app-date-range-picker
+      label="نطاق لوحة المؤشرات"
+      [required]="true"
+      [value]="range()"
+      (valueChange)="setRange($event)"
+    />
+  </div>
+  <app-export-menu
+    [compact]="true"
+    label="تصدير بيانات لوحة المؤشرات"
+    filename="لوحة-المؤشرات"
+    [datasets]="exports()"
+    [context]="context()"
+  /><button hlmBtn type="button" variant="outline" [disabled]="refreshing()" (click)="refresh()">
+    <app-icon name="phosphorArrowCounterClockwise" />{{
+      refreshing() ? 'جارٍ التحديث…' : 'تحديث البيانات'
+    }}
+  </button></app-page-header
+>
+<p aria-live="polite" class="mb-3 text-xs text-muted-foreground">
+  {{
+    lastRefresh()
+      ? 'آخر إعادة قراءة محلية: ' + lastRefresh() + ' · توقيت دمشق'
+      : 'لم يُجرَ تحديث محلي بعد · البيانات مثبتة بتاريخ العرض'
+  }}
+</p>
+<div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+  <div class="flex flex-wrap gap-1 rounded-inset bg-muted p-1">
+    @for (g of granularities; track g.id) {
+      <button
+        hlmBtn
+        type="button"
+        size="sm"
+        [variant]="granularity() === g.id ? 'secondary' : 'ghost'"
+        [attr.aria-pressed]="granularity() === g.id"
+        (click)="granularity.set(g.id)"
+      >
+        {{ g.label }}
+      </button>
+    }
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <button
+      hlmBtn
+      variant="outline"
+      size="sm"
+      type="button"
+      aria-label="إزالة مرشح الفترة"
+      (click)="reset()"
+    >
+      {{ period() }} ×</button
+    ><button hlmBtn size="sm" variant="ghost" type="button" (click)="reset()">
+      إعادة ضبط المرشحات
+    </button>
+  </div>
+</div>
+<p class="my-4 text-xs leading-loose text-muted-foreground">
+  الفترة السابقة المكافئة: {{ format(previous().from) }} — {{ format(previous().to) }}
+</p>
+<div class="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  @for (m of metrics(); track m.label) {
+    <app-metric-card
+      [label]="m.label"
+      [value]="number(m.value)"
+      [caption]="m.caption"
+      [tone]="m.tone"
+      [icon]="m.icon"
+      [comparison]="comparison(m.comparison)"
+    />
+  }
+</div>
+@if (refreshing()) {
+  <app-loading />
+} @else {
+  <div class="grid gap-5 xl:grid-cols-2">
+    <app-chart-workspace
+      class="xl:col-span-2"
+      [primary]="true"
+      [title]="datasets()[0].title"
+      description="عينة البريد؛ ترتيب زمني من اليسار إلى اليمين. المنجز حالة حالية لمعاملات تاريخ الورود."
+      [dataset]="datasets()[0]"
+      [context]="context()"
+      [empty]="!scoped().length"
+      kind="area"
+      [data]="series()"
+      [series]="trendSeries"
+    />
+    <app-chart-workspace
+      [title]="datasets()[1].title"
+      description="حالات عينة الفترة. النسبة من إجماليها؛ اختر حالة لفتح البريد المرشّح."
+      [dataset]="datasets()[1]"
+      [context]="context()"
+      [empty]="!scoped().length"
+      kind="donut"
+      [data]="lifecycle()"
+      [series]="statusSeries"
+      (drill)="drill({ status: $event.id })"
+      ><div class="mt-3 flex flex-wrap gap-2">
+        @for (s of lifecycle(); track s.id) {
+          <button hlmBtn variant="ghost" size="sm" type="button" (click)="drill({ status: s.id })">
+            {{ s.label }} · {{ number(+s.count) }} ·
+            {{ number(scoped().length ? (+s.count / scoped().length) * 100 : 0) }}٪
+          </button>
+        }
+      </div></app-chart-workspace
+    >
+    <app-chart-workspace
+      [title]="datasets()[2].title"
+      description="حلقات شعاعية حسب مجموعة الخدمة والحالة؛ ترتيب المجموعات أدناه من الداخل إلى الخارج. طول الحلقة يقارن حجم المجموعة بأكبر مجموعة في الفترة."
+      [dataset]="datasets()[2]"
+      [context]="context()"
+      [empty]="!scoped().length"
+      kind="radial"
+      [data]="workload()"
+      [series]="statusSeries"
+      (drill)="drill({ group: $event.id })"
+      ><div class="mt-3 flex flex-wrap gap-2">
+        @for (g of module.catalog.groups; track g.id) {
+          <button
+            hlmBtn
+            variant="ghost"
+            size="sm"
+            type="button"
+            (click)="drill({ group: g.label })"
+          >
+            {{ g.label }} · {{ number(groupCount(g.label)) }}
+          </button>
+        }
+      </div></app-chart-workspace
+    >
+    <app-chart-workspace
+      [title]="datasets()[3].title"
+      description="تسجيلات حسابات اصطناعية مؤرخة في الفترة نفسها؛ ليست قياسًا لإنتاج أو تعدادًا للمعاملات."
+      [dataset]="datasets()[3]"
+      [context]="context()"
+      [empty]="!registered()"
+      kind="line"
+      [data]="series()"
+      [series]="usersSeries"
+    />
+    <app-attention-list [rows]="scoped()" (viewAll)="drill($event)" />
+  </div>
+}
+<app-panel class="mt-5"
+  ><h2 class="flex items-center gap-2 text-section-title font-semibold">
+    <app-icon name="phosphorInfo" />ملخص إضافي · نطاقات مستقلة
+  </h2>
+  <p class="mt-2 text-xs text-muted-foreground">
+    اللّقطات الأوسع ثابتة ولا تتأثر بمرشح الفترة؛ حسابات المستخدمين اصطناعية مؤرخة حتى تاريخ العرض.
+  </p>
+  <dl class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    @for (m of summary(); track m.label) {
+      <div
+        [class]="
+          m.primary
+            ? 'rounded-inset bg-primary p-4 text-primary-foreground'
+            : 'rounded-inset bg-surface-subtle p-4'
+        "
+      >
+        <dt class="text-xs">{{ m.label }}</dt>
+        <dd class="mt-2 text-2xl font-semibold tabular-nums">{{ number(m.value) }}</dd>
+      </div>
+    }
+  </dl>
+  <details class="mt-4 text-xs leading-loose text-muted-foreground">
+    <summary class="cursor-pointer font-medium text-primary">عن المقاييس ومصدر البيانات</summary>
+    <p class="mt-2">
+      عينة المعاملات تغطي ١–٦ تشرين الأول فقط. التسجيلات لها تواريخ اصطناعية من كانون الثاني حتى
+      تاريخ العرض. المستخدم النشط لديه نشاط خلال آخر ٣٠ يوماً. المستفيد الفعلي شخص فريد صاحب معاملة
+      منجزة ضمن وارد الفترة. المقارنات تُعرض فقط عند تغطية الفترتين؛ لا نمثّل اللقطات الثابتة كتاريخ
+      مقاس.
+    </p>
+  </details></app-panel
+>
+<app-panel class="mt-5"
+  ><div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h2 class="text-section-title font-semibold">النشاط الأخير</h2>
+      <p class="mt-1 text-xs text-muted-foreground">
+        أحداث معاملات وارد الفترة المختارة · {{ center.name }} · التواريخ والأوقات بتوقيت دمشق
+      </p>
+    </div>
+    <button hlmBtn variant="outline" type="button" (click)="drill({})">فتح معاملات الفترة</button>
+  </div>
+  @if (recent().length) {
+    <ol class="mt-4 divide-y">
+      @for (item of recent(); track item.transaction.id + '-' + item.event.id) {
+        <li class="flex flex-wrap items-start gap-3 py-4">
+          <span
+            class="flex size-9 items-center justify-center rounded-control bg-linear-to-tr from-primary to-primary-hover text-white shadow-metric-icon"
+            ><app-icon name="phosphorClockCounterClockwise"
+          /></span>
+          <div class="min-w-0 flex-1 basis-48">
+            <a
+              class="text-sm font-medium text-primary hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+              [routerLink]="['/centers', center.id, 'transactions', item.transaction.id]"
+              [queryParams]="{ section: 'activity' }"
+              >{{ item.event.title }} · <bdi>#{{ item.transaction.id }}</bdi></a
+            >
+            <p class="mt-1 text-sm text-muted-foreground">
+              {{ item.transaction.applicant }} · {{ item.event.actor }}
+              @if (item.event.detail && item.event.detail !== item.event.actor) {
+                · {{ item.event.detail }}
+              }
+            </p>
+          </div>
+          <time [attr.datetime]="item.event.occurredAt" class="text-xs text-muted-foreground">{{
+            item.event.date
+          }}</time>
+        </li>
+      }
+    </ol>
+  } @else {
+    <p class="py-8 text-sm text-muted-foreground">لا توجد أحداث لمعاملات وارد هذه الفترة.</p>
+  }
+</app-panel>
+<p class="mt-5 text-xs leading-loose text-muted-foreground">
+  اللقطات التاريخية الواسعة لا تدخل صادرات الفترة. كل تصدير يطابق جدول رسمه ويشمل السلاسل المخفية.
+  <a class="text-primary underline" [routerLink]="['/centers', center.id, 'reports']"
+    >فتح دليل التقارير</a
+  >
+</p>
+@if (claim(); as transaction) {
+  <app-transaction-flow
+    [transaction]="transaction"
+    [flow]="{ action: 'claim' }"
+    (closed)="claim.set(null)"
+  />
+}

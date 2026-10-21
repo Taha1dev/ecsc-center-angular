@@ -1,0 +1,37 @@
+:root[data-center='jus'] {
+  --brand-50: #eef6f4;
+  --brand-100: #d7e9e4;
+  --brand-200: #b3d2c9;
+  --brand-300: #83afa2;
+  --brand-400: #56887a;
+  --brand-500: #346659;
+  --brand-600: #1b4940;
+  --brand-700: #002623;
+  --brand-800: #001e1c;
+  --brand-900: #001916;
+  --brand-950: #002623;
+  --highlight-50: #faf7ef;
+  --highlight-100: #f1ead8;
+  --highlight-200: #e4d9bb;
+  --highlight-300: #d3c39c;
+  --highlight-400: #c5b589;
+  --highlight-500: #b9a77a;
+  --highlight-600: #b9a77a;
+  --highlight-700: #968350;
+  --highlight-800: #75653b;
+  --highlight-900: #564929;
+  --highlight-950: #302817;
+  --background: #f3f8f6;
+  --primary: #002623;
+  --secondary: #b9a77a;
+  --muted: #edf2ef;
+  --border: #dce5e0;
+  --input: #7c928a;
+  --surface-subtle: #f8faf9;
+  --divider: #e4ebe7;
+  --chart-1: #002623;
+  --chart-2: #968350;
+  --chart-3: #089cb4;
+  --chart-4: #8358df;
+  --chart-5: #d84685;
+}

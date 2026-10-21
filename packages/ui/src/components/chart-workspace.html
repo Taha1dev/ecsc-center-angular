@@ -1,0 +1,151 @@
+<app-panel [class]="primary() ? 'md:p-6' : ''"
+  ><div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+    <div class="min-w-0">
+      <h2 class="flex items-center gap-2 text-section-title font-semibold">
+        <span
+          class="flex size-8 items-center justify-center rounded-control bg-linear-to-tr from-primary to-primary-hover text-white shadow-metric-icon"
+          ><app-icon name="phosphorChartLine" size="18px" /></span
+        >{{ title() }}
+      </h2>
+      <p class="mt-2 max-w-2xl text-xs leading-loose text-muted-foreground">{{ description() }}</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <div class="flex rounded-inset bg-surface-subtle p-1">
+        <button
+          hlmBtn
+          type="button"
+          size="sm"
+          [variant]="table() ? 'ghost' : 'secondary'"
+          [attr.aria-pressed]="!table()"
+          (click)="table.set(false)"
+        >
+          الرسم</button
+        ><button
+          hlmBtn
+          type="button"
+          size="sm"
+          [variant]="table() ? 'secondary' : 'ghost'"
+          [attr.aria-pressed]="table()"
+          (click)="table.set(true)"
+        >
+          عرض البيانات
+        </button>
+      </div>
+      <app-export-menu
+        [compact]="true"
+        [viewData]="true"
+        (view)="table.set(true)"
+        [label]="'بيانات ' + title()"
+        [datasets]="[dataset()]"
+        [context]="exportContext()"
+        [filename]="title()"
+      /><button
+        hlmBtn
+        variant="outline"
+        size="icon"
+        type="button"
+        [attr.aria-label]="'توسيع ' + title()"
+        (click)="expanded.set(true)"
+      >
+        <app-icon name="phosphorArrowsOut" />
+      </button>
+    </div>
+  </div>
+  <div class="mb-3 flex flex-wrap gap-2 text-xs">
+    <span class="rounded-full bg-primary-soft px-2 py-1 text-primary-soft-foreground">{{
+      context().period
+    }}</span
+    ><span class="rounded-full bg-secondary-soft px-2 py-1 text-secondary-soft-foreground">{{
+      dataset().units
+    }}</span>
+  </div>
+  @if (table()) {
+    <app-chart-data-table [dataset]="dataset()" />
+  } @else if (empty()) {
+    <app-empty-state
+      description="لا توجد بيانات ضمن الفترة المختارة؛ وسّع الفترة أو أعد ضبط المرشحات."
+    />
+  } @else {
+    <div [class]="primary() ? 'flex h-80 flex-col md:h-104' : 'flex h-80 flex-col'">
+      <app-chart
+        class="min-h-0 flex-1"
+        [label]="title()"
+        [kind]="kind()"
+        [data]="data()"
+        [series]="series()"
+        [hidden]="hidden()"
+        [primary]="primary()"
+        (drill)="drill.emit($event)"
+      />
+      <ng-container *ngTemplateOutlet="legend" />
+    </div>
+  }
+  <ng-template #legend
+    ><div
+      dir="rtl"
+      aria-label="سلاسل الرسم"
+      class="flex shrink-0 flex-wrap justify-center gap-2 pt-3 text-sm"
+    >
+      @for (s of series(); track s.id) {
+        <button
+          type="button"
+          [attr.aria-label]="(hidden().includes(s.id) ? 'إظهار ' : 'إخفاء ') + s.label"
+          [attr.aria-pressed]="!hidden().includes(s.id)"
+          class="inline-flex min-h-10 items-center gap-2 rounded-md border border-transparent px-2 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+          [class.opacity-40]="hidden().includes(s.id)"
+          [class.line-through]="hidden().includes(s.id)"
+          (click)="toggle(s.id)"
+        >
+          <span
+            class="size-2.5 shrink-0 rounded-full"
+            [style.backgroundColor]="s.color.startsWith('--') ? 'var(' + s.color + ')' : s.color"
+          ></span
+          >{{ s.label }}
+        </button>
+      }
+    </div></ng-template
+  >
+  @if (hidden().length) {
+    <p class="mt-2 text-xs text-muted-foreground">
+      الإخفاء للعرض فقط؛ الجدول والتصدير يشملان جميع السلاسل.
+    </p>
+  }
+  <ng-content
+/></app-panel>
+<app-dialog
+  [open]="expanded()"
+  (closed)="expanded.set(false)"
+  [wide]="true"
+  [title]="title()"
+  [description]="context().center + ' · ' + context().period + ' · ' + description()"
+  ><div class="flex flex-wrap gap-2">
+    <app-export-menu
+      [viewData]="true"
+      (view)="table.set(true)"
+      [datasets]="[dataset()]"
+      [context]="exportContext()"
+      [filename]="title()"
+    /><button hlmBtn type="button" variant="outline" (click)="table.set(!table())">
+      {{ table() ? 'عرض الرسم' : 'عرض البيانات' }}
+    </button>
+  </div>
+  @if (table()) {
+    <app-chart-data-table [dataset]="dataset()" />
+  } @else if (empty()) {
+    <app-empty-state description="لا توجد بيانات ضمن الفترة المختارة" />
+  } @else {
+    <div class="mt-5 flex h-100 flex-col md:h-120">
+      <app-chart
+        class="min-h-0 flex-1"
+        [label]="title()"
+        [kind]="kind()"
+        [data]="data()"
+        [series]="series()"
+        [hidden]="hidden()"
+        [expanded]="true"
+        (drill)="drill.emit($event)"
+      />
+      <ng-container *ngTemplateOutlet="legend" />
+    </div>
+  }
+</app-dialog>

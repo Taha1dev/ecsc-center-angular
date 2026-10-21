@@ -1,0 +1,156 @@
+@if (transaction(); as t) {
+  @if (section(); as selected) {
+    @if (service(); as service) {
+      <app-page-header [title]="t.type" [description]="'المعاملة #' + t.id + ' · ' + t.applicant">
+        @if (primary(); as a) {
+          <button
+            hlmBtn
+            type="button"
+            [disabled]="a.disabled"
+            [title]="a.reason || ''"
+            (click)="a.onSelect()"
+          >
+            <app-icon [name]="a.icon" />{{ a.label }}
+          </button>
+        }
+        @for (a of secondary(); track a.id) {
+          <button
+            hlmBtn
+            type="button"
+            variant="outline"
+            [disabled]="a.disabled"
+            [title]="a.reason || ''"
+            (click)="a.onSelect()"
+          >
+            <app-icon [name]="a.icon" />{{ a.label }}
+          </button>
+        }
+        @if (rest().length) {
+          <app-action-menu [actions]="rest()" />
+        }
+      </app-page-header>
+      <app-panel class="mb-5"
+        ><div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <app-status-badge
+              [label]="statuses[t.status].label"
+              [intent]="statuses[t.status].intent"
+            />
+            @if (t.deadline < referenceDate && t.status !== 'completed') {
+              <app-status-badge label="متأخرة" intent="danger" />
+            }
+            @if (t.priority === 'urgent') {
+              <app-status-badge label="عاجلة" intent="warning" />
+            }
+            <span class="text-sm text-muted-foreground"
+              >{{ t.owner || 'غير مسندة' }} · {{ date(t.deadline) }}</span
+            >
+          </div>
+          <span class="text-xs text-muted-foreground">{{ center.name }} · {{ t.group }}</span>
+        </div>
+        <ol class="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t pt-4 text-sm">
+          @for (stage of service.stages; track stage.id) {
+            <li
+              [class]="
+                t.stageId === stage.id ? 'font-medium text-primary' : 'text-muted-foreground'
+              "
+            >
+              <span
+                class="me-2 inline-flex size-6 items-center justify-center rounded-full bg-muted text-xs"
+                >{{ $index + 1 }}</span
+              >{{ stage.label }}
+            </li>
+          }
+        </ol></app-panel
+      >
+      <div class="mb-5 2xl:hidden">
+        <app-field
+          [hideLabel]="true"
+          label="قسم المعاملة"
+          kind="select"
+          [options]="sectionOptions()"
+          [formControl]="sectionControl"
+        />
+      </div>
+      <div class="grid min-w-0 gap-5 2xl:grid-cols-[286px_minmax(0,1fr)]">
+        <aside class="hidden self-start rounded-panel border bg-card p-3 shadow-panel 2xl:block">
+          <app-transaction-navigation
+            [transaction]="t"
+            [sections]="sections()"
+            [active]="selected.id"
+            (selected)="navigate($event)"
+          />
+        </aside>
+        <section class="min-w-0">
+          <div
+            class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-inset bg-card/60 p-3"
+          >
+            <h2 class="text-section-title font-semibold">{{ selected.title }}</h2>
+            <div class="flex flex-wrap gap-2">
+              @for (action of selected.actions; track action) {
+                <button
+                  hlmBtn
+                  type="button"
+                  [disabled]="!allowed(action).enabled"
+                  [title]="allowed(action).reason || ''"
+                  (click)="open(action)"
+                >
+                  <app-icon name="phosphorPlus" />{{ labels[action] }}
+                </button>
+              }
+            </div>
+          </div>
+          @if (context(); as ctx) {
+            <ng-container
+              [ngComponentOutlet]="selected.component"
+              [ngComponentOutletInputs]="{ context: ctx }"
+            />
+          }
+        </section>
+      </div>
+    }
+  } @else {
+    <app-empty-state title="القسم غير موجود" description="اختر قسماً صالحاً من بيانات المعاملة."
+      ><button hlmBtn type="button" (click)="navigate('overview')">
+        نظرة عامة
+      </button></app-empty-state
+    >
+  }
+  @if (flow(); as flow) {
+    <app-transaction-flow [transaction]="t" [flow]="flow" (closed)="this.flow.set(null)" />
+  }
+  <app-dialog
+    [open]="inspection() !== null"
+    (closed)="inspection.set(null)"
+    [sheet]="true"
+    [title]="inspectionTitle()"
+    [description]="
+      inspection()?.kind === 'document' ? 'معاينة توضيحية، وليست محتوى الملف الأصلي.' : ''
+    "
+  >
+    @if (inspection()?.kind === 'decision') {
+      <p class="text-sm leading-loose">{{ inspectionItems()[1]?.value }}</p>
+      <p class="mt-4 text-xs text-muted-foreground">{{ inspectionItems()[0]?.value }}</p>
+    } @else {
+      <app-key-values [items]="inspectionItems()" />
+    }
+    @if (inspection()?.kind === 'document') {
+      <app-panel class="mt-5"
+        ><p class="mb-4 text-center font-semibold">{{ center.name }}</p>
+        <app-status-badge label="نموذج توضيحي" intent="warning" />
+        <p class="mt-5 text-sm leading-loose">
+          طلب خدمة: {{ t.type }}<br />مقدم الطلب: {{ t.applicant }}<br />رقم المعاملة:
+          <bdi>{{ t.id }}</bdi>
+        </p></app-panel
+      >
+    }
+  </app-dialog>
+} @else {
+  <app-empty-state
+    title="المعاملة غير موجودة في هذا المركز"
+    description="تحقق من الرقم أو ارجع إلى بريد المركز المحدد."
+    ><a hlmBtn [routerLink]="['/centers', center.id, 'inbox', 'group']"
+      >فتح البريد</a
+    ></app-empty-state
+  >
+}

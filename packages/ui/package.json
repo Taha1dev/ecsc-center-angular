@@ -1,0 +1,34 @@
+{
+  "name": "@workspace/ui",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./globals.css": "./src/styles/globals.css",
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "ng build ui",
+    "typecheck": "ngc -p tsconfig.lib.json --noEmit"
+  },
+  "dependencies": {
+    "@angular/cdk": "22.2.3",
+    "@angular/common": "22.2.3",
+    "@angular/core": "22.2.3",
+    "@angular/forms": "22.2.3",
+    "@fontsource/alexandria": "5.3.0",
+    "@ng-icons/core": "36.1.0",
+    "@ng-icons/phosphor-icons": "36.1.0",
+    "@spartan-ng/brain": "1.8.0",
+    "@tanstack/angular-table": "9.3.1",
+    "@workspace/domain": "*",
+    "echarts": "6.1.0",
+    "exceljs": "4.4.0",
+    "ngx-echarts": "22.0.0",
+    "tailwind-merge": "3.7.0",
+    "tw-animate-css": "1.4.0"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ]
+}

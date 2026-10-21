@@ -1,0 +1,15 @@
+interface:
+  display_name: Rounded Workspace UI
+  short_description: Rounded cards and layered layouts for Arabic admin apps
+  default_prompt: Use $rounded-workspace-ui to refine this service-center interface
+    with layered rounded cards, a clear responsive layout, and the existing center
+    theme.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

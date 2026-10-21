@@ -1,0 +1,19 @@
+{
+  "name": "m3",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "ng serve m3",
+    "build": "ng build m3",
+    "typecheck": "ngc -p tsconfig.app.json --noEmit",
+    "preview": "node ../../scripts/serve.mjs m3"
+  },
+  "dependencies": {
+    "@workspace/core": "*",
+    "@workspace/ui": "*",
+    "@workspace/domain": "*",
+    "@workspace/data-access": "*",
+    "@angular/core": "22.2.3",
+    "@angular/platform-browser": "22.2.3"
+  }
+}

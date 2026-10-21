@@ -1,0 +1,198 @@
+<app-dialog
+  [open]="true"
+  (closed)="closed.emit()"
+  [title]="flow().title || labels[flow().action]"
+  [sheet]="preview()"
+  [description]="center.name + ' · المعاملة ' + transaction().id + ' · محاكاة محلية'"
+>
+  @if (custom()?.component; as component) {
+    <ng-container
+      [ngComponentOutlet]="component"
+      [ngComponentOutletInputs]="{ context: context(), form: form }"
+    />
+  } @else if (flow().action === 'print') {
+    <div class="space-y-5">
+      <app-field
+        label="قالب المخرج"
+        kind="select"
+        [options]="templates"
+        [formControl]="form.controls.format"
+      /><app-panel
+        ><p class="mb-5 text-center text-section-title font-semibold">{{ center.name }}</p>
+        <app-status-badge label="معاينة توضيحية — ليست وثيقة رسمية" intent="warning" />
+        <h3 class="my-4 font-semibold">{{ form.controls.format.value }}</h3>
+        <div class="mt-5"><app-key-values [items]="summary()" /></div>
+        <p class="mt-6 border-t pt-4 text-xs text-muted-foreground">
+          هذا نموذج توضيحي للمراجعة والطباعة المحلية، وليس وثيقة رسمية.
+        </p></app-panel
+      ><button hlmBtn type="button" variant="outline" (click)="print()">
+        طباعة المعاينة الحالية
+      </button>
+      <p class="text-xs text-muted-foreground">
+        يفتح مربع طباعة المتصفح للصفحة الحالية. لا ينشئ ملفاً رسمياً.
+      </p>
+    </div>
+  } @else if (flow().action === 'activity') {
+    <app-activity-timeline [items]="transaction().activity" />
+  } @else {
+    <form class="space-y-5" [formGroup]="form" (ngSubmit)="save()" novalidate>
+      @switch (flow().action) {
+        @case ('claim') {
+          <p class="text-sm">
+            سيتم إسناد المعاملة إلى {{ catalog.employees.find(isCurrentEmployee)?.label }} ونقلها
+            إلى حالة قيد المعالجة.
+          </p>
+        }
+        @case ('status') {
+          <app-field
+            label="الحالة الجديدة"
+            kind="select"
+            [options]="statusOptions()"
+            formControlName="selection"
+          />
+        }
+        @case ('transfer') {
+          <app-field
+            label="الموظف المستلم"
+            kind="select"
+            [options]="employees"
+            formControlName="selection"
+          />
+          <p class="text-sm text-muted-foreground">يتم التحويل داخل المركز المحدد فقط.</p>
+        }
+        @case ('applicant') {
+          <app-field
+            label="الاسم الكامل"
+            placeholder="مثال: نورا عبد الكريم حسن"
+            formControlName="text"
+          /><app-field
+            label="رقم الإثبات"
+            placeholder="مثال: 01302456789"
+            formControlName="identifier"
+          /><app-field
+            label="نوع مقدم الطلب"
+            kind="select"
+            [options]="peopleKinds"
+            formControlName="selection"
+          />
+        }
+        @case ('field') {
+          <app-field
+            label="الحقل"
+            kind="select"
+            [options]="fields()"
+            formControlName="selection"
+          /><app-field
+            label="القيمة"
+            [kind]="
+              selectedField()?.kind === 'select' || selectedField()?.kind === 'boolean'
+                ? 'select'
+                : selectedField()?.kind === 'number'
+                  ? 'number'
+                  : selectedField()?.kind === 'date'
+                    ? 'date'
+                    : 'text'
+            "
+            [options]="fieldOptions()"
+            placeholder="أدخل القيمة المسجلة في الوثيقة"
+            formControlName="text"
+          />
+        }
+        @case ('document') {
+          <label class="flex flex-col gap-2 text-sm font-medium"
+            >ملف من الجهاز<input hlmInput type="file" (change)="chooseFile($event)"
+          /></label>
+          <p class="text-xs text-muted-foreground">
+            يُضاف الاسم والنوع والحجم فقط. لا يُرفع الملف إلى أي خادم.
+          </p>
+        }
+        @case ('payment') {
+          @if (context().targetPayment; as payment) {
+            <p class="text-sm">
+              تأكيد تغيير حالة الدفعة «{{ payment.label }}» من
+              {{ payment.paid ? 'مدفوعة' : 'بانتظار الدفع' }} إلى
+              {{ payment.paid ? 'بانتظار الدفع' : 'مدفوعة' }} محلياً.
+            </p>
+          } @else {
+            <app-field
+              label="نوع الدفعة"
+              kind="select"
+              [options]="paymentKinds"
+              formControlName="selection"
+            /><app-field label="المبلغ التوضيحي (ل.س)" kind="number" formControlName="amount" />
+          }
+        }
+        @case ('fee') {
+          <app-field
+            label="الرسم"
+            kind="select"
+            [options]="feeOptions()"
+            formControlName="selection"
+          /><app-field label="المبلغ التوضيحي (ل.س)" kind="number" formControlName="amount" />
+        }
+        @case ('refund') {
+          <app-field
+            label="المبلغ التوضيحي (ل.س)"
+            kind="number"
+            formControlName="amount"
+          /><app-field
+            label="سبب الإعادة"
+            kind="textarea"
+            placeholder="وضح السبب والبيانات أو الوثائق المطلوبة"
+            formControlName="text"
+          />
+        }
+        @case ('completion') {
+          <app-field
+            label="البيانات والوثائق المطلوب استكمالها"
+            kind="textarea"
+            placeholder="وضح السبب والبيانات أو الوثائق المطلوبة"
+            formControlName="text"
+          />
+        }
+        @case ('decision') {
+          <app-field
+            label="النص"
+            kind="textarea"
+            placeholder="مثال: تمت مطابقة البيانات وتُستكمل المعالجة وفق الوثائق المرفقة."
+            formControlName="text"
+          />
+        }
+        @case ('note') {
+          <app-field
+            label="النص"
+            kind="textarea"
+            placeholder="مثال: يرجى مطابقة رقم المرجع مع الوثيقة الأصلية قبل التسليم."
+            formControlName="text"
+          />
+        }
+      }
+      @if (error.value) {
+        <p role="alert" class="text-sm text-danger">{{ error.value }}</p>
+      }
+      @if (!available().enabled) {
+        <p class="text-sm text-muted-foreground">{{ available().reason }}</p>
+      }
+      <div class="flex flex-wrap gap-3 border-t pt-5">
+        <button hlmBtn type="submit" [disabled]="store.pending() || !available().enabled">
+          {{ store.pending() ? 'جارٍ التحديث…' : 'تأكيد التحديث المحلي' }}</button
+        ><button hlmBtn variant="outline" type="button" (click)="closed.emit()">إلغاء</button>
+      </div>
+    </form>
+  }
+  @if (custom()?.component && !preview()) {
+    <div class="mt-5 flex gap-3 border-t pt-5">
+      <button
+        hlmBtn
+        type="button"
+        [disabled]="store.pending() || !available().enabled"
+        (click)="save()"
+      >
+        تأكيد التحديث المحلي</button
+      ><button hlmBtn variant="outline" type="button" (click)="closed.emit()">إلغاء</button>
+    </div>
+    @if (error.value) {
+      <p role="alert" class="mt-3 text-danger">{{ error.value }}</p>
+    }
+  }
+</app-dialog>
