@@ -54,13 +54,13 @@
 <div class="min-h-svh p-2 lg:p-4">
   <a
     href="#main"
-    class="fixed start-4 top-2 z-50 -translate-y-24 rounded-md bg-card p-3 focus:translate-y-0"
+    class="fixed inset-s-4 top-2 z-50 -translate-y-24 rounded-md bg-card p-3 focus:translate-y-0"
     >انتقل إلى المحتوى</a
   >
   @if (shell() === 'sidebar') {
     <aside
       [class]="
-        'fixed inset-y-4 start-4 z-20 hidden flex-col rounded-workspace border border-sidebar-border bg-sidebar p-4 text-sidebar-foreground shadow-panel lg:flex ' +
+        'fixed inset-y-4 inset-s-4 z-20 hidden flex-col rounded-workspace border border-sidebar-border bg-sidebar p-4 text-sidebar-foreground shadow-panel lg:flex ' +
         (collapsed() ? 'w-20' : compact() ? 'w-20 2xl:w-62' : 'w-62')
       "
     >
@@ -128,7 +128,7 @@
           (shell() === 'navbar'
             ? 'sticky z-20 lg:static ' +
               (scrolled()
-                ? 'top-0 max-lg:-mx-[9px] max-lg:rounded-t-none max-lg:rounded-b-2xl'
+                ? 'top-0 max-lg:-mx-2.25 max-lg:rounded-t-none max-lg:rounded-b-2xl'
                 : 'top-2')
             : '')
         "

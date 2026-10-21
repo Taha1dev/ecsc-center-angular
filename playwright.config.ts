@@ -1,6 +1,6 @@
 import { defineConfig } from '@playwright/test';
+import { workspaceApps } from './scripts/workspace-apps.mjs';
 const production = !!process.env['E2E_PRODUCTION'];
-const port = production ? 5300 : 5200;
 export default defineConfig({
   testDir: './tests/e2e',
   timeout: 90000,
@@ -16,9 +16,9 @@ export default defineConfig({
     locale: 'ar-SY',
     trace: 'retain-on-failure',
   },
-  webServer: ['ecsc', 'm3', 'jus'].map((center, i) => ({
-    command: `npm run ${production ? 'preview' : 'dev'}:${center}`,
-    url: `http://127.0.0.1:${port + i}`,
+  webServer: workspaceApps().map((app) => ({
+    command: `npm run ${production ? 'preview' : 'dev'}:${app.id}`,
+    url: `http://127.0.0.1:${production ? app.previewPort : app.devPort}`,
     reuseExistingServer: true,
     timeout: 120000,
   })),

@@ -332,6 +332,96 @@
           }
         }
       }
+    },
+    "test-center": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:class": {
+          "skipTests": true
+        },
+        "@schematics/angular:component": {
+          "skipTests": true
+        },
+        "@schematics/angular:directive": {
+          "skipTests": true
+        },
+        "@schematics/angular:guard": {
+          "skipTests": true
+        },
+        "@schematics/angular:interceptor": {
+          "skipTests": true
+        },
+        "@schematics/angular:pipe": {
+          "skipTests": true
+        },
+        "@schematics/angular:resolver": {
+          "skipTests": true
+        },
+        "@schematics/angular:service": {
+          "skipTests": true
+        }
+      },
+      "root": "apps/test-center",
+      "sourceRoot": "apps/test-center/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "apps/test-center/src/main.ts",
+            "tsConfig": "apps/test-center/tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "apps/test-center/public",
+                "output": "/assets"
+              }
+            ],
+            "styles": ["apps/test-center/src/styles.css"],
+            "outputPath": "dist/apps/test-center",
+            "index": "apps/test-center/src/index.html",
+            "allowedCommonJsDependencies": ["exceljs"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1MB",
+                  "maximumError": "2MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "test-center:build:production"
+            },
+            "development": {
+              "buildTarget": "test-center:build:development"
+            }
+          },
+          "defaultConfiguration": "development",
+          "options": {
+            "port": 5203
+          }
+        }
+      }
     }
   }
 }

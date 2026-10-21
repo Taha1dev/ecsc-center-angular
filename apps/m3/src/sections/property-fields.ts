@@ -13,7 +13,7 @@ import { AppPanel, HlmButton } from '@workspace/ui';
         >
           <div class="min-w-0">
             <p class="text-xs text-muted-foreground">{{ f.label }}</p>
-            <p class="mt-1 text-sm font-medium break-words">{{ f.value || 'غير متوفر' }}</p>
+            <p class="mt-1 text-sm font-medium wrap-break-words">{{ f.value || 'غير متوفر' }}</p>
           </div>
           <button hlmBtn variant="outline" (click)="context().open('field', f.id)">تعديل</button>
         </div>

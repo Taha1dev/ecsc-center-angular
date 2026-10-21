@@ -12,6 +12,8 @@
   ],
   "scripts": {
     "ng": "ng",
+    "center:new": "node scripts/create-center.mjs",
+    "center:delete": "node scripts/delete-center.mjs",
     "dev": "turbo dev",
     "start": "npm run dev:ecsc",
     "build": "turbo build --concurrency=2",
@@ -28,7 +30,10 @@
     "build:jus": "turbo build --filter=jus",
     "preview:ecsc": "node scripts/serve.mjs ecsc",
     "preview:m3": "node scripts/serve.mjs m3",
-    "preview:jus": "node scripts/serve.mjs jus"
+    "preview:jus": "node scripts/serve.mjs jus",
+    "dev:test-center": "npm run dev --workspace=test-center",
+    "build:test-center": "turbo build --filter=test-center",
+    "preview:test-center": "node scripts/serve.mjs test-center"
   },
   "dependencies": {
     "@angular/cdk": "22.2.3",

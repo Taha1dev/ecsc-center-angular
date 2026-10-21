@@ -84,7 +84,7 @@ import { CENTER_MODULE } from '../module';
                   type="button"
                   variant="ghost"
                   size="icon"
-                  class="absolute end-0 top-0"
+                  class="absolute inset-e-0 top-0"
                   [attr.aria-label]="visible() ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'"
                   [attr.aria-pressed]="visible()"
                   (click)="visible.set(!visible())"

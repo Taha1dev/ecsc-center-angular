@@ -1,17 +1,12 @@
 import { createServer } from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-const names = ['ecsc', 'm3', 'jus'],
-  center = process.argv[2],
-  index = names.indexOf(center);
-if (index < 0) throw new Error('Choose ecsc, m3 or jus');
-const root = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  '../dist/apps',
-  center,
-  'browser',
-);
+import { workspaceApps } from './workspace-apps.mjs';
+const center = process.argv[2];
+const apps = workspaceApps();
+const app = apps.find((entry) => entry.id === center);
+if (!app) throw new Error('Choose ' + apps.map((entry) => entry.id).join(', '));
+const root = app.output;
 if (!fs.existsSync(path.join(root, 'index.html'))) throw new Error(`Build ${center} first`);
 const mime = {
   '.html': 'text/html; charset=utf-8',
@@ -44,6 +39,6 @@ createServer((request, response) => {
     'Cache-Control': 'no-cache',
   });
   fs.createReadStream(file).pipe(response);
-}).listen(5300 + index, '127.0.0.1', () =>
-  console.log(`${center}: http://127.0.0.1:${5300 + index}`),
+}).listen(app.previewPort, '127.0.0.1', () =>
+  console.log(`${center}: http://127.0.0.1:${app.previewPort}`),
 );

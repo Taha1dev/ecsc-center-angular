@@ -28,6 +28,7 @@ export type CenterProfile = {
   loginLogoSize?: 'standard' | 'wide';
 };
 export type Flow = { action: ActionId; targetId?: string; title?: string; formId?: string };
+
 export type SectionContext = {
   t: Transaction;
   service: ServiceDefinition;
@@ -37,6 +38,7 @@ export type SectionContext = {
   navigate: (section: string) => void;
   execute: (command: TransactionCommand) => Promise<void>;
 };
+
 export type SectionEntry = TransactionSectionDefinition & {
   component: Type<unknown>;
   order?: number;

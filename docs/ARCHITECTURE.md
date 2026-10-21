@@ -10,6 +10,8 @@ The workspace uses Angular CLI with standalone components, strict TypeScript and
 
 ## Center composition
 
+New centers can be scaffolded with `npm run center:new -- <id>`; see [the center generator guide](center-generator.md). The generator registers CLI/npm/Turbo tasks and creates app-owned configuration, brand tokens, neutral demo data and a browser smoke suite. Preview and Playwright server discovery use Angular application configuration rather than a fixed center list.
+
 Each app's `src/main.ts` calls `startCenter(centerModule)`. `src/config/module.ts` registers a profile, service catalog, demo settings, reports, adapter and optional rendering extensions. `defineCenter` reuses pure validation and rejects mismatched adapters, invalid service references, conflicting registry entries and conflicting routes. Center identifiers remain validated strings; adding an app does not require modifying a global union.
 
 `CENTER_MODULE` and `CENTER_DATA_CONFIG` are typed DI contracts. `startCenter` binds the validated identity, title, favicon and RTL direction before bootstrap. App-local HTML and CSS establish the correct initial brand before JavaScript loads. All overlays inherit the document's semantic tokens and RTL direction.

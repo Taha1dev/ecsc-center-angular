@@ -67,9 +67,8 @@ export class AppShell {
       .filter((r) => r.label)
       .map((r) => ({ path: r.path, label: r.label!, icon: r.icon ?? 'phosphorFileText' })),
   ];
-  readonly current = computed(
-    () =>
-      this.navigation.find(
+
+  readonly current = computed(() =>this.navigation.find(
         (n) => this.url().split('?')[0] === this.base + (n.path ? '/' + n.path : ''),
       )?.label || (this.url().includes('/transactions/') ? 'إدارة المعاملة' : 'مساحة الموظف'),
   );
@@ -120,6 +119,7 @@ export class AppShell {
         detail: t.activity[0]?.title,
       })),
   );
+  
   constructor() {
     this.router.events
       .pipe(

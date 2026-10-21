@@ -53,6 +53,7 @@ export function createDataClient(adapter: CenterDataAdapter, catalog: ServiceCat
       if (request === version) publish({ loading: false, error: message(cause) });
     }
   }
+
   async function mutate<T>(operation: () => Promise<T>): Promise<T> {
     mutations++;
     publish({ pending: true, mutationError: undefined });
