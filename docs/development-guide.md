@@ -46,6 +46,29 @@ packages/ui/src/
 
 ## 3. كيف تُقرأ أوامر التوليد؟
 
+### اختصار إنشاء مكوّن أو صفحة داخل مركز
+
+للاستعمال المباشر بدون npm، فعّل الاختصار مرة واحدة في كل تيرمنال PowerShell جديد:
+
+```powershell
+.\dev.ps1
+ng g c --ecsc customer-card
+ng g page --ecsc customers
+ng g c --ecsc customer-card --path=features/customers/components --dry-run
+```
+
+`dev.ps1` يعرّف دالة `ng` داخل جلسة PowerShell الحالية فقط، دون تعديل PATH أو profile المستخدم أو تثبيت Angular العالمي. اسم المكوّن يكتب بدون شرطة في بدايته. لإنهاء التفعيل أغلق التيرمنال أو نفّذ `Remove-Item Function:\ng`. يبقى أمر npm التالي متاحاً دون تفعيل:
+
+```powershell
+npm.cmd run ng -- g --ecsc c customer-card
+npm.cmd run ng -- g --ecsc page customers
+npm.cmd run ng -- g --ecsc c customer-card --path=features/customers/components
+```
+
+الأول ينشئ `apps/ecsc/src/components/customer-card/`، والثاني `apps/ecsc/src/pages/customers/`. `--path` اختياري ونسبته إلى `src` الخاص بالمركز. استبدل `--ecsc` باسم أي تطبيق، مثل `--m3` أو `--new-center`. ويمكن كتابة `--center=ecsc` أو `--center-name=ecsc` بدلاً منه. يُضاف `--style=none` و`--skip-tests` افتراضياً ويمكن تجاوزهما بخيارات CLI الصريحة. استعمل `--dry-run` للمعاينة دون إنشاء ملفات.
+
+الاختصار مضاف إلى أمر npm المحلي، وليس أمر `ng` المثبت عالمياً. أوامر Angular العادية التي لا تختار مركزاً تبقى كما هي، بما فيها `--project=ui`. إنشاء صفحة لا يسجل route تلقائياً.
+
 نفذ الأوامر من جذر المستودع. `ecsc` في الأمثلة اسم مشروع اختير للتوضيح فقط؛ استبدله باسم أي تطبيق موجود في `angular.json`.
 
 ```powershell
@@ -144,6 +167,8 @@ export const pages: CenterPages = {};
 
 ## 6. حدود نظام الروابط الحالي وملكية الروابط مستقبلاً
 
+لتخصيص القائمة دون تغيير routes، أصبح متاحاً `CenterModule.navigation`: ملف مستقل يحدد روابط ومجموعات متداخلة لكل مركز. راجع [دليل التنقل والأيقونات الافتراضية](center-navigation.md). القائمة الخاصة تستبدل القائمة الافتراضية بالكامل؛ `label` ضمن routes يضاف إلى القائمة فقط عندما لا يحدد المركز navigation خاصة.
+
 حالياً `packages/core/src/bootstrap.ts` ينشئ المسارات الرئيسية عبر `centerRoutes()` ثم يستدعي `provideRouter()` داخل `startCenter()`. ملفات `apps/*/src/routes.ts` ليست بعدُ ملفات Angular `Routes` مستقلة كاملة.
 
 نوع `CenterRoute` الحالي يحتوي `path`, `label`, `icon`, `component` فقط. لا يمرر `children`, `loadChildren`, `loadComponent`, guards أو route providers. التنقل الافتراضي ومقدمة `/centers/<id>` ثابتان أيضاً.
@@ -217,14 +242,14 @@ import { StatusCard } from '@workspace/ui';
 ## 8. صفحة أو مكوّن منتج مشترك
 
 ```powershell
-npm.cmd run ng -- g c customers-page --project=core --path=packages/core/src/features/customers/pages --flat --style=none --skip-tests
+npm.cmd run ng -- g c customers-page --project=core --path=packages/core/src/features/customers/pages --inline-template=false --flat=false --style=none --skip-tests
 npm.cmd run ng -- g c customer-card --project=core --path=packages/core/src/features/customers/components --style=none --skip-tests
 ```
 
 صدّر الصفحة التي تحتاجها التطبيقات من `packages/core/src/index.ts`:
 
 ```ts
-export { CustomersPage } from './features/customers/pages/customers-page';
+export { CustomersPage } from './features/customers/pages/customers-page/customers-page';
 ```
 
 يمكن لكل تطبيق أن يستورد `CustomersPage` من `@workspace/core` ويسجلها في مساراته. المكونات الداخلية التي لا تستعملها التطبيقات مباشرة لا تحتاج تصديراً عاماً. لا يوجد route لمكتبة `core` لمجرد وجود صفحة فيها؛ التطبيق يجب أن يستخدم الصفحة أو مسارات الميزة.
@@ -353,7 +378,19 @@ import { HlmButton } from '@workspace/ui';
 
 لإضافة مكوّن Spartan غير موجود، راجع مصدر Helm المتوافق مع إصدار Brain، وأضف ملفاته تحت `packages/ui/src/helm` مع تكييف الاستيرادات الداخلية والتوكنات، ثم صدّر العنصر من `packages/ui/src/index.ts`. لو احتاج wrapper أعلى مستوى مكانه `packages/ui/src/components` بشرط أن يبقى عاماً.
 
-الأمر الرسمي العام لـSpartan هو `ng g @spartan-ng/cli:ui`، لكن CLI غير مثبت هنا. حزمة CLI 1.8.0 نفسها تعلن اعتماديات Nx؛ لذلك لا نثبتها مباشرة في هذا المستودع المقصود أن يبقى Angular CLI + Turbo دون Nx. إضافة Helm يدوياً من المصدر أو بأدوات Spartan المتاحة تحافظ على الأدوات الحالية. لا تحتاج تشغيل مولد theme لمجرد إضافة عنصر، فالثيم مهيأ بالفعل.
+CLI Spartan غير مثبت حالياً. هو يدعم Angular CLI رسمياً، ووجود اعتماديات Nx داخل حزمة CLI 1.8.0 لا يعني أن استخدامه يتطلب تحويل المستودع إلى Nx. إعداد التشغيل هنا يظل Angular CLI + Turbo.
+
+الأوامر الرسمية بعد تثبيت CLI المتوافق مع إصدار Brain هي:
+
+```sh
+npm install -D @spartan-ng/cli@1.8.0
+ng g @spartan-ng/cli:ui accordion
+ng g @spartan-ng/cli:ui button
+```
+
+أو شغّل `ng g @spartan-ng/cli:ui` واختر عدة عناصر تفاعلياً. ملف `components.json` في الجذر يحدد `componentsPath` و`importAlias`. لمكتبة UI المشتركة، مسار الملفات المقصود هو `packages/ui/src/helm`، وليس مجلد تطبيق مركز. راجع ناتج `--dry-run` قبل اعتماد الإعداد لأن المولّد يستخدم بنية مثل `accordion/src/lib` ويضيف aliases واعتماديات حسب العنصر.
+
+المولّد الرسمي لا يطابق كل قواعد هذا المشروع تلقائياً: بعض مخرجاته تتضمن عدة مكوّنات flat وقوالب inline وLucide وستايلات Spartan الافتراضية. يجب تنظيم كل مكوّن بمجلده وملف HTML مستقل، وتكييف الأيقونات والتوكنات والاستيرادات الداخلية مع مكتبة UI الحالية، ثم التصدير من `packages/ui/src/index.ts`. التطبيقات تستهلك التصديرات من `@workspace/ui`. الزر الموجود مخصص مسبقاً؛ لا تستبدله بتوليد جديد لمجرد تجربة الأمر. لا تحتاج تشغيل مولد theme مجدداً، فالثيم مهيأ بالفعل.
 
 ## 13. الاعتماديات وحدود الاستيراد
 

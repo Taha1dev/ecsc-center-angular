@@ -1,0 +1,10 @@
+<dl class="grid min-w-0 gap-x-6 gap-y-4 sm:grid-cols-2">
+  @for (item of items(); track $index) {
+    <div class="min-w-0">
+      <dt class="text-xs text-muted-foreground">{{ item.label }}</dt>
+      <dd class="mt-1 text-sm font-medium break-words">
+        <bdi>{{ item.value }}</bdi>
+      </dd>
+    </div>
+  }
+</dl>

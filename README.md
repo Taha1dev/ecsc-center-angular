@@ -1,20 +1,10 @@
 # Service-center Angular workspace
 
-Three independently runnable Arabic RTL applications reproduce the service-center product:
-
-| Application | Identity              | Development           | Production preview    |
-| ----------- | --------------------- | --------------------- | --------------------- |
-| `apps/ecsc` | مركز البوابة          | http://localhost:5200 | http://127.0.0.1:5300 |
-| `apps/m3`   | مركز المصالح العقارية | http://localhost:5201 | http://127.0.0.1:5301 |
-| `apps/jus`  | مركز العدل            | http://localhost:5202 | http://127.0.0.1:5302 |
-
-Use Node 24.15+ and npm 12.0.2. Angular, CLI and CDK are pinned to stable 22.2.3.
+Node 24.15+ and npm 12.0.2. Angular, CLI and CDK are pinned to stable 22.2.3.
 
 ```sh
 npm ci
-npm run dev:ecsc
-npm run dev:m3
-npm run dev:jus
+npm run dev -> runs all centers with different ports default range (localhost:5200 - localhost:520x) 
 ```
 
 `npm start` starts ECSC. `npm run dev` starts all three through Turbo. Each application accepts blank demo login fields. The original React project is separate at `E:/Development/ecsc-center`; this workspace runs Angular without React.

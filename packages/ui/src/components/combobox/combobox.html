@@ -1,0 +1,39 @@
+<brn-popover [state]="open() ? 'open' : 'closed'" (stateChanged)="open.set($event === 'open')"
+  ><button
+    hlmBtn
+    variant="outline"
+    brnPopoverTrigger
+    type="button"
+    role="combobox"
+    [attr.aria-expanded]="open()"
+    class="h-12 w-full justify-start text-muted-foreground"
+    [attr.aria-label]="label()"
+  >
+    <app-icon name="phosphorMagnifyingGlass" /><span>{{ label() }}</span></button
+  ><ng-template brnPopoverContent
+    ><div dir="rtl" class="w-[min(90vw,440px)] rounded-control border bg-popover p-2 shadow-float">
+      <input
+        hlmInput
+        placeholder="ابحث بالاسم أو الفئة…"
+        aria-label="بحث في الخيارات"
+        [value]="query()"
+        (input)="search($event)"
+      />
+      <div cdkMenu class="mt-2 max-h-72 overflow-auto">
+        <p class="px-3 py-2 text-xs text-muted-foreground">التقارير المقترحة</p>
+        @for (option of filtered(); track option.value) {
+          <button
+            cdkMenuItem
+            type="button"
+            class="flex min-h-11 w-full rounded-md px-3 py-2 text-start text-sm outline-none hover:bg-accent focus:bg-accent"
+            (cdkMenuItemTriggered)="select(option.value)"
+          >
+            {{ option.label }}
+          </button>
+        } @empty {
+          <p class="p-4 text-sm text-muted-foreground">لا توجد تقارير مطابقة</p>
+        }
+      </div>
+    </div></ng-template
+  ></brn-popover
+>

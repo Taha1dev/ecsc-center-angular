@@ -1,0 +1,6 @@
+<div class="flex flex-col items-center gap-3 py-12 text-center">
+  <app-icon [name]="icon()" size="40px" class="text-muted-foreground" />
+  <h3 class="font-semibold">{{ title() }}</h3>
+  <p class="max-w-md text-sm text-muted-foreground">{{ description() }}</p>
+  <ng-content />
+</div>

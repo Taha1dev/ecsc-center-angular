@@ -51,6 +51,24 @@ it('generates an isolated app, registers all tasks and discovers it without chan
   expect(workspace.projects['new-center'].architect.build.options.browser).toBe(
     'apps/new-center/src/main.ts',
   );
+  const targets = workspace.projects['new-center'].architect;
+  expect(targets.build.defaultConfiguration).toBe('production');
+  expect(targets.build.configurations.production.fileReplacements).toContainEqual({
+    replace: 'apps/new-center/src/environments/environment.ts',
+    with: 'apps/new-center/src/environments/environment.production.ts',
+  });
+  expect(targets.build.configurations.test).toEqual(targets.build.configurations.development);
+  expect(targets.serve.defaultConfiguration).toBe('test');
+  expect(targets.serve.configurations.test.buildTarget).toBe('new-center:build:test');
+  expect(
+    fs.readFileSync(path.join(root, 'apps/new-center/src/environments/environment.ts'), 'utf8'),
+  ).toContain('production: false');
+  expect(
+    fs.readFileSync(
+      path.join(root, 'apps/new-center/src/environments/environment.production.ts'),
+      'utf8',
+    ),
+  ).toContain('production: true');
   const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
   expect(pkg.scripts['build:new-center']).toBe('turbo build --filter=new-center');
   const turbo = JSON.parse(fs.readFileSync(path.join(root, 'turbo.json'), 'utf8'));

@@ -54,6 +54,29 @@ npm run build:new-center
 npm run preview:new-center
 ```
 
+## بيئات المراكز الجديدة
+
+المولّد يجهز ملفين:
+
+- `apps/<id>/src/environments/environment.ts`: إعدادات التيست (`production: false`).
+- `apps/<id>/src/environments/environment.production.ts`: إعدادات الإنتاج (`production: true`).
+
+كلا الملفين يصدر كائن `environment` بنفس الخصائص. أضف أي إعدادات مستقبلية للمركز إلى الملفين، واستورد دائماً `environment.ts`، مثلاً من `src/main.ts`:
+
+```ts
+import { environment } from './environments/environment';
+```
+
+`npm run dev:<id>` يستخدم إعداد `test` افتراضياً. `npm run build:<id>` يستخدم `production` ويستبدل الملف تلقائياً عبر `fileReplacements`.
+
+لبناء نسخة تيست لمركز جديد:
+
+```sh
+npm run ng -- build new-center --configuration=test
+```
+
+هذا الإعداد خاص بالمراكز التي يتم توليدها بعد التعديل؛ لا يغيّر إعدادات المراكز الموجودة.
+
 ## حذف مركز مولّد
 
 ```sh

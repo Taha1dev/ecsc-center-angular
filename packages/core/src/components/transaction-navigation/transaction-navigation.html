@@ -1,0 +1,56 @@
+<nav aria-label="أقسام المعاملة" brnAccordion type="multiple">
+  @for (group of groups(); track group.label) {
+    <div
+      brnAccordionItem
+      [isOpened]="expanded().includes(group.label)"
+      (openedChange)="setOpened(group.label, $event)"
+      class="border-b last:border-b-0"
+    >
+      <h3 brnAccordionHeader>
+        <button
+          brnAccordionTrigger
+          type="button"
+          class="flex min-h-12 w-full items-center justify-between gap-2 rounded-control px-3 py-3 text-start text-sm font-semibold outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <span class="flex items-center gap-2"
+            ><app-icon
+              [name]="groupIcons[group.label] || 'phosphorBriefcase'"
+              class="text-primary"
+              size="20px"
+            />{{ group.label }}</span
+          ><app-icon
+            name="phosphorCaretDown"
+            size="16px"
+            [class.rotate-180]="expanded().includes(group.label)"
+          />
+        </button>
+      </h3>
+      <div brnAccordionContent [hidden]="!expanded().includes(group.label)" class="space-y-1 pb-3">
+        @for (s of group.sections; track s.id) {
+          <button
+            type="button"
+            (click)="selected.emit(s.id)"
+            [attr.aria-current]="active() === s.id ? 'page' : null"
+            [class]="
+              'flex min-h-11 w-full items-center gap-2.5 rounded-control border-s-3 px-3 py-2.5 text-start text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring ' +
+              (active() === s.id
+                ? 'border-primary bg-primary-soft font-semibold text-primary'
+                : 'border-transparent hover:bg-muted')
+            "
+          >
+            <app-icon [name]="s.icon || icons[s.id] || 'phosphorSquaresFour'" size="18px" /><span
+              class="min-w-0 flex-1"
+              >{{ s.title }}</span
+            >
+            @if (badge(s) !== undefined) {
+              <span
+                class="shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-xs text-muted-foreground"
+                >{{ badge(s) }}</span
+              >
+            }
+          </button>
+        }
+      </div>
+    </div>
+  }
+</nav>

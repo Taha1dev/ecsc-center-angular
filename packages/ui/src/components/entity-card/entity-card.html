@@ -1,0 +1,20 @@
+<div class="flex items-start gap-3 border-b bg-primary-soft/45 px-5 py-4">
+  <span
+    class="relative isolate flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-control bg-linear-to-tr from-primary to-[color-mix(in_oklab,var(--primary),black_30%)] text-white shadow-metric-icon before:pointer-events-none before:absolute before:inset-0 before:bg-linear-to-tr before:from-white/0 before:via-white/10 before:to-white/0"
+    ><app-icon [name]="icon()" size="20px"
+  /></span>
+  <div class="min-w-0">
+    <h3 class="font-semibold break-words">{{ title() }}</h3>
+    @if (description()) {
+      <p class="mt-1 text-sm text-muted-foreground">{{ description() }}</p>
+    }
+  </div>
+</div>
+@if (body()) {
+  <div class="p-5"><ng-content /></div>
+}
+@if (actions()) {
+  <div class="flex flex-wrap items-center justify-end gap-2 border-t bg-surface-subtle px-5 py-3">
+    <ng-content select="[card-actions]" />
+  </div>
+}

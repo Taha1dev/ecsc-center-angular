@@ -1,0 +1,25 @@
+<brn-dialog
+  [state]="open() ? 'open' : 'closed'"
+  [positionStrategy]="position()"
+  (stateChanged)="changed($event)"
+  [restoreFocus]="true"
+  [closeOnOutsidePointerEvents]="true"
+>
+  <ng-template brnDialogContent>
+    <section dir="rtl" [class]="panelClass()">
+      <h2 brnDialogTitle class="pe-8 text-section-title font-semibold">{{ title() }}</h2>
+      <p brnDialogDescription class="mt-1 text-sm text-muted-foreground">
+        {{ description() || 'تفاعل محلي في النسخة التجريبية، لا يتم إرسال بيانات إلى خادم.' }}
+      </p>
+      <button
+        type="button"
+        aria-label="إغلاق"
+        class="absolute end-3 top-3 flex size-11 items-center justify-center rounded-control hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+        (click)="closed.emit()"
+      >
+        <app-icon name="phosphorX" size="20px" />
+      </button>
+      <div class="mt-6"><ng-content /></div>
+    </section>
+  </ng-template>
+</brn-dialog>

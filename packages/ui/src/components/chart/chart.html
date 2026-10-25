@@ -1,0 +1,11 @@
+<div
+  echarts
+  dir="ltr"
+  [options]="options()"
+  [initOpts]="{ renderer: 'svg' }"
+  [autoResize]="true"
+  (chartClick)="clicked($event)"
+  class="h-full! w-full"
+  role="img"
+  [attr.aria-label]="label()"
+></div>

@@ -1,0 +1,20 @@
+<div class="grid gap-4 sm:grid-cols-2">
+  @for (a of actions(); track a.id) {
+    <app-entity-card
+      [title]="a.label"
+      [description]="a.disabled ? a.reason || '' : 'إجراء توضيحي ضمن المركز والمعاملة الحالية'"
+      [body]="false"
+      ><button
+        card-actions
+        hlmBtn
+        type="button"
+        variant="outline"
+        [disabled]="a.disabled"
+        [title]="a.reason || ''"
+        (click)="a.onSelect()"
+      >
+        فتح الإجراء
+      </button></app-entity-card
+    >
+  }
+</div>

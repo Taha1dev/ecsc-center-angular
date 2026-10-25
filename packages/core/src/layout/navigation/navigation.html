@@ -1,0 +1,154 @@
+<ng-template #itemContent let-item>
+  <app-icon [name]="item.icon" size="21px" [attr.data-navigation-icon]="item.icon" />
+  <span [class]="rail() ? 'sr-only' : ''">{{ item.label }}</span>
+  @if (item.kind === 'link' && item.badge && !rail()) {
+    <span class="ms-auto px-2 text-xs tabular-nums">{{ count(item) }}</span>
+  }
+</ng-template>
+
+<ng-template #tree let-list>
+  <ul class="flex flex-col gap-2">
+    @for (item of list; track item.id) {
+      <li class="min-w-0">
+        @if (item.kind === 'link') {
+          <a
+            [routerLink]="href(item)"
+            [attr.aria-current]="active(item) ? 'page' : null"
+            [class]="linkClass + (active(item) ? activeClass : ' text-sidebar-muted')"
+            (click)="selected.emit()"
+          >
+            <ng-container
+              [ngTemplateOutlet]="itemContent"
+              [ngTemplateOutletContext]="{ $implicit: item }"
+            />
+          </a>
+        } @else {
+          <button
+            type="button"
+            [class]="
+              linkClass +
+              ' w-full text-start' +
+              (active(item) ? ' bg-sidebar-accent text-sidebar-foreground' : ' text-sidebar-muted')
+            "
+            [attr.aria-expanded]="expanded().has(item.id)"
+            [attr.aria-controls]="prefix + '-' + item.id"
+            (click)="toggle(item.id)"
+          >
+            <ng-container
+              [ngTemplateOutlet]="itemContent"
+              [ngTemplateOutletContext]="{ $implicit: item }"
+            />
+            <app-icon
+              [name]="expanded().has(item.id) ? 'phosphorCaretDown' : 'phosphorCaretLeft'"
+              class="ms-auto"
+            />
+          </button>
+          <div
+            [id]="prefix + '-' + item.id"
+            [hidden]="!expanded().has(item.id)"
+            class="ms-5 mt-2 border-s border-sidebar-border ps-3"
+          >
+            <ng-container
+              [ngTemplateOutlet]="tree"
+              [ngTemplateOutletContext]="{ $implicit: item.children }"
+            />
+          </div>
+        }
+      </li>
+    }
+  </ul>
+</ng-template>
+
+<ng-template #menu let-list let-label="label">
+  <div
+    cdkMenu
+    dir="rtl"
+    [attr.aria-label]="label"
+    class="z-50 max-h-[85svh] w-64 max-w-[calc(100vw-1.5rem)] overflow-y-auto rounded-panel border bg-popover p-1.5 text-start shadow-float"
+  >
+    @for (item of list; track item.id) {
+      @if (item.kind === 'link') {
+        <button
+          type="button"
+          cdkMenuItem
+          (cdkMenuItemTriggered)="follow(item)"
+          [attr.aria-current]="active(item) ? 'page' : null"
+          [class]="
+            menuClass + (active(item) ? ' bg-accent font-medium text-accent-foreground' : '')
+          "
+        >
+          <app-icon [name]="item.icon" [attr.data-navigation-icon]="item.icon" />
+          <span>{{ item.label }}</span>
+          @if (item.badge) {
+            <span class="ms-auto text-xs tabular-nums">{{ count(item) }}</span>
+          }
+        </button>
+      } @else {
+        <button
+          type="button"
+          cdkMenuItem
+          hlmMenuTrigger
+          [cdkMenuTriggerFor]="menu"
+          [cdkMenuTriggerData]="{ $implicit: item.children, label: item.label }"
+          [cdkMenuPosition]="sidePositions"
+          [class]="menuClass"
+        >
+          <app-icon [name]="item.icon" [attr.data-navigation-icon]="item.icon" />
+          <span>{{ item.label }}</span
+          ><app-icon name="phosphorCaretLeft" class="ms-auto" />
+        </button>
+      }
+    }
+  </div>
+</ng-template>
+
+<nav aria-label="التنقل الرئيسي">
+  @if (popup()) {
+    <ul [class]="mode() === 'navbar' ? 'flex flex-wrap gap-2' : 'flex flex-col gap-2'">
+      @for (item of items(); track item.id) {
+        <li class="min-w-0">
+          @if (item.kind === 'link') {
+            <a
+              [routerLink]="href(item)"
+              [title]="rail() ? item.label : ''"
+              [attr.aria-current]="active(item) ? 'page' : null"
+              [class]="linkClass + (active(item) ? activeClass : ' text-sidebar-muted')"
+              (click)="selected.emit()"
+            >
+              <ng-container
+                [ngTemplateOutlet]="itemContent"
+                [ngTemplateOutletContext]="{ $implicit: item }"
+              />
+            </a>
+          } @else {
+            <button
+              type="button"
+              hlmMenuTrigger
+              [cdkMenuTriggerFor]="menu"
+              [cdkMenuTriggerData]="{ $implicit: item.children, label: item.label }"
+              [cdkMenuPosition]="rail() ? sidePositions : positions"
+              [title]="rail() ? item.label : ''"
+              [class]="
+                linkClass +
+                ' w-full text-start' +
+                (active(item)
+                  ? ' bg-sidebar-accent text-sidebar-foreground'
+                  : ' text-sidebar-muted')
+              "
+            >
+              <ng-container
+                [ngTemplateOutlet]="itemContent"
+                [ngTemplateOutletContext]="{ $implicit: item }"
+              />
+              @if (!rail()) {
+                <app-icon name="phosphorCaretDown" />
+              }
+            </button>
+          }
+        </li>
+      }
+    </ul>
+  } @else {
+    <ng-container [ngTemplateOutlet]="tree" [ngTemplateOutletContext]="{ $implicit: items() }" />
+  }
+</nav>

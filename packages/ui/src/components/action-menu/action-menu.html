@@ -1,0 +1,70 @@
+@if (actions().length) {
+  <button
+    hlmBtn
+    hlmMenuTrigger
+    [variant]="text() || !showIcon() ? 'outline' : 'ghost'"
+    [size]="text() || !showIcon() ? 'default' : 'icon'"
+    type="button"
+    [disabled]="disabled()"
+    [attr.aria-label]="label()"
+    [cdkMenuTriggerFor]="menu"
+    [cdkMenuPosition]="positions"
+  >
+    <ng-content />
+    @if (!text() && showIcon()) {
+      <app-icon name="phosphorDotsThree" />
+    } @else {
+      {{ text() }}
+    }
+  </button>
+}
+<ng-template #menu
+  ><div
+    cdkMenu
+    dir="rtl"
+    [attr.aria-label]="label()"
+    class="z-50 max-h-[85svh] w-72 max-w-[calc(100vw-1.5rem)] overflow-y-auto rounded-panel border bg-popover p-1.5 text-start shadow-float"
+  >
+    @for (group of groups(); track group.id) {
+      @if ($index) {
+        <div role="separator" class="mx-2 my-1.5 h-px bg-border"></div>
+      }
+      <div role="group" [attr.aria-labelledby]="group.label ? id + '-' + group.id : null">
+        @if (group.label) {
+          <p
+            [id]="id + '-' + group.id"
+            class="px-3 pt-2 pb-1 text-xs font-medium text-muted-foreground"
+          >
+            {{ group.label }}
+          </p>
+        }
+        @for (action of group.actions; track action.id) {
+          <button
+            cdkMenuItem
+            [cdkMenuItemDisabled]="!!action.disabled"
+            [attr.aria-describedby]="action.reason ? id + '-' + action.id + '-reason' : null"
+            (cdkMenuItemTriggered)="select(action)"
+            [class]="
+              'flex min-h-11 w-full cursor-default flex-col justify-center rounded-control px-3 py-2.5 text-start text-sm outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-ring/30 aria-disabled:opacity-60 ' +
+              intentClass(action.intent)
+            "
+          >
+            <span class="flex items-center gap-2.5">
+              @if (action.icon; as icon) {
+                <app-icon [name]="icon" size="18px" />
+              }
+              {{ action.label }}</span
+            >
+            @if (action.reason) {
+              <span
+                [id]="id + '-' + action.id + '-reason'"
+                class="mt-1 text-xs text-muted-foreground"
+                >{{ action.reason }}</span
+              >
+            }
+          </button>
+        }
+      </div>
+    }
+  </div></ng-template
+>

@@ -1,0 +1,7 @@
+<app-action-menu
+  [disabled]="busy()"
+  [label]="label()"
+  [text]="busy() ? 'جارٍ التصدير…' : compact() ? 'تصدير' : label()"
+  [actions]="actions()"
+  ><app-icon name="phosphorDownloadSimple" size="16px"
+/></app-action-menu>

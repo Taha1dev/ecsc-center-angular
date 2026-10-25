@@ -1,0 +1,20 @@
+<div
+  class="flex flex-wrap items-start justify-between gap-4"
+  [class.mb-3]="compact()"
+  [class.mb-6]="!compact()"
+>
+  <div class="min-w-0">
+    <h1 class="text-page-title font-semibold">{{ title() }}</h1>
+    @if (description()) {
+      <p class="mt-1 text-sm text-muted-foreground">{{ description() }}</p>
+    }
+    <ng-content select="[header-meta]" />
+  </div>
+  <div
+    [class]="
+      'flex flex-wrap gap-2 empty:hidden ' + (compact() ? 'w-full items-center lg:w-auto' : '')
+    "
+  >
+    <ng-content />
+  </div>
+</div>

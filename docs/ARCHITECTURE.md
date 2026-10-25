@@ -2,6 +2,8 @@
 
 The workspace uses Angular CLI with standalone components, strict TypeScript and strict templates. Angular 22 supplies zoneless change detection and OnPush defaults. Signals hold synchronous state; computed values derive presentation; Router and RxJS manage route subscriptions. Typed Reactive Forms and ControlValueAccessor drive reusable application fields. Feature routes load lazily.
 
+Every component in `packages` owns a matching folder containing `name.ts` and `name.html`, connected through `templateUrl`. Component files contain one component each; shared services and directives remain separate. Public library exports keep consumers independent of these internal paths. The root lint command checks this structure alongside import boundaries.
+
 ## Boundaries
 
 `apps/* → core / ui / data-access / domain`; `core → ui / data-access / domain`; `data-access → domain`; `ui → domain` only for generic calendar utilities. Domain imports no framework or application code. UI does not know routes, centers, fixtures, schemas or stores. Shared product code does not import an app or branch on a center identifier.
@@ -9,6 +11,8 @@ The workspace uses Angular CLI with standalone components, strict TypeScript and
 `npm run lint` parses imports/re-exports/dynamic imports with the TypeScript AST and enforces these boundaries, public entry points and absence of obsolete React tooling. Every workspace declares its direct imports. npm workspaces link the libraries; Angular source paths support application compilation. ng-packagr builds each library against its dependency's declaration output. Turbo builds dependencies first and caches each project's own output directory.
 
 ## Center composition
+
+`CenterModule.navigation` optionally owns the complete center navigation tree, independently of route definitions. Link/group entries render as inline disclosures, navbar menus or collapsed-rail menus using one shared renderer. Omitted navigation preserves legacy destinations and labeled extension routes. Missing icons receive separate defaults for standalone pages, groups and child links. Composition rejects duplicate IDs, empty groups and foreign/absolute paths. See [center navigation](center-navigation.md).
 
 New centers can be scaffolded with `npm run center:new -- <id>`; see [the center generator guide](center-generator.md). The generator registers CLI/npm/Turbo tasks and creates app-owned configuration, brand tokens, neutral demo data and a browser smoke suite. Preview and Playwright server discovery use Angular application configuration rather than a fixed center list.
 

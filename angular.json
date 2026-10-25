@@ -422,6 +422,200 @@
           }
         }
       }
+    },
+    "layal-center": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:class": {
+          "skipTests": true
+        },
+        "@schematics/angular:component": {
+          "skipTests": true
+        },
+        "@schematics/angular:directive": {
+          "skipTests": true
+        },
+        "@schematics/angular:guard": {
+          "skipTests": true
+        },
+        "@schematics/angular:interceptor": {
+          "skipTests": true
+        },
+        "@schematics/angular:pipe": {
+          "skipTests": true
+        },
+        "@schematics/angular:resolver": {
+          "skipTests": true
+        },
+        "@schematics/angular:service": {
+          "skipTests": true
+        }
+      },
+      "root": "apps/layal-center",
+      "sourceRoot": "apps/layal-center/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "apps/layal-center/src/main.ts",
+            "tsConfig": "apps/layal-center/tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "apps/layal-center/public",
+                "output": "/assets"
+              }
+            ],
+            "styles": ["apps/layal-center/src/styles.css"],
+            "outputPath": "dist/apps/layal-center",
+            "index": "apps/layal-center/src/index.html",
+            "allowedCommonJsDependencies": ["exceljs"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1MB",
+                  "maximumError": "2MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "layal-center:build:production"
+            },
+            "development": {
+              "buildTarget": "layal-center:build:development"
+            }
+          },
+          "defaultConfiguration": "development",
+          "options": {
+            "port": 5204
+          }
+        }
+      }
+    },
+    "m5": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:class": {
+          "skipTests": true
+        },
+        "@schematics/angular:component": {
+          "skipTests": true
+        },
+        "@schematics/angular:directive": {
+          "skipTests": true
+        },
+        "@schematics/angular:guard": {
+          "skipTests": true
+        },
+        "@schematics/angular:interceptor": {
+          "skipTests": true
+        },
+        "@schematics/angular:pipe": {
+          "skipTests": true
+        },
+        "@schematics/angular:resolver": {
+          "skipTests": true
+        },
+        "@schematics/angular:service": {
+          "skipTests": true
+        }
+      },
+      "root": "apps/m5",
+      "sourceRoot": "apps/m5/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "apps/m5/src/main.ts",
+            "tsConfig": "apps/m5/tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "apps/m5/public",
+                "output": "/assets"
+              }
+            ],
+            "styles": ["apps/m5/src/styles.css"],
+            "outputPath": "dist/apps/m5",
+            "index": "apps/m5/src/index.html",
+            "allowedCommonJsDependencies": ["exceljs"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1MB",
+                  "maximumError": "2MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "apps/m5/src/environments/environment.ts",
+                  "with": "apps/m5/src/environments/environment.production.ts"
+                }
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
+            "test": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "m5:build:production"
+            },
+            "development": {
+              "buildTarget": "m5:build:development"
+            },
+            "test": {
+              "buildTarget": "m5:build:test"
+            }
+          },
+          "defaultConfiguration": "test",
+          "options": {
+            "port": 5205
+          }
+        }
+      }
     }
   }
 }

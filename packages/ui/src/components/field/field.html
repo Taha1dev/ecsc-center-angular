@@ -1,0 +1,48 @@
+<div class="flex min-w-0 flex-col gap-2 text-sm" [class.font-medium]="!hideLabel()">
+  <label [for]="id" [class.sr-only]="hideLabel()">{{ label() }}</label>
+  @switch (kind()) {
+    @case ('select') {
+      <hlm-select
+        [id]="id"
+        [label]="label()"
+        [value]="value()"
+        [options]="options()"
+        [disabled]="disabled()"
+        [invalid]="!!error()"
+        [describedBy]="error() ? id + '-error' : ''"
+        (changed)="select($event)"
+        (focusout)="touched()"
+      />
+    }
+    @case ('textarea') {
+      <textarea
+        hlmInput
+        [id]="id"
+        [value]="value()"
+        [placeholder]="placeholder()"
+        [disabled]="disabled()"
+        [attr.aria-invalid]="!!error()"
+        [attr.aria-describedby]="error() ? id + '-error' : null"
+        (input)="update($event)"
+        (blur)="touched()"
+      ></textarea>
+    }
+    @default {
+      <input
+        hlmInput
+        [id]="id"
+        [type]="kind()"
+        [value]="value()"
+        [placeholder]="placeholder()"
+        [disabled]="disabled()"
+        [attr.aria-invalid]="!!error()"
+        [attr.aria-describedby]="error() ? id + '-error' : null"
+        (input)="update($event)"
+        (blur)="touched()"
+      />
+    }
+  }
+  @if (error()) {
+    <span [id]="id + '-error'" role="alert" class="text-danger">{{ error() }}</span>
+  }
+</div>

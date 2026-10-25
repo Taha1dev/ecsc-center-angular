@@ -1,0 +1,22 @@
+<app-panel
+  ><div class="mb-6 grid gap-4 sm:grid-cols-2">
+    <app-field
+      [hideLabel]="true"
+      label="مرشح الموظف"
+      kind="select"
+      [options]="employees"
+      [formControl]="actor"
+    /><app-field
+      [hideLabel]="true"
+      label="نوع الحدث"
+      kind="select"
+      [options]="kinds"
+      [formControl]="kind"
+    />
+  </div>
+  @if (events().length) {
+    <app-activity-timeline [items]="events()" />
+  } @else {
+    <app-empty-state description="لا يوجد نشاط يطابق المرشحات المختارة." />
+  }
+</app-panel>

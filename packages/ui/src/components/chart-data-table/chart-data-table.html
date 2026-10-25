@@ -1,0 +1,34 @@
+<div class="mt-4 overflow-x-auto rounded-inset border">
+  <table class="w-full min-w-100 text-start text-sm">
+    <caption class="border-b bg-surface-subtle p-3 text-start font-medium">
+      {{
+        dataset().title
+      }}
+      ·
+      {{
+        dataset().units
+      }}
+    </caption>
+    <thead>
+      <tr>
+        @for (header of dataset().headers; track $index) {
+          <th scope="col" class="px-3 py-3 text-start">{{ header }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of dataset().rows; track $index) {
+        <tr class="border-t">
+          @for (value of row; track $index) {
+            <td class="px-3 py-3">
+              <bdi>{{ format(value) }}</bdi>
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+  @if (!dataset().rows.length) {
+    <p class="p-4 text-sm">لا توجد بيانات ضمن الفترة المختارة</p>
+  }
+</div>

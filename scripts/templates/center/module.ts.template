@@ -1,6 +1,7 @@
 import { defineCenter } from '@workspace/core';
 import { accountFixtures, createFixtures, createMemoryAdapter } from '@workspace/data-access';
 import { extensions, pages } from '../routes';
+import { navigation } from '../navigation';
 import { center } from './center';
 import { reports } from './reports';
 import { catalog, demo } from './services';
@@ -12,6 +13,7 @@ export const centerModule = defineCenter({
   reports,
   routes: extensions,
   pages,
+  navigation,
   adapter: createMemoryAdapter({
     centerId: center.id,
     catalog,

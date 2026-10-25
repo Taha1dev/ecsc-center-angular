@@ -72,6 +72,22 @@ export async function createCenterPlan(root, options) {
       .replaceAll('dist/apps/ecsc', `dist/apps/${id}`)
       .replaceAll('ecsc:build', `${id}:build`),
   );
+  const environmentFile = `apps/${id}/src/environments/environment.ts`;
+  project.architect.build.configurations.production.fileReplacements = [
+    ...(project.architect.build.configurations.production.fileReplacements ?? []).filter(
+      (replacement) => replacement.replace !== environmentFile,
+    ),
+    {
+      replace: environmentFile,
+      with: `apps/${id}/src/environments/environment.production.ts`,
+    },
+  ];
+  project.architect.build.configurations.test = {
+    ...project.architect.build.configurations.development,
+  };
+  project.architect.build.defaultConfiguration = 'production';
+  project.architect.serve.configurations.test = { buildTarget: `${id}:build:test` };
+  project.architect.serve.defaultConfiguration = 'test';
   project.architect.serve.options.port = port;
   workspace.projects[id] = project;
   pkg.scripts[`dev:${id}`] = `npm run dev --workspace=${id}`;
@@ -131,8 +147,20 @@ export async function createCenterPlan(root, options) {
     "import { startCenter } from '@workspace/core';\nimport { centerModule } from './config/module';\nstartCenter(centerModule).catch((error) => console.error(error));\n",
   );
   app(
+    'src/environments/environment.ts',
+    "// Test environment settings. Always import this file; the production build replaces it automatically.\nexport const environment = {\n  production: false,\n  name: 'test',\n};\n",
+  );
+  app(
+    'src/environments/environment.production.ts',
+    "// Production environment settings. Keep the same properties as environment.ts.\nexport const environment = {\n  production: true,\n  name: 'production',\n};\n",
+  );
+  app(
     'src/routes.ts',
-    "import type { CenterPages, CenterRoute } from '@workspace/core';\nexport const extensions: CenterRoute[] = [];\nexport const pages: CenterPages = {};\n",
+    "// This file connects this center's extra page URLs to their components.\n// Add routes to extensions, or use pages to replace a shared page.\n// To show a page link in the menu, add it to navigation.ts with the same path.\nimport type { CenterPages, CenterRoute } from '@workspace/core';\nexport const extensions: CenterRoute[] = [];\nexport const pages: CenterPages = {};\n",
+  );
+  app(
+    'src/navigation.ts',
+    "// This file controls the menu links, groups, labels, icons and their order.\n// Each link points to a page registered in routes.ts or provided by the shared app.\n// Keep undefined to use the default menu, or set an array to define the entire menu.\n// Removing a link from the menu does not remove the page or block access to it.\nimport type { CenterNavItem } from '@workspace/core';\nexport const navigation: readonly CenterNavItem[] | undefined = undefined;\n",
   );
   app(
     'src/config/center.ts',

@@ -1,0 +1,50 @@
+@for (field of fields(); track field.id) {
+  @if (field.kind === 'date-range') {
+    <div class="flex min-w-0 flex-col gap-2 text-sm font-medium">
+      <span>{{ field.label }}{{ field.required ? ' *' : '' }}</span
+      ><app-date-range-picker
+        [label]="field.label"
+        [required]="!!field.required"
+        [value]="range(field.id)"
+        (valueChange)="rangeChange(field.id, $event)"
+        [error]="errors()[field.id] || ''"
+      />
+    </div>
+  } @else if (field.kind === 'boolean') {
+    <label class="flex items-center gap-2 text-sm"
+      ><input
+        type="checkbox"
+        class="size-5 accent-primary"
+        [checked]="values()[field.id] === 'true'"
+        (change)="booleanChange(field.id, $event)"
+      />{{ field.label }}</label
+    >
+  } @else if (field.kind === 'multiselect') {
+    <label class="flex min-w-0 flex-col gap-2 text-sm font-medium"
+      >{{ field.label
+      }}<select
+        multiple
+        class="min-h-24 rounded-control border bg-card px-3 text-sm"
+        (change)="multiChange(field.id, $event)"
+      >
+        @for (o of field.options; track o.value) {
+          <option
+            [value]="o.value"
+            [selected]="(values()[field.id] || '').split(',').includes(o.value)"
+          >
+            {{ o.label }}
+          </option>
+        }
+      </select></label
+    >
+  } @else {
+    <app-field
+      [label]="field.label + (field.required ? ' *' : '')"
+      [kind]="field.kind === 'select' ? 'select' : field.kind === 'date' ? 'date' : 'text'"
+      [options]="options(field)"
+      [placeholder]="placeholder(field)"
+      [error]="errors()[field.id] || ''"
+      [formControl]="control(field.id)"
+    />
+  }
+}

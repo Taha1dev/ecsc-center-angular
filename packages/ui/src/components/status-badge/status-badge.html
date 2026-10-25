@@ -1,0 +1,16 @@
+<span [class]="classes()"
+  ><app-icon
+    [name]="
+      intent() === 'danger'
+        ? 'phosphorWarningCircle'
+        : intent() === 'success'
+          ? 'phosphorCheckCircle'
+          : intent() === 'warning'
+            ? 'phosphorClock'
+            : intent() === 'neutral'
+              ? 'phosphorCircle'
+              : 'phosphorInfo'
+    "
+    size="16px"
+  />{{ label() }}</span
+>

@@ -44,6 +44,14 @@
     "test-center#build": {
       "outputs": ["../../dist/apps/test-center/**"],
       "dependsOn": ["^build"]
+    },
+    "layal-center#build": {
+      "outputs": ["../../dist/apps/layal-center/**"],
+      "dependsOn": ["^build"]
+    },
+    "m5#build": {
+      "outputs": ["../../dist/apps/m5/**"],
+      "dependsOn": ["^build"]
     }
   }
 }

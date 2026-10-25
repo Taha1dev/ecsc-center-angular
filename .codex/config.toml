@@ -1,0 +1,23 @@
+# Project-local MCP servers. No API keys or user-level configuration are stored here.
+
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"
+enabled = true
+startup_timeout_sec = 30
+tool_timeout_sec = 90
+
+[mcp_servers.angular-cli]
+command = "node"
+args = ["node_modules/@angular/cli/bin/ng.js", "mcp", "--root", "."]
+cwd = "E:/Development/ecsc-center-angular"
+enabled = true
+startup_timeout_sec = 60
+tool_timeout_sec = 180
+
+[mcp_servers.spartan-ui]
+command = "cmd.exe"
+args = ["/d", "/c", "npx", "-y", "--package=@spartan-ng/mcp@1.8.0", "--package=ajv@8.17.1", "spartan-mcp"]
+cwd = "E:/Development/ecsc-center-angular"
+enabled = true
+startup_timeout_sec = 120
+tool_timeout_sec = 120

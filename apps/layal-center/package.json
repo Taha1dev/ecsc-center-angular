@@ -1,0 +1,19 @@
+{
+  "name": "layal-center",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "ng serve layal-center",
+    "build": "ng build layal-center",
+    "typecheck": "ngc -p tsconfig.app.json --noEmit",
+    "preview": "node ../../scripts/serve.mjs layal-center"
+  },
+  "dependencies": {
+    "@workspace/core": "*",
+    "@workspace/ui": "*",
+    "@workspace/domain": "*",
+    "@workspace/data-access": "*",
+    "@angular/core": "22.2.3",
+    "@angular/platform-browser": "22.2.3"
+  }
+}

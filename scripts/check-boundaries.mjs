@@ -49,6 +49,38 @@ export function checkImport(file, specifier) {
       throw new Error('Domain imports presentation definitions');
   }
 }
+export function checkComponentStructure(file, source) {
+  const components = source.statements.filter(ts.isClassDeclaration).flatMap((node) =>
+    (ts.getDecorators(node) ?? []).flatMap((decorator) => {
+      const call = decorator.expression;
+      return ts.isCallExpression(call) &&
+        ts.isIdentifier(call.expression) &&
+        call.expression.text === 'Component'
+        ? [call.arguments[0]]
+        : [];
+    }),
+  );
+  if (!components.length) return;
+  const name = path.basename(file, '.ts');
+  if (components.length !== 1 || path.basename(path.dirname(file)) !== name)
+    throw new Error(`Each component needs its own matching folder and TS file: ${file}`);
+  const metadata = components[0];
+  if (!metadata || !ts.isObjectLiteralExpression(metadata))
+    throw new Error(`Component metadata must declare an external HTML template: ${file}`);
+  const property = (key) =>
+    metadata.properties.find(
+      (entry) => ts.isPropertyAssignment(entry) && entry.name.getText(source) === key,
+    );
+  const template = property('templateUrl')?.initializer;
+  if (
+    property('template') ||
+    !template ||
+    !ts.isStringLiteral(template) ||
+    template.text !== `./${name}.html` ||
+    !fs.existsSync(path.join(path.dirname(file), `${name}.html`))
+  )
+    throw new Error(`Component needs a separate ${name}.html beside its TS file: ${file}`);
+}
 export function checkBoundaries() {
   let count = 0;
   function walk(dir) {
@@ -60,6 +92,8 @@ export function checkBoundaries() {
         count++;
         const text = fs.readFileSync(f, 'utf8');
         const source = ts.createSourceFile(f, text, ts.ScriptTarget.Latest, true);
+        if (f.startsWith(path.join(root, 'packages') + path.sep) && f.endsWith('.ts'))
+          checkComponentStructure(f, source);
         function visit(node) {
           if (
             (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&

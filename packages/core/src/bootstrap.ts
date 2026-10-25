@@ -1,22 +1,17 @@
 import { OVERLAY_DEFAULT_CONFIG } from '@angular/cdk/overlay';
 import { provideHttpClient } from '@angular/common/http';
-import { Component, inject, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { inject, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideRouter, Router, RouterOutlet, type Route, type Routes } from '@angular/router';
+import { provideRouter, Router, type Route, type Routes } from '@angular/router';
 import { provideBrnDialogDefaultOptions } from '@spartan-ng/brain/dialog';
-import { AppToaster } from '@workspace/ui';
+import { CenterApplication } from './layout/center-application/center-application';
 import { defineCenter, provideCenter, type CenterModule } from './module';
-@Component({
-  selector: 'app-root',
-  imports: [RouterOutlet, AppToaster],
-  template: '<router-outlet /><app-toaster />',
-})
-export class CenterApplication {}
+
 export function centerRoutes(module: CenterModule): Routes {
   const pages = module.pages ?? {};
   const login: Route = pages.login
     ? { component: pages.login }
-    : { loadComponent: () => import('./features/login').then((m) => m.LoginPage) };
+    : { loadComponent: () => import('./features/login/login').then((m) => m.LoginPage) };
   return [
     { path: '', pathMatch: 'full', redirectTo: 'login' },
     {
@@ -34,20 +29,23 @@ export function centerRoutes(module: CenterModule): Routes {
     },
     {
       path: 'centers/' + module.profile.id,
-      loadComponent: () => import('./layout/shell').then((m) => m.AppShell),
+      loadComponent: () => import('./layout/shell/shell').then((m) => m.AppShell),
       children: [
         {
           path: '',
           pathMatch: 'full',
           ...(pages.dashboard
             ? { component: pages.dashboard }
-            : { loadComponent: () => import('./features/dashboard').then((m) => m.DashboardPage) }),
+            : {
+                loadComponent: () =>
+                  import('./features/dashboard/dashboard').then((m) => m.DashboardPage),
+              }),
         },
         {
           path: 'inbox/:scope',
           ...(pages.inbox
             ? { component: pages.inbox }
-            : { loadComponent: () => import('./features/inbox').then((m) => m.InboxPage) }),
+            : { loadComponent: () => import('./features/inbox/inbox').then((m) => m.InboxPage) }),
           canMatch: [(_route, segments) => ['group', 'personal'].includes(segments[1]?.path)],
         },
         {
@@ -56,14 +54,19 @@ export function centerRoutes(module: CenterModule): Routes {
             ? { component: pages.transaction }
             : {
                 loadComponent: () =>
-                  import('./features/transactions/transaction').then((m) => m.TransactionPage),
+                  import('./features/transactions/transaction/transaction').then(
+                    (m) => m.TransactionPage,
+                  ),
               }),
         },
         {
           path: 'reports',
           ...(pages.reports
             ? { component: pages.reports }
-            : { loadComponent: () => import('./features/reports').then((m) => m.ReportsPage) }),
+            : {
+                loadComponent: () =>
+                  import('./features/reports/reports').then((m) => m.ReportsPage),
+              }),
         },
         {
           path: 'design-system',
@@ -71,17 +74,20 @@ export function centerRoutes(module: CenterModule): Routes {
             ? { component: pages.designSystem }
             : {
                 loadComponent: () =>
-                  import('./features/design-system').then((m) => m.DesignSystemPage),
+                  import('./features/design-system/design-system').then((m) => m.DesignSystemPage),
               }),
         },
         ...(module.routes ?? []).map((r) => ({ path: r.path, component: r.component })),
         {
           path: '**',
-          loadComponent: () => import('./features/not-found').then((m) => m.NotFoundPage),
+          loadComponent: () => import('./features/not-found/not-found').then((m) => m.NotFoundPage),
         },
       ],
     },
-    { path: '**', loadComponent: () => import('./features/not-found').then((m) => m.NotFoundPage) },
+    {
+      path: '**',
+      loadComponent: () => import('./features/not-found/not-found').then((m) => m.NotFoundPage),
+    },
   ];
 }
 export function startCenter(module: CenterModule) {

@@ -45,15 +45,15 @@ export const builders: Partial<Record<ActionId, (c: ActionFormContext) => Transa
     c.targetPayment
       ? { type: 'toggle-payment', paymentId: c.targetPayment.id }
       : {
-          type: 'payment',
-          payment: {
-            id: serial(c.t, 'payment', c.t.payments.length),
-            label: c.selection,
-            amount: Number(c.amount),
-            paid: false,
-            method: 'محاكاة محلية',
-          },
+        type: 'payment',
+        payment: {
+          id: serial(c.t, 'payment', c.t.payments.length),
+          label: c.selection,
+          amount: Number(c.amount),
+          paid: false,
+          method: 'محاكاة محلية',
         },
+      },
   fee: (c) => ({ type: 'fee', feeId: c.selection, amount: Number(c.amount) }),
   refund: (c) => ({ type: 'refund', amount: Number(c.amount), reason: c.text }),
   decision: (c) => ({ type: 'decision', text: c.text }),

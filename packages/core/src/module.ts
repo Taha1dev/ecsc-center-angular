@@ -17,6 +17,7 @@ import {
   type TransactionSectionDefinition,
 } from '@workspace/domain';
 import type { TableColumn } from '@workspace/ui';
+import { validateNavigation, type CenterNavItem } from './navigation';
 export type CenterProfile = {
   id: string;
   name: string;
@@ -77,7 +78,12 @@ export type ActionPresentation = {
   intent: 'neutral' | 'primary' | 'warning' | 'danger';
   target: 'dialog' | 'sheet';
 };
-export type CenterRoute = { path: string; label?: string; icon?: string; component: Type<unknown> };
+export type CenterRoute = {
+  path: string;
+  label?: string;
+  icon?: string;
+  component: Type<unknown>
+};
 export type CenterPages = Partial<
   Record<
     'login' | 'dashboard' | 'inbox' | 'transaction' | 'reports' | 'designSystem',
@@ -102,9 +108,11 @@ export type CenterModule = {
   inbox?: InboxCustomization;
   routes?: CenterRoute[];
   pages?: CenterPages;
+  navigation?: readonly CenterNavItem[];
 };
 export function defineCenter(module: CenterModule) {
   validateCenterDefinition(module);
+  if (module.navigation) validateNavigation(module.navigation);
   return module;
 }
 export function defineActionForm<Input>({

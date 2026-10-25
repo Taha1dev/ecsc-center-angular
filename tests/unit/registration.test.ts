@@ -74,3 +74,11 @@ it('registers owned section and action-form replacements with typed command buil
   expect(defineCenter(module).sections?.override?.[0].component).toBe(Extension);
   expect(form.buildCommand).toBeTypeOf('function');
 });
+
+it('accepts center-owned navigation and rejects conflicting entries at composition', () => {
+  const module = make();
+  module.navigation = [{ kind: 'link', id: 'work', label: 'المعاملات', path: 'inbox/personal' }];
+  expect(defineCenter(module).navigation).toHaveLength(1);
+  module.navigation = [...module.navigation, ...module.navigation];
+  expect(() => defineCenter(module)).toThrow('duplicate navigation');
+});
