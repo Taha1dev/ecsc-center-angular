@@ -11,26 +11,61 @@
     "target": "ES2022",
     "module": "preserve",
     "moduleResolution": "bundler",
-    "lib": ["ES2023", "DOM"],
+    "lib": [
+      "ES2023",
+      "DOM"
+    ],
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "paths": {
-      "@workspace/domain": ["./packages/domain/src/index.ts"],
-      "@workspace/domain/*": ["./packages/domain/src/*"],
-      "@workspace/data-access": ["./packages/data-access/src/index.ts"],
-      "@workspace/data-access/*": ["./packages/data-access/src/*"],
-      "@workspace/ui": ["./packages/ui/src/index.ts"],
-      "@workspace/ui/*": ["./packages/ui/src/*"],
-      "@workspace/core": ["./packages/core/src/index.ts"],
-      "@workspace/core/*": ["./packages/core/src/*"],
-      "@workspace/domain/contracts/*": ["./packages/domain/src/domain/*"],
-      "@spartan-ng/helm/accordion": ["./libs/ui/accordion/src/index.ts"],
-      "@spartan-ng/helm/utils": ["./libs/ui/utils/src/index.ts"],
-      "@spartan-ng/helm/button": ["./libs/ui/button/src/index.ts"],
-      "@spartan-ng/helm/input": ["./libs/ui/input/src/index.ts"],
-      "@spartan-ng/helm/textarea": ["./libs/ui/textarea/src/index.ts"],
-      "@spartan-ng/helm/popover": ["./libs/ui/popover/src/index.ts"],
-      "@spartan-ng/helm/select": ["./libs/ui/select/src/index.ts"]
+      "@workspace/domain": [
+        "./packages/domain/src/index.ts"
+      ],
+      "@workspace/domain/*": [
+        "./packages/domain/src/*"
+      ],
+      "@workspace/data-access": [
+        "./packages/data-access/src/index.ts"
+      ],
+      "@workspace/data-access/*": [
+        "./packages/data-access/src/*"
+      ],
+      "@workspace/ui": [
+        "./packages/ui/src/index.ts"
+      ],
+      "@workspace/ui/*": [
+        "./packages/ui/src/*"
+      ],
+      "@workspace/core": [
+        "./packages/core/src/index.ts"
+      ],
+      "@workspace/core/*": [
+        "./packages/core/src/*"
+      ],
+      "@workspace/domain/contracts/*": [
+        "./packages/domain/src/domain/*"
+      ],
+      "@spartan-ng/helm/accordion": [
+        "./libs/ui/accordion/src/index.ts"
+      ],
+      "@spartan-ng/helm/utils": [
+        "./libs/ui/utils/src/index.ts"
+      ],
+      "@spartan-ng/helm/button": [
+        "./libs/ui/button/src/index.ts"
+      ],
+      "@spartan-ng/helm/input": [
+        "./libs/ui/input/src/index.ts"
+      ],
+      "@spartan-ng/helm/textarea": [
+        "./libs/ui/textarea/src/index.ts"
+      ],
+      "@spartan-ng/helm/popover": [
+        "./libs/ui/popover/src/index.ts"
+      ],
+      "@spartan-ng/helm/select": [
+        "./libs/ui/select/src/index.ts"
+      ]
     },
     "rootDir": "."
   },
@@ -39,12 +74,5 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "references": [
-    {
-      "path": "./apps/my-app/tsconfig.app.json"
-    },
-    {
-      "path": "./apps/my-app/tsconfig.spec.json"
-    }
-  ]
+  "references": []
 }

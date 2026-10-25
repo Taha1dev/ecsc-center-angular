@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-
+export const workspaceRootType = typeof workspaceRoot;
 // Tooling discovers applications from Angular CLI; no runtime center registry is needed.
 export function workspaceApps(root = workspaceRoot) {
   const workspace = JSON.parse(fs.readFileSync(path.join(root, 'angular.json'), 'utf8'));

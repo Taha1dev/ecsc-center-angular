@@ -8,6 +8,7 @@ import { HlmSelectImports } from '@spartan-ng/helm/select';
   host: { class: 'block min-w-0' },
   templateUrl: './select.html',
 })
+
 export class AppSelect {
   readonly value = input('');
   readonly options = input<readonly { value: string; label: string }[]>([]);
