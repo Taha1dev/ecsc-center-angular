@@ -1,0 +1,23 @@
+{
+  "name": "@spartan-ng/helm",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node ../../scripts/prepare-helm-package.mjs && ng build helm",
+    "typecheck": "ngc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@angular/cdk": "22.2.3",
+    "@angular/common": "22.2.3",
+    "@angular/core": "22.2.3",
+    "@angular/forms": "22.2.3",
+    "@ng-icons/core": "36.1.0",
+    "@ng-icons/lucide": ">=32.0.0 <34.0.0",
+    "@spartan-ng/brain": "1.8.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.5.0"
+  },
+  "sideEffects": false
+}

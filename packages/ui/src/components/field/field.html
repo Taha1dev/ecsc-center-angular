@@ -2,7 +2,7 @@
   <label [for]="id" [class.sr-only]="hideLabel()">{{ label() }}</label>
   @switch (kind()) {
     @case ('select') {
-      <hlm-select
+      <app-select
         [id]="id"
         [label]="label()"
         [value]="value()"
@@ -16,7 +16,7 @@
     }
     @case ('textarea') {
       <textarea
-        hlmInput
+        hlmTextarea
         [id]="id"
         [value]="value()"
         [placeholder]="placeholder()"

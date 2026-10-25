@@ -1,6 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, input, output, signal } from '@angular/core';
-import { HlmButton } from '../../helm/button';
+import { HlmButton } from '@spartan-ng/helm/button';
 import type { ExportContext, ExportDataset } from '../../lib/export-data';
 import { AppChart, type ChartRow, type ChartSeries } from '../chart/chart';
 import { AppDialog } from '../dialog/dialog';

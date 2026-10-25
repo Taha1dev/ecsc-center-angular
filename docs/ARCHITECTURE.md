@@ -4,6 +4,10 @@ The workspace uses Angular CLI with standalone components, strict TypeScript and
 
 Every component in `packages` owns a matching folder containing `name.ts` and `name.html`, connected through `templateUrl`. Component files contain one component each; shared services and directives remain separate. Public library exports keep consumers independent of these internal paths. The root lint command checks this structure alongside import boundaries.
 
+Official Spartan CLI output lives separately in `libs/ui/<primitive>/src`, with the `maia` style selected in root `components.json`. Import these shared primitives through `@spartan-ng/helm/<primitive>`. Generated upstream files retain their official structure; the folder/external-template rule above applies to owned components in `packages`. The shared stylesheet imports Spartan's preset and scans `libs/ui` for every center. Turbo includes these sources in its global cache inputs, and `npm run typecheck:spartan` checks them directly. See [Spartan usage](spartan-ui.md).
+
+`libs/ui` is also a private npm workspace and Angular library with secondary entrypoints. Turbo builds it before `packages/ui`; library build tsconfigs resolve its emitted declarations while applications resolve the source aliases. Product field adapters compose these primitives rather than keeping a second Helm implementation. CLI additions receive ng-packagr metadata through `prepare-helm-package.mjs` at build time.
+
 ## Boundaries
 
 `apps/* → core / ui / data-access / domain`; `core → ui / data-access / domain`; `data-access → domain`; `ui → domain` only for generic calendar utilities. Domain imports no framework or application code. UI does not know routes, centers, fixtures, schemas or stores. Shared product code does not import an app or branch on a center identifier.

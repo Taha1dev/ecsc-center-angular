@@ -4,14 +4,14 @@ import { Directive, forwardRef } from '@angular/core';
 
 /** Preserve the reference menu's 12px collision gutter through CDK's public strategy API. */
 @Directive({
-  selector: '[hlmMenuTrigger]',
+  selector: '[appMenuTrigger]',
   providers: [
-    { provide: CdkMenuTrigger, useExisting: forwardRef(() => HlmMenuTrigger) },
-    { provide: MENU_TRIGGER, useExisting: forwardRef(() => HlmMenuTrigger) },
+    { provide: CdkMenuTrigger, useExisting: forwardRef(() => AppMenuTrigger) },
+    { provide: MENU_TRIGGER, useExisting: forwardRef(() => AppMenuTrigger) },
     PARENT_OR_NEW_MENU_STACK_PROVIDER,
   ],
 })
-export class HlmMenuTrigger extends CdkMenuTrigger {
+export class AppMenuTrigger extends CdkMenuTrigger {
   override open() {
     super.open();
     const overlay = this.overlayRef;

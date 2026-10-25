@@ -4,7 +4,8 @@
     "paths": {
       "@workspace/domain": ["../../dist/domain/types/workspace-domain.d.ts"],
       "@workspace/data-access": ["../../dist/data-access/types/workspace-data-access.d.ts"],
-      "@workspace/core": ["../../dist/core/types/workspace-core.d.ts"]
+      "@workspace/core": ["../../dist/core/types/workspace-core.d.ts"],
+      "@spartan-ng/helm/*": ["../../dist/helm/types/spartan-ng-helm-*.d.ts"]
     }
   }
 }

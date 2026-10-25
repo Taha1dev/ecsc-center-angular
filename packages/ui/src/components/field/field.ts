@@ -1,13 +1,14 @@
 import { Component, forwardRef, input, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { HlmInput, HlmTextarea } from '../../helm/input';
-import { HlmSelect } from '../../helm/select/select';
+import { HlmInput } from '@spartan-ng/helm/input';
+import { HlmTextarea } from '@spartan-ng/helm/textarea';
+import { AppSelect } from '../select/select';
 export type SelectOption = { value: string; label: string };
 let serial = 0;
 @Component({
   selector: 'app-field',
   host: { class: 'block min-w-0' },
-  imports: [HlmInput, HlmTextarea, HlmSelect],
+  imports: [HlmInput, HlmTextarea, AppSelect],
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => AppField), multi: true }],
   templateUrl: './field.html',
 })

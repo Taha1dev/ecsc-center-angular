@@ -1,8 +1,8 @@
 import { CdkMenu, CdkMenuItem } from '@angular/cdk/menu';
 import type { ConnectedPosition } from '@angular/cdk/overlay';
 import { Component, computed, input } from '@angular/core';
-import { HlmButton } from '../../helm/button';
-import { HlmMenuTrigger } from '../../helm/menu-trigger';
+import { HlmButton } from '@spartan-ng/helm/button';
+import { AppMenuTrigger } from './menu-trigger';
 import { AppIcon } from '../icon/icon';
 export type ActionGroup = { id: string; label: string; order?: number };
 export type MenuAction = {
@@ -18,7 +18,7 @@ export type MenuAction = {
 let menuSerial = 0;
 @Component({
   selector: 'app-action-menu',
-  imports: [CdkMenu, CdkMenuItem, HlmMenuTrigger, HlmButton, AppIcon],
+  imports: [CdkMenu, CdkMenuItem, AppMenuTrigger, HlmButton, AppIcon],
   templateUrl: './action-menu.html',
 })
 export class AppActionMenu {

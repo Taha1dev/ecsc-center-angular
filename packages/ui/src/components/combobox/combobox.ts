@@ -1,8 +1,8 @@
 import { CdkMenuModule } from '@angular/cdk/menu';
 import { Component, computed, input, output, signal } from '@angular/core';
 import { BrnPopoverImports } from '@spartan-ng/brain/popover';
-import { HlmButton } from '../../helm/button';
-import { HlmInput } from '../../helm/input';
+import { HlmButton } from '@spartan-ng/helm/button';
+import { HlmInput } from '@spartan-ng/helm/input';
 import { AppIcon } from '../icon/icon';
 @Component({
   selector: 'app-combobox',

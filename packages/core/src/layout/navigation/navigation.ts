@@ -14,14 +14,14 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { AppIcon, HlmMenuTrigger } from '@workspace/ui';
+import { AppIcon, AppMenuTrigger } from '@workspace/ui';
 import { map } from 'rxjs';
 import { navItemActive, type ResolvedNavItem } from '../../navigation';
 
 let navigationSerial = 0;
 @Component({
   selector: 'app-center-navigation',
-  imports: [NgTemplateOutlet, RouterLink, CdkMenu, CdkMenuItem, HlmMenuTrigger, AppIcon],
+  imports: [NgTemplateOutlet, RouterLink, CdkMenu, CdkMenuItem, AppMenuTrigger, AppIcon],
   templateUrl: './navigation.html',
 })
 export class CenterNavigation {

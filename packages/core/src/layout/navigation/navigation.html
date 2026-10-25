@@ -87,7 +87,7 @@
         <button
           type="button"
           cdkMenuItem
-          hlmMenuTrigger
+          appMenuTrigger
           [cdkMenuTriggerFor]="menu"
           [cdkMenuTriggerData]="{ $implicit: item.children, label: item.label }"
           [cdkMenuPosition]="sidePositions"
@@ -123,7 +123,7 @@
           } @else {
             <button
               type="button"
-              hlmMenuTrigger
+              appMenuTrigger
               [cdkMenuTriggerFor]="menu"
               [cdkMenuTriggerData]="{ $implicit: item.children, label: item.label }"
               [cdkMenuPosition]="rail() ? sidePositions : positions"

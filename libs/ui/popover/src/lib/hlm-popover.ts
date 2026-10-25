@@ -4,7 +4,9 @@ import { BrnPopover, BRN_POPOVER_OVERLAY_DEFAULT_OPTIONS } from '@spartan-ng/bra
 
 /** Keep the approved RTL anchor and push into view instead of switching horizontal edges. */
 @Directive({
-  selector: 'hlm-popover',
+  selector: '[hlmPopover],hlm-popover',
+  exportAs: 'hlmPopover',
+  host: { 'data-slot': 'popover' },
   providers: [
     { provide: BrnPopover, useExisting: forwardRef(() => HlmPopover) },
     { provide: BrnOverlay, useExisting: forwardRef(() => HlmPopover) },

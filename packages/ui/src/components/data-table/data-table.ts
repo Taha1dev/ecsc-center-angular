@@ -16,7 +16,7 @@ import {
   type RowSelectionState,
   type SortingState,
 } from '@tanstack/angular-table';
-import { HlmButton } from '../../helm/button';
+import { HlmButton } from '@spartan-ng/helm/button';
 import { AppActionMenu, type MenuAction } from '../action-menu/action-menu';
 import { AppEmptyState } from '../empty-state/empty-state';
 import { AppIcon } from '../icon/icon';

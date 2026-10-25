@@ -11,7 +11,9 @@ const allowed = {
 };
 export function checkImport(file, specifier) {
   const relative = path.relative(root, file).replaceAll('\\', '/');
-  const owner = relative.match(/^packages\/([^/]+)\//)?.[1];
+  const owner =
+    relative.match(/^packages\/([^/]+)\//)?.[1] ??
+    (relative.startsWith('libs/ui/') ? 'ui' : undefined);
   const app = relative.match(/^apps\/([^/]+)\//)?.[1];
   if (
     specifier.startsWith('@/') ||
@@ -28,6 +30,8 @@ export function checkImport(file, specifier) {
   if (owner === 'domain' && !specifier.startsWith('.') && !['zod'].includes(specifier))
     throw new Error(`Domain must be framework independent: ${specifier}`);
   const dep = specifier.match(/^@workspace\/([^/]+)/)?.[1];
+  if (specifier.startsWith('@spartan-ng/helm/') && ['domain', 'data-access'].includes(owner))
+    throw new Error(`Forbidden UI dependency in ${relative}: ${specifier}`);
   if (owner && dep && dep !== owner && !allowed[owner]?.includes(dep))
     throw new Error(`Forbidden dependency ${owner} -> ${dep}`);
   if (owner && specifier.includes('/apps/'))
@@ -36,6 +40,8 @@ export function checkImport(file, specifier) {
     const resolved = path
       .relative(root, path.resolve(path.dirname(file), specifier))
       .replaceAll('\\', '/');
+    if (resolved.startsWith('libs/ui/') && (app || relative.startsWith('packages/')))
+      throw new Error('Use the public @spartan-ng/helm/<component> alias');
     if (owner && resolved.startsWith('apps/')) throw new Error('Shared code imports application');
     if (app && resolved.startsWith('packages/'))
       throw new Error('Apps must use library public entry points');
@@ -122,6 +128,7 @@ export function checkBoundaries() {
   }
   walk(path.join(root, 'apps'));
   walk(path.join(root, 'packages'));
+  if (fs.existsSync(path.join(root, 'libs/ui'))) walk(path.join(root, 'libs/ui'));
   return count;
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url))

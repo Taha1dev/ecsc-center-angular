@@ -1,0 +1,25 @@
+<hlm-select
+  [value]="value()"
+  (valueChange)="choose($event)"
+  [disabled]="disabled()"
+  [itemToString]="itemToString"
+  dir="rtl"
+>
+  <hlm-select-trigger
+    [buttonId]="id()"
+    [forceInvalid]="invalid()"
+    [aria-invalid]="invalid()"
+    [aria-label]="label()"
+    [aria-describedby]="describedBy() || null"
+    class="h-11 w-full"
+  >
+    <span class="truncate">{{ selected() }}</span>
+  </hlm-select-trigger>
+  <hlm-select-content *hlmSelectPortal dir="rtl">
+    <hlm-select-group>
+      @for (option of options(); track option.value) {
+        <hlm-select-item [value]="option.value">{{ option.label }}</hlm-select-item>
+      }
+    </hlm-select-group>
+  </hlm-select-content>
+</hlm-select>

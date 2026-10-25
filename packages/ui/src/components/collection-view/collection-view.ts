@@ -1,7 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, effect, input, signal, TemplateRef } from '@angular/core';
 import type { RowSelectionState } from '@tanstack/angular-table';
-import { HlmButton } from '../../helm/button';
+import { HlmButton } from '@spartan-ng/helm/button';
 import type { MenuAction } from '../action-menu/action-menu';
 import { AppDataTable, type TableColumn } from '../data-table/data-table';
 import { AppIcon } from '../icon/icon';

@@ -17,8 +17,8 @@ import {
   shiftCalendarDate,
   type CalendarRange,
 } from '@workspace/domain';
-import { HlmButton } from '../../helm/button';
-import { HlmPopover } from '../../helm/popover';
+import { HlmButton } from '@spartan-ng/helm/button';
+import { HlmPopover } from '@spartan-ng/helm/popover';
 import { AppIcon } from '../icon/icon';
 let calendarSerial = 0;
 @Component({

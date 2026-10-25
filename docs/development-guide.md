@@ -36,10 +36,12 @@ packages/data-access/src/customers/
 packages/domain/src/customers/
 
 packages/ui/src/
-  helm/
   components/
   pipes/
   directives/
+
+libs/ui/
+  <spartan-component>/src/
 ```
 
 كل ما يتعلق بميزة واحدة يبقى قربها. أدوات العرض العامة فقط توضع في `ui`. مكوّن يعرف Customer أو Transaction أو صلاحيات المنتج مكانه `core` أو التطبيق، حتى لو كان قابلاً لإعادة الاستخدام.
@@ -364,33 +366,32 @@ npm.cmd run ng -- g d read-only --project=ecsc --path=apps/ecsc/src/features/cus
 
 ## 12. Spartan مشتركة على مستوى المستودع
 
-السياسة المقصودة لهذا المشروع: Brain اعتماد مشترك، وكود Helm داخل `packages/ui/src/helm` فقط. التطبيقات تستخدم exports من `@workspace/ui` ولا تحتفظ بنسخ مستقلة من Spartan.
+Spartan مثبتة بالطريقة الرسمية: Brain اعتماد مشترك، وCLI يولّد Helm داخل `libs/ui` بنمط `maia` حسب `components.json`. كل المراكز تستخدم نفس المصادر من `@spartan-ng/helm/<component>`. راجع [دليل Spartan في المشروع](spartan-ui.md).
 
 المكتبة مثبتة أصلاً: `@spartan-ng/brain@1.8.0`. هي معلنة في الجذر وضمن حزمة UI. لا تحتاج إعادة تثبيتها لكل مركز جديد.
 
-`BrnButton` يوفّر السلوك، و`HlmButton` الموجود يوفّر التغليف والتنسيق. المستهلك يستخدم:
+`BrnButton` يوفّر السلوك، و`HlmButton` العالمي في `libs/ui/button` يوفّر التنسيق. المستهلك يستخدم:
 
 ```ts
-import { HlmButton } from '@workspace/ui';
+import { HlmButton } from '@spartan-ng/helm/button';
 ```
 
 ثم `imports: [HlmButton]` و`<button hlmBtn>حفظ</button>`. ألوان المركز تأتي من semantic tokens، فلا تحتاج نسخ زر لكل هوية.
 
-لإضافة مكوّن Spartan غير موجود، راجع مصدر Helm المتوافق مع إصدار Brain، وأضف ملفاته تحت `packages/ui/src/helm` مع تكييف الاستيرادات الداخلية والتوكنات، ثم صدّر العنصر من `packages/ui/src/index.ts`. لو احتاج wrapper أعلى مستوى مكانه `packages/ui/src/components` بشرط أن يبقى عاماً.
+مكونات المنتج داخل `packages/ui`، مثل `AppField` و`AppSelect`، تركّب عناصر Helm العالمية. استيراد `HlmButton` من `@workspace/ui` يبقى متاحاً للتوافق ويشير لنفس الصنف العالمي؛ لا توجد نسخة Helm قديمة مكررة داخل الحزمة.
 
-CLI Spartan غير مثبت حالياً. هو يدعم Angular CLI رسمياً، ووجود اعتماديات Nx داخل حزمة CLI 1.8.0 لا يعني أن استخدامه يتطلب تحويل المستودع إلى Nx. إعداد التشغيل هنا يظل Angular CLI + Turbo.
+CLI Spartan مثبت. هو يدعم Angular CLI رسمياً، ووجود اعتماديات Nx داخله لا يغير إعداد تشغيل المشروع الذي يبقى Angular CLI + Turbo.
 
-الأوامر الرسمية بعد تثبيت CLI المتوافق مع إصدار Brain هي:
+لإضافة مكوّن:
 
 ```sh
-npm install -D @spartan-ng/cli@1.8.0
 ng g @spartan-ng/cli:ui accordion
 ng g @spartan-ng/cli:ui button
 ```
 
-أو شغّل `ng g @spartan-ng/cli:ui` واختر عدة عناصر تفاعلياً. ملف `components.json` في الجذر يحدد `componentsPath` و`importAlias`. لمكتبة UI المشتركة، مسار الملفات المقصود هو `packages/ui/src/helm`، وليس مجلد تطبيق مركز. راجع ناتج `--dry-run` قبل اعتماد الإعداد لأن المولّد يستخدم بنية مثل `accordion/src/lib` ويضيف aliases واعتماديات حسب العنصر.
+أو شغّل `ng g @spartan-ng/cli:ui` واختر عدة عناصر تفاعلياً. ملف `components.json` في الجذر يحدد `componentsPath: "libs/ui"` و`importAlias: "@spartan-ng/helm"`. مثلاً Accordion يولّد في `libs/ui/accordion/src` ويُستورد من `@spartan-ng/helm/accordion`. لا تحدد مركزاً عند إضافة عنصر مشترك.
 
-المولّد الرسمي لا يطابق كل قواعد هذا المشروع تلقائياً: بعض مخرجاته تتضمن عدة مكوّنات flat وقوالب inline وLucide وستايلات Spartan الافتراضية. يجب تنظيم كل مكوّن بمجلده وملف HTML مستقل، وتكييف الأيقونات والتوكنات والاستيرادات الداخلية مع مكتبة UI الحالية، ثم التصدير من `packages/ui/src/index.ts`. التطبيقات تستهلك التصديرات من `@workspace/ui`. الزر الموجود مخصص مسبقاً؛ لا تستبدله بتوليد جديد لمجرد تجربة الأمر. لا تحتاج تشغيل مولد theme مجدداً، فالثيم مهيأ بالفعل.
+ملفات `libs/ui` تحتفظ ببنية Spartan الرسمية، بما فيها القوالب inline وLucide. قاعدة المجلد وملف HTML المنفصل تطبّق على مكوناتنا داخل `packages`. الربط مع Tailwind وpreset مشترك في `globals.css`، والفحص المخصص هو `npm run typecheck:spartan`. لا تشغّل مولد theme لتبديل ألوان المراكز؛ ثيماتها مهيأة بالفعل.
 
 ## 13. الاعتماديات وحدود الاستيراد
 

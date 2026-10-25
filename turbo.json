@@ -1,5 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["libs/ui/**"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -51,6 +52,10 @@
     },
     "m5#build": {
       "outputs": ["../../dist/apps/m5/**"],
+      "dependsOn": ["^build"]
+    },
+    "@spartan-ng/helm#build": {
+      "outputs": ["../../dist/helm/**"],
       "dependsOn": ["^build"]
     }
   }
