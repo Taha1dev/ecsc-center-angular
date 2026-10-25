@@ -144,15 +144,19 @@ export async function createCenterPlan(root, options) {
   );
   app(
     'src/main.ts',
-    "import { startCenter } from '@workspace/core';\nimport { centerModule } from './config/module';\nstartCenter(centerModule).catch((error) => console.error(error));\n",
+    "import { startCenter } from '@workspace/core';\nimport { appConfig } from './app.config';\nimport { centerModule } from './config/module';\nstartCenter(centerModule, appConfig).catch((error) => console.error(error));\n",
+  );
+  app(
+    'src/app.config.ts',
+    "import type { ApplicationConfig } from '@angular/core';\nimport { provideApiConfig } from '@workspace/data-access';\nimport { environment } from './environments/environment';\n\nexport const appConfig: ApplicationConfig = {\n  providers: [provideApiConfig({ baseUrl: environment.apiBaseUrl })],\n};\n",
   );
   app(
     'src/environments/environment.ts',
-    "// Test environment settings. Always import this file; the production build replaces it automatically.\nexport const environment = {\n  production: false,\n  name: 'test',\n};\n",
+    "// Test environment settings. Always import this file; the production build replaces it automatically.\nexport const environment = {\n  production: false,\n  name: 'test',\n  // Replace with this center's test API URL, or proxy /api to its backend.\n  apiBaseUrl: '/api',\n};\n",
   );
   app(
     'src/environments/environment.production.ts',
-    "// Production environment settings. Keep the same properties as environment.ts.\nexport const environment = {\n  production: true,\n  name: 'production',\n};\n",
+    "// Production environment settings. Keep the same properties as environment.ts.\nexport const environment = {\n  production: true,\n  name: 'production',\n  // Replace with this center's production API URL, or serve it behind /api.\n  apiBaseUrl: '/api',\n};\n",
   );
   app(
     'src/routes.ts',

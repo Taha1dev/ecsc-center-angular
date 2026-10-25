@@ -4,6 +4,8 @@ This package handles reading and changing data. Pages use it to load records, ru
 
 The current application uses an in-memory adapter and demo records. A real backend adapter would belong in this layer, behind the same contracts, rather than being called directly from page components.
 
+Each center now provides its API address through `API_CONFIG`. Use `inject(API_CONFIG)` in a service instead of importing an application's environment file. See [API configuration](../../docs/api-configuration.md) for the setup and an HTTP service example.
+
 ## What goes here
 
 - Adapters that read and update records.

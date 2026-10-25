@@ -4,7 +4,9 @@ import { About } from './pages/about/about';
 import { Team } from './pages/team/team';
 import { Faq } from './pages/faq/faq';
 import { Contact } from './pages/contact/contact';
+import { ApiExamples } from './pages/api-examples/api-examples';
 export const extensions: CenterRoute[] = [
+  { path: 'api-examples', component: ApiExamples },
   {
     path: 'aurora',
     label: 'Aurora',
@@ -16,7 +18,5 @@ export const extensions: CenterRoute[] = [
   { path: 'team', component: Team },
   { path: 'guide/contact', component: Contact },
   { path: 'guide/faq', component: Faq },
-
 ];
-export const pages: CenterPages = {
-};
+export const pages: CenterPages = {};

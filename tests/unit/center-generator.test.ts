@@ -69,6 +69,16 @@ it('generates an isolated app, registers all tasks and discovers it without chan
       'utf8',
     ),
   ).toContain('production: true');
+  expect(fs.readFileSync(path.join(root, 'apps/new-center/src/app.config.ts'), 'utf8')).toContain(
+    'provideApiConfig({ baseUrl: environment.apiBaseUrl })',
+  );
+  expect(fs.readFileSync(path.join(root, 'apps/new-center/src/main.ts'), 'utf8')).toContain(
+    'startCenter(centerModule, appConfig)',
+  );
+  for (const file of ['environment.ts', 'environment.production.ts'])
+    expect(
+      fs.readFileSync(path.join(root, 'apps/new-center/src/environments', file), 'utf8'),
+    ).toMatch(/apiBaseUrl: ['"]\/api['"]/);
   const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
   expect(pkg.scripts['build:new-center']).toBe('turbo build --filter=new-center');
   const turbo = JSON.parse(fs.readFileSync(path.join(root, 'turbo.json'), 'utf8'));

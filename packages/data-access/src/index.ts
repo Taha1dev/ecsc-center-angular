@@ -4,3 +4,5 @@ export * from './data/dashboard';
 export * from './data/fixtures';
 export * from './data/reports';
 export * from './store';
+export * from './config/api-config';
+export * from './demo-api/json-placeholder.service';

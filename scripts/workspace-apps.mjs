@@ -4,11 +4,17 @@ import { fileURLToPath } from 'node:url';
 
 export const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const workspaceRootType = typeof workspaceRoot;
-// Tooling discovers applications from Angular CLI; no runtime center registry is needed.
+// Center tooling uses apps with explicit server ports and build outputs.
+// A plain Angular CLI app may not have these center-specific settings yet.
 export function workspaceApps(root = workspaceRoot) {
   const workspace = JSON.parse(fs.readFileSync(path.join(root, 'angular.json'), 'utf8'));
   return Object.entries(workspace.projects)
-    .filter(([, project]) => project.projectType === 'application')
+    .filter(
+      ([, project]) =>
+        project.projectType === 'application' &&
+        Number.isInteger(project.architect?.serve?.options?.port) &&
+        project.architect?.build?.options?.outputPath,
+    )
     .map(([id, project]) => {
       const devPort = project.architect.serve.options.port;
       const output = project.architect.build.options.outputPath;

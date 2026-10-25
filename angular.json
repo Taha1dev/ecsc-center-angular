@@ -70,9 +70,20 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "apps/ecsc/src/environments/environment.ts",
+                  "with": "apps/ecsc/src/environments/environment.production.ts"
+                }
+              ]
             },
             "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
+            "test": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -88,9 +99,12 @@
             },
             "development": {
               "buildTarget": "ecsc:build:development"
+            },
+            "test": {
+              "buildTarget": "ecsc:build:test"
             }
           },
-          "defaultConfiguration": "development",
+          "defaultConfiguration": "test",
           "options": {
             "port": 5200
           }
@@ -160,9 +174,20 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "apps/m3/src/environments/environment.ts",
+                  "with": "apps/m3/src/environments/environment.production.ts"
+                }
+              ]
             },
             "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
+            "test": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -178,9 +203,12 @@
             },
             "development": {
               "buildTarget": "m3:build:development"
+            },
+            "test": {
+              "buildTarget": "m3:build:test"
             }
           },
-          "defaultConfiguration": "development",
+          "defaultConfiguration": "test",
           "options": {
             "port": 5201
           }
@@ -250,9 +278,20 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "apps/jus/src/environments/environment.ts",
+                  "with": "apps/jus/src/environments/environment.production.ts"
+                }
+              ]
             },
             "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
+            "test": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -268,9 +307,12 @@
             },
             "development": {
               "buildTarget": "jus:build:development"
+            },
+            "test": {
+              "buildTarget": "jus:build:test"
             }
           },
-          "defaultConfiguration": "development",
+          "defaultConfiguration": "test",
           "options": {
             "port": 5202
           }
@@ -396,9 +438,20 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "apps/test-center/src/environments/environment.ts",
+                  "with": "apps/test-center/src/environments/environment.production.ts"
+                }
+              ]
             },
             "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
+            "test": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -414,9 +467,12 @@
             },
             "development": {
               "buildTarget": "test-center:build:development"
+            },
+            "test": {
+              "buildTarget": "test-center:build:test"
             }
           },
-          "defaultConfiguration": "development",
+          "defaultConfiguration": "test",
           "options": {
             "port": 5203
           }
@@ -486,9 +542,20 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "apps/layal-center/src/environments/environment.ts",
+                  "with": "apps/layal-center/src/environments/environment.production.ts"
+                }
+              ]
             },
             "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
+            "test": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -504,9 +571,12 @@
             },
             "development": {
               "buildTarget": "layal-center:build:development"
+            },
+            "test": {
+              "buildTarget": "layal-center:build:test"
             }
           },
-          "defaultConfiguration": "development",
+          "defaultConfiguration": "test",
           "options": {
             "port": 5204
           }

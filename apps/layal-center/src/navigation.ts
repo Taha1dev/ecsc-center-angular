@@ -2,6 +2,13 @@ import type { CenterNavItem } from '@workspace/core';
 
 export const navigation: CenterNavItem[] = [
   { kind: 'link', id: 'home', label: 'الرئيسية', path: '', icon: 'phosphorHouse' },
+  {
+    kind: 'link',
+    id: 'api-examples',
+    label: 'تجربة API',
+    path: 'api-examples',
+    icon: 'phosphorLightning',
+  },
   { kind: 'link', id: 'aurora', label: 'Aurora', path: 'aurora' },
   { kind: 'link', id: 'about', label: 'عن المركز', path: 'about' },
   { kind: 'link', id: 'team', label: 'فريق العمل', path: 'team', icon: 'phosphorUsers' },

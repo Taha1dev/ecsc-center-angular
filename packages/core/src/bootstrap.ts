@@ -1,6 +1,11 @@
 import { OVERLAY_DEFAULT_CONFIG } from '@angular/cdk/overlay';
 import { provideHttpClient } from '@angular/common/http';
-import { inject, provideBrowserGlobalErrorListeners } from '@angular/core';
+import {
+  inject,
+  mergeApplicationConfig,
+  provideBrowserGlobalErrorListeners,
+  type ApplicationConfig,
+} from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, Router, type Route, type Routes } from '@angular/router';
 import { provideBrnDialogDefaultOptions } from '@spartan-ng/brain/dialog';
@@ -90,7 +95,10 @@ export function centerRoutes(module: CenterModule): Routes {
     },
   ];
 }
-export function startCenter(module: CenterModule) {
+export function startCenter(
+  module: CenterModule,
+  appConfig: ApplicationConfig = { providers: [] },
+) {
   defineCenter(module);
   document.documentElement.lang = 'ar';
   document.documentElement.dir = 'rtl';
@@ -98,7 +106,7 @@ export function startCenter(module: CenterModule) {
   document.title = module.profile.name + ' | مساحة الموظف';
   const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
   if (favicon) favicon.href = module.profile.favicon;
-  return bootstrapApplication(CenterApplication, {
+  const sharedConfig: ApplicationConfig = {
     providers: [
       provideBrowserGlobalErrorListeners(),
       provideHttpClient(),
@@ -111,5 +119,6 @@ export function startCenter(module: CenterModule) {
         restoreFocus: true,
       }),
     ],
-  });
+  };
+  return bootstrapApplication(CenterApplication, mergeApplicationConfig(sharedConfig, appConfig));
 }

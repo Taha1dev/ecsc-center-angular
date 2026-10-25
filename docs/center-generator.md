@@ -75,7 +75,7 @@ import { environment } from './environments/environment';
 npm run ng -- build new-center --configuration=test
 ```
 
-هذا الإعداد خاص بالمراكز التي يتم توليدها بعد التعديل؛ لا يغيّر إعدادات المراكز الموجودة.
+هذا الإعداد موجود أيضاً في المراكز الحالية. يحتوي كلا ملفَي البيئة على `apiBaseUrl`، ويربطه `src/app.config.ts` تلقائياً مع `API_CONFIG` المشترك. عدّل عنوان التيست والإنتاج لكل مركز؛ القيمة الأولية `/api` تحتاج API أو proxy على نفس النطاق. راجع [إعداد API](api-configuration.md) للمثال الكامل.
 
 ## حذف مركز مولّد
 
