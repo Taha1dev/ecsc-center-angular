@@ -76,6 +76,7 @@ Existing applications include demo workflows and sample data. Their catalogs, pa
 
 ## Guides
 
+- [Create your first center: illustrated walkthrough](docs/guides/create-center.md)
 - [Architecture and ownership](docs/ARCHITECTURE.md)
 - [Development examples and generator options](docs/development-guide.md)
 - [Create/delete a center and choose its identity](docs/center-generator.md)
@@ -86,5 +87,3 @@ Existing applications include demo workflows and sample data. Their catalogs, pa
 - [Verification commands and limits](docs/VALIDATION.md)
 - [Optional project-local MCP setup](docs/mcp-setup.md)
 - [Agent instructions](AGENTS.md)
-
-Historical migration evidence is [archived separately](docs/archive/angular-migration.md). It is not a report of current verification.
