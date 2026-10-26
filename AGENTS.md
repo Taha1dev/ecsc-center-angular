@@ -26,4 +26,6 @@ Use [VALIDATION](docs/VALIDATION.md) to select checks proportionate to the chang
 
 Write all Markdown in English, including example labels; this does not change the localized application language. Keep each topic in its canonical guide and link to it rather than repeating tutorials. Report actual checks, existing failures, and limitations separately from historical evidence.
 
+For developer command examples, show `.\dev.ps1` once per PowerShell terminal, followed by direct `ng` commands. Use `npm run center:new -- <id>` for center creation. Do not present internal Node script invocations as alternative developer commands.
+
 Do not touch CI/CD, push, deploy, or publish unless explicitly requested. Keep changes locally reviewable and preserve valid project skills.

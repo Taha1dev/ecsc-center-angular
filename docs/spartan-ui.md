@@ -29,12 +29,6 @@ ng g @spartan-ng/cli:ui autocomplete
 ng g @spartan-ng/cli:ui accordion
 ```
 
-You can also use the local script without enabling the PowerShell shortcut:
-
-```sh
-node scripts/ng.mjs g @spartan-ng/cli:ui autocomplete
-```
-
 No center selector is needed. Autocomplete files go into `libs/ui/autocomplete/src`, and the public import is `@spartan-ng/helm/autocomplete`. Run `ng g @spartan-ng/cli:ui` to choose multiple components interactively.
 
 Add components as needed. Existing UI code uses `button`, `input`, `textarea`, `popover`, and `select`, so their shared sources are already present. Do not choose `all` unless you intend to add every component.

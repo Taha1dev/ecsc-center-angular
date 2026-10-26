@@ -22,18 +22,18 @@ npm run center:new -- "New Service Center"
 Custom identity:
 
 ```sh
-node scripts/create-center.mjs new-center --name "New Service Center" --visual-identity y --primary "#397b73" --secondary "#baa97d" --dry-run
+npm run center:new -- new-center --name "New Service Center" --visual-identity y --primary "#397b73" --secondary "#baa97d" --dry-run
 ```
 
 Default identity:
 
 ```sh
-node scripts/create-center.mjs new-center --name "New Center" --visual-identity n --dry-run
+npm run center:new -- new-center --name "New Center" --visual-identity n --dry-run
 ```
 
 Remove `--dry-run` to create the files. Do not combine `--visual-identity n` with `--primary`, `--secondary`, or `--logo`. Older non-interactive commands that supply custom colors without the identity flag still work.
 
-When passing flags through npm in Windows PowerShell, use `npm.cmd run center:new -- ...` or the direct `node` command to avoid npm.ps1 option-forwarding issues.
+When passing flags through npm in Windows PowerShell, use `npm.cmd run center:new -- ...` if npm.ps1 does not forward the options correctly.
 
 Additional options:
 

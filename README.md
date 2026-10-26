@@ -31,13 +31,7 @@ On PowerShell, enable the local `ng` shortcut once per terminal:
 ng g s customers-api
 ```
 
-On other shells, or without the shortcut:
-
-```sh
-node scripts/ng.mjs g s customers-api
-```
-
-The wrapper asks whether the code belongs to a center or a shared package. A global Angular CLI alone does not provide these workspace shortcuts.
+The command asks whether the code belongs to a center or a shared package. Run `.\dev.ps1` again in each new PowerShell terminal before using `ng`.
 
 ## Common tasks
 

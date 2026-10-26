@@ -88,7 +88,7 @@ Common options:
 - `--dry-run`: preview files without writing them.
 - `--no-skip-tests`: create a component/page spec file. These specs are not executed by the current Node Vitest setup; see [test discovery](VALIDATION.md#unit-tests-and-generated-test-files). Services, pipes, and directives always skip tests through this wrapper.
 
-Without the PowerShell shortcut, replace `ng` with `node scripts/ng.mjs`. A global Angular CLI alone does not provide the workspace picker or center shortcuts. See the root [README](../README.md) for the full options table.
+Run `.\dev.ps1` once in each new PowerShell terminal before using `ng`. This enables the workspace picker and center shortcuts.
 
 ## 4. Create a center-specific component and page
 

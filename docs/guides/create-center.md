@@ -19,7 +19,7 @@ On PowerShell, enable the workspace's short `ng` command in each terminal where 
 .\dev.ps1
 ```
 
-This changes the current terminal only. On other shells, replace `ng` with `node scripts/ng.mjs`. A globally installed Angular CLI does not know the project's `page` shortcut or center selectors.
+This enables the project's `ng` command in the current terminal. Run it again in each new PowerShell terminal before using the commands below.
 
 ## The short path
 
@@ -66,7 +66,7 @@ _Captured prompt/output excerpts. The normal run also completed its npm workspac
 **Alternative, inspected but not used for these screenshots:** answer `y` to enter primary and secondary HEX colors before the display name. Supply an authentic local logo with `--logo`; otherwise the custom-identity path creates a temporary marker. For example:
 
 ```sh
-node scripts/create-center.mjs guide-center --name "Guide Center" --visual-identity y --primary "#397b73" --secondary "#baa97d" --logo ./my-logo.png --dry-run
+npm run center:new -- guide-center --name "Guide Center" --visual-identity y --primary "#397b73" --secondary "#baa97d" --logo ./my-logo.png --dry-run
 ```
 
 Run that preview **before** creating the center: even a dry run rejects an existing ID. `my-logo.png` represents your own file; it is not bundled with this guide. Do not combine default identity (`n`) with custom color or logo flags.
@@ -149,12 +149,6 @@ In a second PowerShell terminal at the repository root:
 ```powershell
 .\dev.ps1
 ng g page --center-name=guide-center getting-started
-```
-
-The equivalent portable command, used to generate the captured page, is:
-
-```sh
-node scripts/ng.mjs g page --center-name=guide-center getting-started
 ```
 
 It creates a folder with separate `getting-started.ts` and `getting-started.html` files under `apps/guide-center/src/pages/getting-started/`. It skips test and CSS files by default. Add `--style=css` if you need a stylesheet; other flags are in the [development guide](../development-guide.md#3-generate-files).
@@ -271,7 +265,7 @@ Preview serves existing build files; it does not rebuild after edits. Stop/resta
 
 | Symptom                                    | What to check                                                                                                                               |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Unknown `page` or center argument          | Run `.\dev.ps1` in that terminal, or use `node scripts/ng.mjs`.                                                                             |
+| Unknown `page` or center argument          | Run `.\dev.ps1` in that terminal, then retry the `ng` command.                                                                              |
 | Generator refuses the ID                   | Check `angular.json` and `apps/`; choose an unused ID instead of overwriting an app.                                                        |
 | Files exist but the workspace cannot start | If installation failed or you used `--skip-install`, run `npm install --ignore-scripts` at the root.                                        |
 | Address already in use                     | Stop the process occupying the printed port or choose an available dev port in `angular.json`. Check the corresponding preview port too.    |
