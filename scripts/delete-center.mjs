@@ -20,10 +20,6 @@ function checkedPath(root, relative) {
 export async function deleteCenterPlan(directory, value) {
   const root = fs.realpathSync(directory),
     id = centerId(value);
-  if (['ecsc', 'm3', 'jus'].includes(id))
-    throw new Error(
-      'ECSC, M3 and JUS are preserved applications. This command deletes generated centers only.',
-    );
   const originals = new Map();
   const read = (file) => {
     const bytes = fs.readFileSync(checkedPath(root, file));
@@ -42,7 +38,11 @@ export async function deleteCenterPlan(directory, value) {
   )
     throw new Error(`No generated application with the expected paths: ${id}`);
   const appPath = checkedPath(root, `apps/${id}`);
-  const appPackage = JSON.parse(fs.readFileSync(path.join(appPath, 'package.json'), 'utf8'));
+  const appPackage = read(`apps/${id}/package.json`);
+  if (appPackage.center?.deletionProtected === true)
+    throw new Error(
+      'This application is preserved by center.deletionProtected in its package.json.',
+    );
   const brand = JSON.parse(fs.readFileSync(path.join(appPath, 'brand.json'), 'utf8'));
   if (appPackage.name !== id || !brand.primary || !brand.secondary || !brand.tokens)
     throw new Error('The application does not match the generated center structure.');

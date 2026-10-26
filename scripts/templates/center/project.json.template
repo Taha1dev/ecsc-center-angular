@@ -1,0 +1,108 @@
+{
+  "projectType": "application",
+  "schematics": {
+    "@schematics/angular:class": {
+      "skipTests": true
+    },
+    "@schematics/angular:component": {
+      "skipTests": true
+    },
+    "@schematics/angular:directive": {
+      "skipTests": true
+    },
+    "@schematics/angular:guard": {
+      "skipTests": true
+    },
+    "@schematics/angular:interceptor": {
+      "skipTests": true
+    },
+    "@schematics/angular:pipe": {
+      "skipTests": true
+    },
+    "@schematics/angular:resolver": {
+      "skipTests": true
+    },
+    "@schematics/angular:service": {
+      "skipTests": true
+    }
+  },
+  "root": "apps/__CENTER_ID__",
+  "sourceRoot": "apps/__CENTER_ID__/src",
+  "prefix": "app",
+  "architect": {
+    "build": {
+      "builder": "@angular/build:application",
+      "options": {
+        "browser": "apps/__CENTER_ID__/src/main.ts",
+        "tsConfig": "apps/__CENTER_ID__/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/__CENTER_ID__/public",
+            "output": "/assets"
+          }
+        ],
+        "styles": [
+          "apps/__CENTER_ID__/src/styles.css"
+        ],
+        "outputPath": "dist/apps/__CENTER_ID__",
+        "index": "apps/__CENTER_ID__/src/index.html",
+        "allowedCommonJsDependencies": [
+          "exceljs"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "1MB",
+              "maximumError": "2MB"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kB",
+              "maximumError": "8kB"
+            }
+          ],
+          "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "apps/__CENTER_ID__/src/environments/environment.ts",
+              "with": "apps/__CENTER_ID__/src/environments/environment.production.ts"
+            }
+          ]
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        },
+        "test": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "builder": "@angular/build:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "__CENTER_ID__:build:production"
+        },
+        "development": {
+          "buildTarget": "__CENTER_ID__:build:development"
+        },
+        "test": {
+          "buildTarget": "__CENTER_ID__:build:test"
+        }
+      },
+      "defaultConfiguration": "test",
+      "options": {
+        "port": 0
+      }
+    }
+  }
+}

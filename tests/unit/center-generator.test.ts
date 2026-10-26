@@ -20,6 +20,19 @@ function fixture() {
     fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
     fs.copyFileSync(path.resolve(file), path.join(root, file));
   }
+  const workspace = JSON.parse(fs.readFileSync(path.join(root, 'angular.json'), 'utf8'));
+  for (const project of Object.values(workspace.projects) as {
+    projectType: string;
+    root: string;
+    sourceRoot: string;
+  }[]) {
+    if (project.projectType !== 'application') continue;
+    for (const file of [`${project.root}/package.json`, `${project.sourceRoot}/main.ts`]) {
+      if (!fs.existsSync(file)) continue;
+      fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
+      fs.copyFileSync(file, path.join(root, file));
+    }
+  }
   return root;
 }
 afterEach(() => {
@@ -41,6 +54,46 @@ it('accepts only y/n answers for the visual identity question', () => {
   expect(hasVisualIdentity(' N ')).toBe(false);
   for (const answer of ['', 'yes', 'no', 'maybe'])
     expect(() => hasVisualIdentity(answer)).toThrow('y or n');
+});
+
+it('generates independently of example application configuration or package files', async () => {
+  const root = fixture();
+  const file = path.join(root, 'angular.json');
+  const workspace = JSON.parse(fs.readFileSync(file, 'utf8'));
+  delete workspace.projects.ecsc;
+  fs.writeFileSync(file, JSON.stringify(workspace));
+  fs.unlinkSync(path.join(root, 'apps/ecsc/package.json'));
+  const plan = await createCenterPlan(root, options);
+  const generated = JSON.parse(plan.files.get('angular.json')).projects[options.id];
+  expect(generated.root).toBe('apps/new-center');
+  expect(generated.architect.build.options.assets[0].input).toBe('apps/new-center/public');
+  expect(JSON.parse(plan.files.get('apps/new-center/package.json')).center).toEqual({
+    generated: true,
+    deletionProtected: false,
+  });
+});
+
+it('protects any application marked by metadata rather than a known name', async () => {
+  const root = fixture();
+  applyCenterPlan(root, await createCenterPlan(root, options));
+  const file = path.join(root, 'apps/new-center/package.json');
+  const pkg = JSON.parse(fs.readFileSync(file, 'utf8'));
+  pkg.center.deletionProtected = true;
+  fs.writeFileSync(file, JSON.stringify(pkg));
+  await expect(deleteCenterPlan(root, options.id)).rejects.toThrow('preserved');
+  expect(fs.existsSync(path.join(root, 'apps/new-center/src/main.ts'))).toBe(true);
+});
+
+it('rejects a deletion plan when application protection metadata changes before confirmation', async () => {
+  const root = fixture();
+  applyCenterPlan(root, await createCenterPlan(root, options));
+  const plan = await deleteCenterPlan(root, options.id);
+  const file = path.join(root, 'apps/new-center/package.json');
+  const pkg = JSON.parse(fs.readFileSync(file, 'utf8'));
+  pkg.center.deletionProtected = true;
+  fs.writeFileSync(file, JSON.stringify(pkg));
+  expect(() => applyCenterDeletion(plan, plan.phrase)).toThrow('configuration changed');
+  expect(fs.existsSync(path.join(root, 'apps/new-center/src/main.ts'))).toBe(true);
 });
 
 it('copies the default image unchanged and uses it for both logo and favicon', async () => {

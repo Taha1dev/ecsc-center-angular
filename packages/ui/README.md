@@ -1,67 +1,19 @@
-# UI
+﻿# UI
 
-This package contains the controls and display components we share across the applications. They receive values and emit events; they do not decide which center is active or fetch transaction records.
+Generic display components, form wrappers, tables/charts, semantic styles, fonts, and export helpers. UI receives typed inputs and emits events; it does not know a center's catalog, routes, store, or business workflow.
 
-Examples include a field, a table, a dialog, a chart, and an empty state.
+## Public entry point
 
-## Where things live
+Import from `@workspace/ui` (`src/index.ts`). It exports the owned `App*` components, table/chart types, export helpers, toast service, and compatibility re-exports of selected global Helm primitives. Import official primitives directly through `@spartan-ng/helm/<primitive>` when appropriate.
 
-| Location                 | Contents                                                |
-| ------------------------ | ------------------------------------------------------- |
-| `src/components/`        | Shared components and the adapters that compose them    |
-| `src/services/`          | UI services, such as the toast service                  |
-| `src/styles/globals.css` | Shared fonts, semantic tokens, and Tailwind integration |
-| `src/lib/`               | Supporting utilities, including local exports           |
-| `src/index.ts`           | The public exports                                      |
+## Source map
 
-Domain-specific actions and transaction rules belong in core or domain. A component that knows how to process a refund is more than a generic UI control.
+- `src/components`: general controls and display patterns, one folder and external HTML per owned component.
+- `src/styles/globals.css`: canonical semantic tokens, typography, shared geometry, and font/preset imports.
+- `src/lib`: non-component utilities such as local exports.
+- `src/services`: UI-owned services.
+- Root `libs/ui`: shared Spartan Helm source, not a second implementation under this package.
 
-## Adding a component we own
+UI does not import core, data-access, or applications. Its current domain dependency is limited by convention to generic date helpers. Keep product-aware components in `core` or an application. Use semantic utilities and supplied display data rather than center-ID branches or duplicate themes.
 
-Run this from the repository root:
-
-```sh
-ng g c status-card --project=ui --path=packages/ui/src/components --flat=false --inline-template=false --style=none --skip-tests
-```
-
-It creates:
-
-```text
-src/components/status-card/
-  status-card.ts
-  status-card.html
-```
-
-Keep one component per folder, with its template in the HTML file. Use the existing semantic color utilities so the component picks up each center's brand.
-
-To make it available outside this package, add this to `src/index.ts`:
-
-```ts
-export * from './components/status-card/status-card';
-```
-
-Consumers can then import `StatusCard` from `@workspace/ui` and add it to their component's `imports`.
-
-Angular pipes and directives can also be generated with `ng g p` and `ng g d`. A plain formatting function or a type can be written by hand.
-
-## Spartan components
-
-Official Spartan Helm files live in [libs/ui](../../libs/ui), outside this package. Add only the primitive you need:
-
-```sh
-ng g @spartan-ng/cli:ui accordion
-```
-
-Import it through its public alias:
-
-```ts
-import { HlmAccordionImports } from '@spartan-ng/helm/accordion';
-```
-
-The CLI uses the `maia` style from the root `components.json`. Keep those generated files in their official location.
-
-Our `AppSelect`, for example, composes the global Helm select primitives and exposes the field API used by the product. It does not keep a second copy of Helm. Existing button and input exports from `@workspace/ui` also point to the global implementations.
-
-The separate HTML and folder rule applies to our components in `packages`; generated Spartan files keep their upstream structure.
-
-See the [Spartan guide](../../docs/spartan-ui.md) for setup and usage, or [core](../core/README.md) for shared product features.
+Public exports are explicit in `src/index.ts`. The package build includes its shared CSS export; applications import it through their styles entry. See [design](../../DESIGN.md), [Spartan](../../docs/spartan-ui.md), and [development examples](../../docs/development-guide.md).

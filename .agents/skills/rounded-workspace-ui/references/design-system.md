@@ -1,72 +1,40 @@
-# Visual system
+﻿# Visual decisions
 
-## Reference interpretation
-
-Observe `../assets/dashboard-reference.jpg`: the enclosing rounded frame, inset navigation, compact selected navigation row, soft card edges, metric cards above a wide table, small capsules and stacked utility column. Notice the restrained rim highlight and ambient tint.
-
-Transfer those relationships to service-center work. The screenshot is a presentation crop, not a required aspect ratio. Do not reproduce crypto content, market tickers, decorative presentation labels, tiny typography or exchange widgets. Keep important values/actions truthful.
-
-## Proposed token scale
-
-Use these as a coherent starting system, mapped to existing equivalent tokens. These are design choices, not exact measurements from the image.
-
-| Role | Desktop target | Mobile adaptation |
-| --- | --- | --- |
-| Workspace shell | 28px radius | 16px or edge-to-edge |
-| Major panel/card | 20px radius | 16–20px |
-| Nested field/item | 12–14px radius | Same |
-| Button/input/selected navigation | 12px radius | Same |
-| Small filter/badge | Full capsule | Same |
-| Page gutter | 24px | 12–16px |
-| Panel padding | 20–24px | 16px |
-| Grid gap | 16–24px | 12–16px |
-| Internal rhythm | 4, 8, 12, 16px | Same |
-| Standard control | 40px visual height | 44px touch target when needed |
-| Page title | 24–28px, semibold | 22–24px |
-| Panel title | 16–18px, semibold | Same |
-| Main metric | 28–32px, semibold | 24–28px |
-| Data/control labels | 14–16px | Same |
-| Metadata | 12–13px | Same |
-
-Use a subtle 1px border and restrained neutral shadow. Prefer faint external shadow on light surfaces and an optional inner rim on dark surfaces. Keep the canvas quieter than cards.
+Use [the current design specification](../../../../DESIGN.md) and [shared tokens](../../../../packages/ui/src/styles/globals.css) for repository-specific values. Inspect the actual component utilities before assuming a token controls its geometry.
 
 ## Composition
 
-- Keep primary navigation around 240–264px where space permits. Preserve an existing 286px contextual transaction rail; do not force two rails plus a utility column into a narrow viewport.
-- Give main work `minmax(0, 1fr)`. Use an optional 280–320px utility column only for useful secondary tasks and sufficient space.
-- Choose breakpoints by measured content fit, including the full shell. Stack utility content at intermediate widths; keep primary work before it in DOM reading order.
-- Use 2–4 metric cards according to content. Use two at medium widths and one on narrow mobile when Arabic labels/values need room.
-- Keep tables inside one panel with internal horizontal scrolling and row dividers. Clip visual corners without clipping focus rings. Avoid separate rounded cards around every cell.
-- Group titles/descriptions and filters/actions with logical alignment. Wrap naturally and keep primary actions available on mobile.
-- Give consequential metrics/charts more space than secondary summaries. Avoid duplicate titles.
+- Give the primary task most of the available space. Add a utility column only when it supports a real secondary task and fits alongside navigation.
+- Use inset navigation and an outer workspace surface with a clear hierarchy of panel and inset shapes. A reference image's crop is not a required screen ratio.
+- Keep `minmax(0, 1fr)` and `min-w-0` through grid/flex content. Stack secondary content before it compresses the primary task.
+- Separate titles, actions, and data through spacing, alignment, and type hierarchy. Do not give every element equal emphasis.
+- Keep comparable records in tables or consistent collections. Notes and activity are readable lists/timelines. Avoid elevated cards around every table cell.
 
-## Card anatomy
+## Surface anatomy
 
-| Pattern | Structure | Treatment |
-| --- | --- | --- |
-| Metric | Label/icon, value, comparison/context | Small icon well and clear value |
-| Entity/document | Identity, supporting fields, status/actions | Semantic icon, tonal metadata, action footer |
-| Chart | Header/controls, plot, legend/table alternative | Quiet plot and meaningful series colors |
-| Table/list | Header/filters, collection, pagination/footer | Shared container, subtle row boundaries |
-| Form/utility | Title, fields, summary, primary action | Inset fields, explicit validation |
-| Attention item | ID/title, reason, deadline, eligible action | Compact row with severity text/icon |
+| Surface        | Useful content                                              |
+| -------------- | ----------------------------------------------------------- |
+| Metric         | Label, value, and truthful scope/comparison                 |
+| Entity         | Identity, key fields, optional status and relevant actions  |
+| Chart          | Header, controls, plot, legend, and alternative data view   |
+| Form           | Labels, grouped fields, feedback, and clear action          |
+| Attention item | Record identity, reason, deadline, and eligible next action |
 
-Keep notes/activity as readable lists or timelines, attention content as task-oriented lists, and transaction groups as accessible accordions. Avoid making every content type a uniform card grid.
+Use restrained borders/shadows and the existing semantic roles. Keep backgrounds quieter than the data. Tint and icons clarify meaning; they should not manufacture urgency or imply fabricated activity.
 
-## Theme translation
+## Identity and interaction
 
-Use semantic roles: canvas/background, card, foreground, muted foreground, border, inset surface, primary, primary soft, success, warning, danger and ring. Define a missing role in the approved token location rather than embedding center colors in components.
+The reference's dark crypto theme is not an instruction to add dark mode. Preserve the app's current mode, brand assets, typography, and common status semantics. Use center-agnostic component variants and configuration rather than center-ID conditionals.
 
-For light mode use a neutral off-white canvas, white/near-white raised cards, neutral inset regions and measured contrast. In an already-supported dark mode use distinct near-black canvas/charcoal cards and a restrained rim. Keep status semantics identical across brands.
+Keep important Arabic text readable and naturally shaped. Isolate mixed-direction values with `bdi` where useful. Avoid truncating important errors or identifiers to force a layout to fit.
 
-Ambient tint is optional: one static decorative region behind a shell/header, brand-derived, faint and pointer-events-none. Remove it if it hurts readability or violates repository rules. Avoid large blur filters, heavy glassmorphism, photographic backgrounds and animated gradients.
+Interactive controls need visible focus, meaningful labels, reachable touch targets, and consistent disabled/loading behavior. Menus and dialogs keep CDK/Brain keyboard and focus behavior. Scroll or clip only the region that needs it; do not hide focus rings.
 
-## Review traps
+## Common review failures
 
-- Use shared radius roles rather than arbitrary rounding.
-- Reduce excessive nested cards, borders and shadows with inset grouping.
-- Preserve table density when making dashboard cards spacious.
-- Preserve branding rather than copying the orange reference accent.
-- Keep keyboard focus visible outside clipped containers.
-- Keep long Arabic names/errors and numeric values readable.
-- Avoid fabricated trends, unsupported percentages and decorative controls that do nothing.
+- Copying fixed dimensions or palettes from a reference instead of reading the current implementation.
+- Inventing trends, counts, live indicators, or unsupported product rules.
+- Adding page-specific theme CSS rather than fixing an owned shared component.
+- Keeping a side column when it causes narrow primary content.
+- Removing error/retry/empty states while polishing the populated layout.
+- Claiming universal visual parity from a passing build or a single screenshot.

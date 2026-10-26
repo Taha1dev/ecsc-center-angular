@@ -35,7 +35,7 @@ import type { ClassValue } from 'clsx';
       <ng-content />
       <ng-icon
         name="lucideChevronDown"
-        class="text-muted-foreground text-[length:--spacing(4)] ms-auto"
+        class="text-muted-foreground text-[--spacing(4)] ms-auto"
       />
     </button>
   `,

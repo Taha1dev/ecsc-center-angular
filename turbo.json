@@ -1,6 +1,14 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["libs/ui/**"],
+  "globalDependencies": [
+    "angular.json",
+    "tsconfig*.json",
+    ".postcssrc.json",
+    "components.json",
+    "eslint.config.mjs",
+    "scripts/**",
+    "libs/ui/**"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

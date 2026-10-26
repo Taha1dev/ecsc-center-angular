@@ -1,14 +1,15 @@
+// Historical baseline tool only. See docs/archive/angular-migration.md.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
 import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const reference =
-  process.env.REFERENCE_DIR || path.resolve(root, '../ecsc-center-migration-evidence/reference');
-const output =
-  process.env.VISUAL_OUTPUT || path.resolve(root, '../ecsc-center-migration-evidence/angular-live');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+if (!process.env.REFERENCE_DIR)
+  throw new Error('Set REFERENCE_DIR to a historical baseline manifest directory.');
+const reference = path.resolve(process.env.REFERENCE_DIR);
+const output = process.env.VISUAL_OUTPUT || path.join(root, 'test-results/archive-reference');
 const live = process.env.VISUAL_LIVE_REFERENCE !== '0';
 const cachedReference = process.env.VISUAL_REFERENCE_CACHE;
 const cachedStates = new Map(

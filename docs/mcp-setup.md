@@ -1,35 +1,33 @@
-# Project-local MCP servers
+﻿# Project-local MCP servers
 
-Codex configuration lives in [`.codex/config.toml`](../.codex/config.toml). It registers three enabled servers for this repository, without changing user-level MCP settings:
+The optional Codex setup is committed in [`.codex/config.toml`](../.codex/config.toml). It does not change user-level MCP settings or contain API keys.
 
-| Server        | Transport       | Launch / endpoint                                                                        |
-| ------------- | --------------- | ---------------------------------------------------------------------------------------- |
-| `context7`    | Streamable HTTP | `https://mcp.context7.com/mcp`                                                           |
-| `angular-cli` | STDIO           | Installed workspace Angular CLI: `node node_modules/@angular/cli/bin/ng.js mcp --root .` |
-| `spartan-ui`  | STDIO           | `@spartan-ng/mcp@1.8.0`, with `ajv@8.17.1` supplied through npm exec's temporary cache   |
+| Server        | Transport       | Launcher                                  |
+| ------------- | --------------- | ----------------------------------------- |
+| `context7`    | Streamable HTTP | `https://mcp.context7.com/mcp`            |
+| `angular-cli` | STDIO           | `node scripts/mcp-server.mjs angular-cli` |
+| `spartan-ui`  | STDIO           | `node scripts/mcp-server.mjs spartan-ui`  |
 
-The two local processes explicitly start in `E:/Development/ecsc-center-angular`, so Angular discovers this workspace instead of an unrelated working directory. If the repository moves, update their `cwd` settings. `cmd.exe` runs the npm launcher on Windows. Spartan's temporary npm packages do not add dependencies or Nx configuration to this workspace.
+Launch the project client/session from the repository root. The committed command arguments are relative to that working directory. The Node launcher then derives the repository location from its own file and starts each tool there. It uses the installed Angular CLI and chooses the appropriate npm launcher for Windows or POSIX systems. No personal checkout path or unsupported configuration-variable substitution is used.
 
-Prerequisites: the project's supported Node/npm versions, `npm ci` for Angular, and network access for Context7, Spartan documentation and the first npm-cache download. Context7 is configured without an API key; service rate limits apply. Do not commit API keys to this file.
+If your MCP client does not launch project commands from the repository root, set the working directory or absolute launcher path in that client's machine-local configuration. Do not commit your personal path. Codex supports optional per-server working-directory configuration; exact path resolution and project trust behavior depend on the client.
 
-After adding or changing these settings, restart the local Codex client/extension or open a new Codex session for this trusted project. A configuration change does not add new tools to an already running conversation automatically.
+Prerequisites are the supported Node/npm versions, `npm ci`, network access for external docs and the first Spartan npm-cache download, and a client that supports the configured MCP transports. The Spartan launcher supplies pinned `@spartan-ng/mcp` and `ajv` packages through npm's temporary execution cache; it does not migrate the workspace to another build system.
 
-To inspect the resolved registrations from the repository root:
+## Inspect and troubleshoot
 
-```powershell
-codex mcp get context7 --json
-codex mcp get angular-cli --json
-codex mcp get spartan-ui --json
+Restart the client/session after changing registrations. Project configuration is not evidence that the servers connected successfully.
+
+With a Codex CLI installation, inspect the effective configuration from the repository root:
+
+```sh
+codex mcp list
+codex mcp get angular-cli
+codex mcp get spartan-ui
 ```
 
-These commands inspect configuration, not connection health. The client's `/mcp` view shows active connections. Keep the project trusted in Codex so its project-level configuration can be loaded.
+Use the client's tool inventory to confirm an actual connection. STDIO servers expect protocol messages on stdin/stdout, so launching one by hand may wait silently for a client. Diagnostics should go to stderr.
 
-Verification completed for this setup: Context7 initialized and listed its two documentation tools; Angular initialized, listed nine tools and successfully discovered this repository with `list_projects`; Spartan initialized, listed 17 tools and returned its component catalog.
+A missing API key, network policy, unavailable npm cache package, or client trust restriction can prevent startup. Context7 is configured without a key; service limits may apply. Store any optional credentials outside committed configuration.
 
-The installed standalone Codex CLI currently rejects the existing user-level `service_tier = "default"` setting. Registration inspection succeeded with a per-command compatibility override, without changing that user-level file:
-
-```powershell
-codex -c 'service_tier="fast"' mcp get angular-cli --json
-```
-
-References: [Codex MCP configuration](https://learn.chatgpt.com/docs/extend/mcp), [Angular CLI MCP](https://angular.dev/ai/mcp), [Spartan MCP](https://www.npmjs.com/package/@spartan-ng/mcp), [Context7 setup](https://context7.com/docs/resources/all-clients).
+References: [Codex MCP settings](https://learn.chatgpt.com/docs/extend/mcp), [Angular MCP](https://angular.dev/ai/mcp), [Spartan MCP](https://www.npmjs.com/package/@spartan-ng/mcp), and [Context7 clients](https://context7.com/docs/resources/all-clients).

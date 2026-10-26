@@ -15,5 +15,8 @@
     "@workspace/data-access": "*",
     "@angular/core": "22.2.3",
     "@angular/platform-browser": "22.2.3"
+  },
+  "center": {
+    "deletionProtected": true
   }
 }

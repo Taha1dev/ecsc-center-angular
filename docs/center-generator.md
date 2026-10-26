@@ -109,7 +109,9 @@ The command lists the app folder, generated test, and build output, then require
 delete new-center center
 ```
 
-Any other response cancels. There is no confirmation bypass, and deletion requires an interactive terminal. Confirming removes the app, including local customizations, its generated test, and build output. It also removes Angular/npm/Turbo registrations and updates workspace links and the lockfile. The original applications protected by the deletion script cannot be removed with this tool.
+Any other response cancels. There is no confirmation bypass, and deletion requires an interactive terminal. Confirming removes the app, including local customizations, its generated test, and build output. It also removes Angular/npm/Turbo registrations and updates workspace links and the lockfile.
+
+An application with `center.deletionProtected: true` in its `package.json` cannot be deleted by this tool, regardless of its name. Existing protected applications retain that explicit metadata. New generated manifests include `center.generated: true` and `center.deletionProtected: false`. The tool also checks the generated folder/brand structure; changing a metadata flag alone does not make an arbitrary directory deletable. It rechecks configuration and application metadata after confirmation to reject stale plans.
 
 On Windows, stop the center's development or preview server with `Ctrl+C` first. The tool backs up files without renaming the app directory and retries temporary file locks. If a persistent lock prevents deletion, it restores files/settings and explains which processes to close. If recovery itself fails, it preserves the backup and prints its path.
 

@@ -8,16 +8,14 @@ tool_timeout_sec = 90
 
 [mcp_servers.angular-cli]
 command = "node"
-args = ["node_modules/@angular/cli/bin/ng.js", "mcp", "--root", "."]
-cwd = "E:/Development/ecsc-center-angular"
+args = ["scripts/mcp-server.mjs", "angular-cli"]
 enabled = true
 startup_timeout_sec = 60
 tool_timeout_sec = 180
 
 [mcp_servers.spartan-ui]
-command = "cmd.exe"
-args = ["/d", "/c", "npx", "-y", "--package=@spartan-ng/mcp@1.8.0", "--package=ajv@8.17.1", "spartan-mcp"]
-cwd = "E:/Development/ecsc-center-angular"
+command = "node"
+args = ["scripts/mcp-server.mjs", "spartan-ui"]
 enabled = true
 startup_timeout_sec = 120
 tool_timeout_sec = 120

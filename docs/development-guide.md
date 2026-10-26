@@ -86,7 +86,7 @@ Common options:
 - `--path`: select a folder. With a center selector it is relative to the center's `src`. With `--project` or the package picker it is relative to the repository root.
 - `--style=css`: generate a component stylesheet. Center shortcuts default to `--style=none` because the project uses Tailwind.
 - `--dry-run`: preview files without writing them.
-- `--no-skip-tests`: include a component/page test file. Services, pipes, and directives always skip tests through this wrapper.
+- `--no-skip-tests`: create a component/page spec file. These specs are not executed by the current Node Vitest setup; see [test discovery](VALIDATION.md#unit-tests-and-generated-test-files). Services, pipes, and directives always skip tests through this wrapper.
 
 Without the PowerShell shortcut, replace `ng` with `node scripts/ng.mjs`. A global Angular CLI alone does not provide the workspace picker or center shortcuts. See the root [README](../README.md) for the full options table.
 
@@ -169,36 +169,11 @@ A route label adds a menu link only when the application uses default navigation
 
 `pages` replaces a built-in page at its existing URL. For example, `pages.dashboard` replaces dashboard content rather than creating a new URL.
 
-## 6. Current routing limits and a possible next step
+## 6. Routing ownership and limits
 
-`packages/core/src/bootstrap.ts` creates the main routes with `centerRoutes()` and registers the router inside `startCenter()`. Application `routes.ts` files currently provide extensions and replacements; they are not independent Angular `Routes` definitions.
+Applications own their extension registrations and navigation. The current shared router still supplies the common URL prefix and built-in destinations. It does not yet accept arbitrary app-owned Angular Routes arrays. See [the routing contract and limits](ARCHITECTURE.md#routing-and-its-current-limits) before using child routes, lazy loaders, guards, or route providers.
 
-The current `CenterRoute` contract supports `path`, `label`, `icon`, and `component`. It does not forward `children`, `loadChildren`, `loadComponent`, guards, or route providers. The `/centers/<id>` prefix is also part of the current shared routing.
-
-If applications need completely different routing structures, a possible change is:
-
-- Let each application own an Angular `Routes` array.
-- Keep shared pages and optional route factories in `core`.
-- Accept app-owned routes at bootstrap, or separate common providers from router registration.
-- Let each app define navigation that matches its routes.
-- Pass navigation policies to shared pages when they need to build links.
-
-For example, after implementing that separation:
-
-```ts
-import type { Routes } from '@angular/router';
-
-export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'customers' },
-  {
-    path: 'customers',
-    loadComponent: () =>
-      import('./features/customers/pages/customers/customers').then((m) => m.Customers),
-  },
-];
-```
-
-This is a proposal, not the current `startCenter` API. Do not register a second router over the existing bootstrap to imitate it. Another application could choose `/clients` or nested routes while reusing the same page. Different routes do not require a duplicate UI library.
+Do not register a second router over the existing bootstrap or document a proposed separation as implemented. Different center needs should lead to a deliberate contract change, not a copied UI library.
 
 ## 7. Build a general shared component
 

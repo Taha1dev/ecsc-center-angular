@@ -1,26 +1,64 @@
-# Validation
+﻿# Verification
 
-Run from the repository root with Node 24.15+ and npm 12.0.2:
+Run checks from the repository root after `npm ci`. Supported Node/npm versions are defined in `package.json`; do not infer current versions from historical migration records.
+
+| Command                     | Actual scope                                                                                |
+| --------------------------- | ------------------------------------------------------------------------------------------- |
+| `npm run typecheck`         | Turbo package type checks, test/config TypeScript, then the dedicated Spartan check         |
+| `npm run lint`              | Static import/component boundaries, followed by ESLint over `apps`, `packages`, and `tests` |
+| `npm test`                  | Vitest files matching `tests/unit/**/*.test.ts`, in a Node environment                      |
+| `npm run build`             | Production builds for workspace packages in dependency order                                |
+| `npm run build:<id>`        | One configured application's build plus library dependencies                                |
+| `npm run test:e2e`          | Playwright files under `tests/e2e`, using configured application servers                    |
+| `npm run typecheck:spartan` | Direct checking of installed Helm sources                                                   |
+
+Root scripts are authoritative. An empty/missing task is not coverage, and passing compilation alone does not establish visual or behavioral parity.
+
+## Unit tests and generated test files
+
+Vitest currently runs the hand-maintained tests under `tests/unit`. These include domain/data contracts, date/export behavior, navigation/registration checks, component structure, generator/deletion behavior, and workspace tooling regressions. Explicit source aliases are read from `tsconfig.json`, including installed Helm entry points.
+
+Angular-generated `*.spec.ts` component files are **not** included by `npm test`. The Node Vitest suite is not configured as a browser/TestBed component-testing harness. Some registration tests load Angular's JIT compiler, but that does not make arbitrary generated TestBed specs executable. Do not add every `.spec.ts` to discovery without deliberately configuring a compatible environment and setup.
+
+The workspace wrapper skips service/pipe/directive specs, and skips component specs by default. `--no-skip-tests` for a component can create a starting file, but does not add execution support. Put meaningful tests in the supported suite, or explicitly set up component testing when the task requires it. Do not generate superficial tests to inflate coverage.
+
+Playwright `*.spec.ts` files under `tests/e2e` are separate browser tests, including smoke tests created by the center generator.
+
+## Browser tests
+
+Playwright uses installed Chrome (`channel: chrome`). If needed:
 
 ```sh
-npm ci
-npm run typecheck
-npm run lint
-npm test
-npm run build
+npx playwright install chrome
+```
+
+Servers are discovered from Angular application configuration with valid entry files, explicit ports, and build outputs. No fixed center count is assumed. Existing scenario files may target particular example applications; discovery of a new server does not automatically create full scenario coverage for it.
+
+For production previews, build first, then set the flag using your shell:
+
+```powershell
+$env:E2E_PRODUCTION = '1'
 npm run test:e2e
 ```
 
-Type checks cover all seven Angular projects plus test/config TypeScript. Lint combines TypeScript AST import boundaries, ESLint and Angular template checks. Vitest covers preserved catalogs, all field kinds, registry extensions/conflict rejection, eligibility/transitions/commands, deterministic fixtures, report/adaptor contracts, center isolation, concurrent claims, loading/retry/rejection and stale responses. Additional tests cover date-only arithmetic, export escaping and Angular route/form/section registrations.
+```sh
+E2E_PRODUCTION=1 npm run test:e2e
+```
 
-Playwright starts all three apps. Tests cover every route and all fourteen transaction sections across sidebar/navbar shells at 390, 768, 1280 and 1536px, checking RTL, overflow and runtime errors. Interaction checks cover blank login, foreign routes, dependent filters, draft/apply/cancel date ranges, sorting, pagination, columns, selection, claims, collection modes, accepted/rejected forms, reports, local CSV/Excel downloads, shell switching, Escape, focus restoration and mobile focus trapping. Dedicated action-form tests exercise each transaction workflow. Axe scans representative pages; calendar keyboard and equivalent 200% reflow checks supplement automated scans.
+Run a selected browser file through `npm run test:e2e -- <file>` when appropriate. Inspect its application dependencies before limiting server startup. Generated smoke scenarios cover the scaffold's demo routes/sections, not arbitrary future routes or real backend rules.
 
-For production validation, first build, then set `E2E_PRODUCTION=1` and run `npm run test:e2e`. Built application previews use ports 5300/5301/5302. The production server is a small local static SPA server, without backend behavior.
+For visual/runtime changes, check affected apps and relevant shells, useful mobile/tablet/desktop widths, overflow, keyboard/focus, portals, and populated/loading/error/empty states. Include reflow where relevant. A half-width viewport is a reflow approximation, not a claim of native browser zoom testing.
 
-The React reference remains separate and runnable at `E:/Development/ecsc-center-react-reference`. Its captured baseline is commit `973e72cbd6823737e904dd499ef28e4e0bfe9bc8`, reference date 2026-10-06 and Asia/Damascus timezone. Compare identical center, shell, route/section, viewport, fonts, fixture state and overlays. Reference captures and check logs are retained in `E:/Development/ecsc-center-migration-evidence`. Test artifacts are ignored under `test-results/`.
+## Tooling and documentation changes
 
-Current measured results and remaining discrepancies are maintained in [angular-migration.md](angular-migration.md). Historical React checks are baseline evidence, not Angular validation. Passing compilation alone does not establish visual or functional parity.
+Use focused generator, deletion, boundary, and discovery tests for script changes. Validate generated plans and help output without modifying real apps where possible. After shared build configuration changes, run affected builds and check Turbo's dry-run task/global inputs.
 
-`node scripts/compare-reference.mjs` compares all 474 baseline cases against the production previews. It requires live React reference previews on ports 4173/4174/4175. Set `VISUAL_LIVE_REFERENCE=0` and `VISUAL_REFERENCE_CACHE` to an aligned Playwright capture directory to reuse its unchanged reference images. `VISUAL_OUTPUT` selects an external evidence directory; `VISUAL_PAGES` and `VISUAL_WIDTHS` limit a follow-up run to comma-separated inventory page names and widths. Do not rebuild application outputs during capture.
+Check Markdown links, referenced paths, English documentation, workspace registration files, and stale current-state claims. Documentation-only edits do not require a full browser matrix.
 
-`node scripts/compare-overlays.mjs` compares 84 open-state pairs: date ranges, expanded charts, account menus, notifications, note dialogs, report parameters and previews, across every center and shell at 390/1536px. `OVERLAY_OUTPUT` selects its external evidence directory; `OVERLAY_STATES` limits follow-ups, and `OVERLAY_RETRY_MANIFEST` reruns only failed cases from a previous manifest. The scripts wait for font and chart readiness and do not mask differing regions. Large PNG inventories are developer evidence, not part of the application deliverable.
+Static import rules cover literal imports/exports, literal dynamic imports/require, and selected direct center-ID branch shapes. They do not prove complete center independence or runtime authorization.
+
+## Reporting
+
+Report commands actually run and their outcomes. Separate pre-existing failures and unverified behavior from new failures. Do not repeat an old test count or parity percentage as a current result.
+
+[Archived migration evidence](archive/angular-migration.md) records a dated comparison against a separate reference. The historical comparison scripts live under `scripts/archive` and are not normal platform validation or discovery tools. External reference inputs are not bundled, so those comparisons cannot be assumed reproducible from this checkout alone.

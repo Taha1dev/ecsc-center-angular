@@ -1,3 +1,4 @@
+// Historical baseline tool only. See docs/archive/angular-migration.md.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -5,10 +6,8 @@ import { chromium } from '@playwright/test';
 import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const output =
-  process.env.OVERLAY_OUTPUT ||
-  path.resolve(root, '../ecsc-center-migration-evidence/angular-overlays');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const output = process.env.OVERLAY_OUTPUT || path.join(root, 'test-results/archive-overlays');
 fs.mkdirSync(output, { recursive: true });
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 const captures = [];

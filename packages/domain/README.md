@@ -1,50 +1,15 @@
-# Domain
+﻿# Domain
 
-This is where we describe the data the product works with and the rules that apply to it. The code here should work without Angular, a browser, or a running center.
+Shared TypeScript types, validation, calculations, registry rules, and commands that do not depend on Angular or a particular application's implementation.
 
-A transaction type belongs here. So does a function that checks a command or calculates a total. A dialog that lets someone edit that transaction belongs elsewhere.
+## Public entry point
 
-## What goes here
+Import from `@workspace/domain` (`src/index.ts`). The public exports cover domain models, schema/workflow helpers, validation, and generic calendar-date utilities. Existing transaction types describe the current shared feature contract; they are not proof that every future center has the same business requirements.
 
-- Types and interfaces for transactions, people, services, commands, and results.
-- Validation and rules that operate on those values.
-- Pure calculations and date helpers.
-- Contracts for service definitions and extension registries.
+Keep agreed rules here. If a rule is unique to one center, keep its implementation/application configuration local and supply any required variation through a typed contract. Do not choose behavior by enumerating known center IDs.
 
-The current structure includes:
+Domain files can be written as plain TypeScript; do not generate Angular services, components, pipes, or directives here. The package must not import Angular, UI, core, data-access, or application files. Validation may use the declared schema dependency.
 
-| Location               | Contents                                                           |
-| ---------------------- | ------------------------------------------------------------------ |
-| `src/domain/`          | Models, commands, validation, workflow helpers, and registry rules |
-| `src/types/`           | Types exposed to the rest of the workspace                         |
-| `src/lib/`             | Formatting and presentation helpers that do not depend on Angular  |
-| `src/calendar-date.ts` | Calendar dates without timezone conversion                         |
-| `src/index.ts`         | The public exports                                                 |
+Use existing local calendar helpers for calendar-only values so dates do not shift through UTC serialization. Keep mutation validation deterministic and separate business eligibility from display wording or icons.
 
-## Adding something
-
-Create a TypeScript file by hand. You do not need `ng g` for an interface or a function.
-
-For example, a future customer feature might start with:
-
-```text
-src/customers/
-  customer.ts
-  customer-rules.ts
-```
-
-Keep the rules specific to what has actually been agreed for the product. Demo data is not a source of production requirements.
-
-Export anything other packages need through `src/index.ts`. Consumers then use the package name:
-
-```ts
-import type { Transaction } from '@workspace/domain';
-```
-
-## Keep outside this package
-
-Angular components, injectable services, HTTP requests, storage, routing, and UI state do not belong here. Neither do imports from `apps`, `core`, `ui`, or `data-access`.
-
-If a rule needs data from a server, let data-access fetch it and pass the relevant values into the rule. The rule itself should not make the request.
-
-For the rest of the flow, see [data-access](../data-access/README.md) and [core](../core/README.md).
+See [architecture](../../docs/ARCHITECTURE.md) for boundaries and [development](../../docs/development-guide.md) for examples. Request coordination and integration implementations belong in [data-access](../data-access/README.md).

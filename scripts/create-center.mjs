@@ -77,7 +77,8 @@ export async function createCenterPlan(root, options) {
     fs.existsSync(path.join(root, 'apps', id))
   )
     throw new Error(`Center/project ${id} already exists. Nothing was changed.`);
-  const apps = workspaceApps(root);
+  // Reserve configured ports even in a preview plan whose files are not written yet.
+  const apps = workspaceApps(root, { requireFiles: false });
   const usedPorts = new Set(apps.flatMap((app) => [app.devPort, app.previewPort]));
   let port = 5200;
   while (usedPorts.has(port) || usedPorts.has(port + 100)) port++;
@@ -86,12 +87,11 @@ export async function createCenterPlan(root, options) {
     if (Object.hasOwn(pkg.scripts, key)) throw new Error(`Script ${key} already exists.`);
   if (Object.hasOwn(turbo.tasks, `${id}#build`)) throw new Error('Turbo task already exists.');
 
-  // Reuse the maintained CLI build configuration, never another center's business data.
+  // Platform scaffolding is maintained independently of any application instance.
   const project = JSON.parse(
-    JSON.stringify(workspace.projects.ecsc)
-      .replaceAll('apps/ecsc', `apps/${id}`)
-      .replaceAll('dist/apps/ecsc', `dist/apps/${id}`)
-      .replaceAll('ecsc:build', `${id}:build`),
+    fs
+      .readFileSync(path.join(templates, 'project.json.template'), 'utf8')
+      .replaceAll('__CENTER_ID__', id),
   );
   const environmentFile = `apps/${id}/src/environments/environment.ts`;
   project.architect.build.configurations.production.fileReplacements = [
@@ -118,14 +118,13 @@ export async function createCenterPlan(root, options) {
     outputs: [`../../dist/apps/${id}/**`],
     dependsOn: ['^build'],
   };
-  const appPackage = readJson('apps/ecsc/package.json');
-  appPackage.name = id;
-  appPackage.scripts = {
-    dev: `ng serve ${id}`,
-    build: `ng build ${id}`,
-    typecheck: 'ngc -p tsconfig.app.json --noEmit',
-    preview: `node ../../scripts/serve.mjs ${id}`,
-  };
+  const appPackage = JSON.parse(
+    fs
+      .readFileSync(path.join(templates, 'package.json.template'), 'utf8')
+      .replaceAll('__CENTER_ID__', id)
+      .replaceAll('__ANGULAR_CORE__', pkg.dependencies['@angular/core'])
+      .replaceAll('__ANGULAR_PLATFORM_BROWSER__', pkg.dependencies['@angular/platform-browser']),
+  );
   const base = `apps/${id}`,
     assets = `/assets/brands/${id}`;
   const files = new Map();
@@ -225,7 +224,7 @@ export async function createCenterPlan(root, options) {
   );
   app(
     'README.md',
-    `# ${id}\n\nGenerated center: \`${id}\`.\n\n- Development: \`npm run dev:${id}\` — http://localhost:${port}\n- Build with dependencies: \`npm run build:${id}\`\n- Production preview after building: \`npm run preview:${id}\` — http://localhost:${port + 100}\n\nThe catalog, fees, decisions and demo data are illustrative only. Replace \`src/config/services.ts\` and \`reports.ts\` with approved definitions. The shared fourteen sections and both shells are inherited without product redesign.\n\nBrand inputs and derived tokens are in \`brand.json\`; the applied theme is \`src/brand.css\`. The requested colors are stored in brand-950/highlight-500; action and link colors may be darkened for contrast. Text ink, focus indicators and chart colors are derived for contrast. Shared status colors remain unchanged.\n\n${usesDefaultIdentity ? 'The default identity logo was copied unchanged and is also used as the favicon.' : options.logo ? 'The supplied logo was copied unchanged.' : 'The SVG is a temporary geometric marker. Replace it with the authentic center logo.'} Update \`src/config/center.ts\` and the favicon in \`src/index.html\` if asset filenames change.\n\nRegister optional sections, action forms, routes or replacement pages in \`src/config/module.ts\`. No global center union is required.\n`,
+    `# ${id}\n\nGenerated application with its own profile, catalog, assets, and environment settings. Its demo definitions are not requirements for other centers.\n\n- Development: \`npm run dev:${id}\` - http://localhost:${port}\n- Production build with dependencies: \`npm run build:${id}\`\n- Preview after build: \`npm run preview:${id}\` - http://localhost:${port + 100}\n\nEdit \`src/config\` for composition/catalog/reports, \`src/routes.ts\` and \`src/navigation.ts\` for pages and menu links, and \`src/environments\` for API addresses. Brand inputs are in \`brand.json\` and applied values in \`src/brand.css\`.\n\n${usesDefaultIdentity ? 'The default logo is also used as the favicon.' : options.logo ? 'The supplied logo was copied unchanged.' : 'Replace the temporary SVG marker with the actual logo.'} The login uses the shared stars pattern.\n\nSee [development](../../docs/development-guide.md), [center generation](../../docs/center-generator.md), and [API setup](../../docs/api-configuration.md).\n`,
   );
   const smoke = `tests/e2e/${id}.generated.spec.ts`;
   put(

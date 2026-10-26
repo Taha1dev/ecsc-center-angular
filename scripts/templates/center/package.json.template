@@ -1,0 +1,23 @@
+{
+  "name": "__CENTER_ID__",
+  "version": "1.0.0",
+  "private": true,
+  "center": {
+    "generated": true,
+    "deletionProtected": false
+  },
+  "scripts": {
+    "dev": "ng serve __CENTER_ID__",
+    "build": "ng build __CENTER_ID__",
+    "typecheck": "ngc -p tsconfig.app.json --noEmit",
+    "preview": "node ../../scripts/serve.mjs __CENTER_ID__"
+  },
+  "dependencies": {
+    "@workspace/core": "*",
+    "@workspace/ui": "*",
+    "@workspace/domain": "*",
+    "@workspace/data-access": "*",
+    "@angular/core": "__ANGULAR_CORE__",
+    "@angular/platform-browser": "__ANGULAR_PLATFORM_BROWSER__"
+  }
+}

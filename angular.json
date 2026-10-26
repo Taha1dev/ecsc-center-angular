@@ -701,67 +701,6 @@
         }
       }
     },
-    "my-app": {
-      "projectType": "application",
-      "schematics": {},
-      "root": "apps/my-app",
-      "sourceRoot": "apps/my-app/src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular/build:application",
-          "options": {
-            "browser": "apps/my-app/src/main.ts",
-            "tsConfig": "apps/my-app/tsconfig.app.json",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "apps/my-app/public"
-              }
-            ],
-            "styles": ["apps/my-app/src/styles.css"]
-          },
-          "configurations": {
-            "production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
-                }
-              ],
-              "outputHashing": "all"
-            },
-            "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "serve": {
-          "builder": "@angular/build:dev-server",
-          "configurations": {
-            "production": {
-              "buildTarget": "my-app:build:production"
-            },
-            "development": {
-              "buildTarget": "my-app:build:development"
-            }
-          },
-          "defaultConfiguration": "development"
-        },
-        "test": {
-          "builder": "@angular/build:unit-test"
-        }
-      }
-    },
     "gov-center": {
       "projectType": "application",
       "schematics": {

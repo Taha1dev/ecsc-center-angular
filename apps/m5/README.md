@@ -1,15 +1,19 @@
 # m5
 
-Generated center: `m5`.
+An independently configured example application. Its sample catalog and workflows do not define requirements for other centers.
 
-- Development: `npm run dev:m5` — http://localhost:5205
-- Build with dependencies: `npm run build:m5`
-- Production preview after building: `npm run preview:m5` — http://localhost:5305
+| Task                               | Command / URL                                |
+| ---------------------------------- | -------------------------------------------- |
+| Development                        | `npm run dev:m5` - http://localhost:5205     |
+| Production build with dependencies | `npm run build:m5`                           |
+| Preview after build                | `npm run preview:m5` - http://localhost:5305 |
 
-The catalog, fees, decisions and demo data are illustrative only. Replace `src/config/services.ts` and `reports.ts` with approved definitions. The shared fourteen sections and both shells are inherited without product redesign.
+## Application-owned configuration
 
-Brand inputs and derived tokens are in `brand.json`; the applied theme is `src/brand.css`. The requested colors are stored in brand-950/highlight-500; action and link colors may be darkened for contrast. Text ink, focus indicators and chart colors are derived for contrast. Shared status colors remain unchanged.
+- Profile and assets: `src/config/center.ts` and `public/brands/m5`. The configured login pattern is `circuit`.
+- Brand values: `src/brand.css` and `brand.json`.
+- Composition, catalog, and reports: `src/config`.
+- Extra/replacement page registrations: `src/routes.ts`; menu configuration: `src/navigation.ts`.
+- API providers: `src/app.config.ts`; test/production addresses: `src/environments`. The current test address is `/api`.
 
-The SVG is a temporary geometric marker. Replace it with the authentic center logo. Update `src/config/center.ts` and the favicon in `src/index.html` if asset filenames change.
-
-Register optional sections, action forms, routes or replacement pages in `src/config/module.ts`. No global center union is required.
+See [development](../../docs/development-guide.md), [API configuration](../../docs/api-configuration.md), and [navigation](../../docs/center-navigation.md) for shared instructions.

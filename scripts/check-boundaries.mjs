@@ -40,6 +40,9 @@ export function checkImport(file, specifier) {
     const resolved = path
       .relative(root, path.resolve(path.dirname(file), specifier))
       .replaceAll('\\', '/');
+    const targetApp = resolved.match(/^apps\/([^/]+)\//)?.[1];
+    if (app && targetApp && targetApp !== app)
+      throw new Error(`Application imports another application: ${relative} -> ${resolved}`);
     if (resolved.startsWith('libs/ui/') && (app || relative.startsWith('packages/')))
       throw new Error('Use the public @spartan-ng/helm/<component> alias');
     if (owner && resolved.startsWith('apps/')) throw new Error('Shared code imports application');
@@ -54,6 +57,41 @@ export function checkImport(file, specifier) {
     )
       throw new Error('Domain imports presentation definitions');
   }
+}
+// A deliberately bounded static check: direct literal comparisons/switches on
+// common center-ID access shapes. It is not a proof of arbitrary data-flow behavior.
+export function checkCenterBranches(file, source) {
+  const isCenterId = (node) =>
+    ts.isPropertyAccessExpression(node) &&
+    (node.name.text === 'centerId' ||
+      (node.name.text === 'id' &&
+        ((ts.isIdentifier(node.expression) && node.expression.text === 'center') ||
+          (ts.isPropertyAccessExpression(node.expression) &&
+            node.expression.name.text === 'profile'))));
+  const visit = (node) => {
+    if (
+      ts.isBinaryExpression(node) &&
+      [
+        ts.SyntaxKind.EqualsEqualsToken,
+        ts.SyntaxKind.EqualsEqualsEqualsToken,
+        ts.SyntaxKind.ExclamationEqualsToken,
+        ts.SyntaxKind.ExclamationEqualsEqualsToken,
+      ].includes(node.operatorToken.kind) &&
+      ((isCenterId(node.left) && ts.isStringLiteral(node.right)) ||
+        (isCenterId(node.right) && ts.isStringLiteral(node.left)))
+    )
+      throw new Error(`Literal center-ID branching in shared code: ${file}`);
+    if (
+      ts.isSwitchStatement(node) &&
+      isCenterId(node.expression) &&
+      node.caseBlock.clauses.some(
+        (clause) => ts.isCaseClause(clause) && ts.isStringLiteral(clause.expression),
+      )
+    )
+      throw new Error(`Literal center-ID switch in shared code: ${file}`);
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
 }
 export function checkComponentStructure(file, source) {
   const components = source.statements.filter(ts.isClassDeclaration).flatMap((node) =>
@@ -118,11 +156,7 @@ export function checkBoundaries() {
           ts.forEachChild(node, visit);
         }
         visit(source);
-        if (
-          f.includes(`${path.sep}packages${path.sep}`) &&
-          /center\.id\s*===\s*['"](?:ecsc|m3|jus)['"]/.test(text)
-        )
-          throw new Error(`Center branching in shared code: ${f}`);
+        if (f.startsWith(path.join(root, 'packages') + path.sep)) checkCenterBranches(f, source);
       }
     }
   }
