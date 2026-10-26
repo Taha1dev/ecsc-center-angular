@@ -57,6 +57,10 @@
     "@spartan-ng/helm#build": {
       "outputs": ["../../dist/helm/**"],
       "dependsOn": ["^build"]
+    },
+    "gov-center#build": {
+      "outputs": ["../../dist/apps/gov-center/**"],
+      "dependsOn": ["^build"]
     }
   }
 }

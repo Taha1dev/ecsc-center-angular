@@ -1,6 +1,6 @@
-# Spartan الرسمية في المشروع
+﻿# Spartan UI in this workspace
 
-CLI مثبت، وملف `components.json` في الجذر مضبوط على:
+The CLI is installed. The root `components.json` contains:
 
 ```json
 {
@@ -10,32 +10,40 @@ CLI مثبت، وملف `components.json` في الجذر مضبوط على:
 }
 ```
 
-Maia يحدد نمط مكونات Helm المولّدة. ألوان المركز وخط Alexandria تبقى من التوكنات والثيم الموجودين. الملفات المولّدة مشتركة لكل المراكز، وليست مرتبطة بتطبيق معيّن.
+Maia controls the generated Helm style. Center colors and Alexandria typography come from the existing theme tokens. Generated components are shared across applications rather than installed in one center.
 
-## إضافة مكوّن
+Inputs, textareas, selects, and outline buttons use `bg-card` for a light surface. In this workspace, `--input` is a border token and can be dark, so these controls do not use `bg-input/30` as their background. Primary and secondary buttons still use the center's brand colors.
 
-من جذر المشروع:
+## Add a component
+
+Enable the workspace CLI once in a new PowerShell terminal:
+
+```powershell
+.\dev.ps1
+```
+
+From the repository root:
 
 ```sh
 ng g @spartan-ng/cli:ui autocomplete
 ng g @spartan-ng/cli:ui accordion
 ```
 
-أو باستخدام CLI المحلي عبر السكربت الموجود:
+You can also use the local script without enabling the PowerShell shortcut:
 
 ```sh
-npm run ng -- g @spartan-ng/cli:ui autocomplete
+node scripts/ng.mjs g @spartan-ng/cli:ui autocomplete
 ```
 
-لا تحتاج تحديد مركز. الملفات تنزل في `libs/ui/autocomplete/src`، والاستيراد الرسمي هو `@spartan-ng/helm/autocomplete`. الاختيار التفاعلي لعدة عناصر متاح عبر `ng g @spartan-ng/cli:ui`.
+No center selector is needed. Autocomplete files go into `libs/ui/autocomplete/src`, and the public import is `@spartan-ng/helm/autocomplete`. Run `ng g @spartan-ng/cli:ui` to choose multiple components interactively.
 
-الإضافة حسب الحاجة فقط. عناصر `button` و`input` و`textarea` و`popover` و`select` تستخدمها مكونات المشروع الحالية، لذلك مصدرها المشترك موجود في `libs/ui`. نزّل أي عنصر إضافي عند حاجته؛ لا تستخدم `all` إلا إذا كنت تقصد تثبيت كل المكونات.
+Add components as needed. Existing UI code uses `button`, `input`, `textarea`, `popover`, and `select`, so their shared sources are already present. Do not choose `all` unless you intend to add every component.
 
-تشغيل الأمر لعنصر موجود يجعله يتخطاه. المولّد يعتبر الـalias دليلاً على التثبيت، لذلك لا تحذف مجلد مكوّن مع إبقاء alias يشير لملف مفقود.
+The generator skips an element it considers installed. Its alias is used as evidence of installation, so do not delete a component folder while leaving an alias pointing to the missing files.
 
-## الاستخدام داخل أي مركز
+## Use it in any center
 
-مثال Accordion في ملف المكوّن:
+Accordion example:
 
 ```ts
 import { Component } from '@angular/core';
@@ -49,40 +57,40 @@ import { HlmAccordionImports } from '@spartan-ng/helm/accordion';
 export class Example {}
 ```
 
-وفي `example.html`:
+In `example.html`:
 
 ```html
 <hlm-accordion>
   <hlm-accordion-item>
-    <hlm-accordion-trigger>تفاصيل إضافية</hlm-accordion-trigger>
-    <hlm-accordion-content>محتوى توضيحي.</hlm-accordion-content>
+    <hlm-accordion-trigger>More details</hlm-accordion-trigger>
+    <hlm-accordion-content>Example content.</hlm-accordion-content>
   </hlm-accordion-item>
 </hlm-accordion>
 ```
 
-Autocomplete يتبع نفس الفكرة:
+Autocomplete follows the same import pattern:
 
 ```ts
 import { HlmAutocompleteImports } from '@spartan-ng/helm/autocomplete';
 ```
 
-أضف `HlmAutocompleteImports` إلى `imports` في المكوّن، ثم استخدم عناصره حسب مثال Spartan الرسمي.
+Add it to the consuming component's `imports`, then use the elements shown in Spartan's examples.
 
-## التنظيم والتحقق
+## Source organization and checks
 
-- اترك ملفات `libs/ui` بهيكلها الرسمي، بما فيها المكونات ذات القوالب inline. قاعدة المجلد وملف HTML المنفصل تخص المكونات المملوكة داخل `packages`.
-- `packages/ui` تملك مكونات المنتج مثل `AppField` و`AppSelect` التي تركّب عناصر Helm المشتركة. لا يوجد تنفيذ Helm مكرر داخلها. تصديرات الزر وحقول الإدخال القديمة من `@workspace/ui` تشير لنفس عناصر `libs/ui` للتوافق.
-- `libs/ui` حزمة workspace خاصة باسم `@spartan-ng/helm`. تجهيز entrypoints وبناؤها يتم قبل `packages/ui` تلقائياً عند بناء مركز عبر Turbo؛ سكربت `prepare-helm-package.mjs` يجهّز metadata لأي مكوّن تضيفه لاحقاً دون نقل ملفات CLI.
-- الاستيرادات داخل التطبيقات تكون من alias العام فقط. إعداد VS Code في `.vscode/settings.json` يفضّل الاستيرادات غير النسبية بدلاً من سلاسل `../../`.
-- ملف `packages/ui/src/styles/globals.css` يربط preset ومصادر Tailwind لجميع المراكز، بما فيها المراكز الجديدة.
-- تعديل `libs/ui` يؤثر في cache البناء عبر `globalDependencies` في Turbo.
+- Keep generated `libs/ui` files in Spartan's structure, including inline templates. The matching-folder and external-HTML convention applies to owned components in `packages`.
+- `packages/ui` contains wrappers such as `AppField` and `AppSelect` that compose shared Helm primitives. It does not maintain a duplicate Helm implementation. Compatibility exports from `@workspace/ui` refer to the same global components.
+- `libs/ui` is a private npm workspace named `@spartan-ng/helm`. Turbo builds its entrypoints before `packages/ui`. `prepare-helm-package.mjs` prepares metadata for later CLI additions without moving generated source files.
+- Application imports use `@spartan-ng/helm/<component>`. The VS Code settings prefer public aliases over long relative paths.
+- `packages/ui/src/styles/globals.css` imports the preset and scans the shared Tailwind sources for current and future centers.
+- Changes under `libs/ui` invalidate the relevant Turbo cache through `globalDependencies`.
 
-فحص Spartan وحدها:
+Check Spartan sources on their own:
 
 ```sh
 npm run typecheck:spartan
 ```
 
-المراجع: [Spartan CLI](https://spartan.ng/documentation/cli)، [components.json](https://spartan.ng/documentation/components-json)، [Autocomplete](https://spartan.ng/components/autocomplete).
+When no primitives have been installed, the check prints a message and skips rather than failing because there are no TypeScript files.
 
-إذا لم تنزّل أي مكوّن بعد، أمر الفحص يطبع رسالة ويتخطى فحص Helm بدل أن يفشل بسبب عدم وجود ملفات TypeScript.
+References: [Spartan CLI](https://spartan.ng/documentation/cli), [components.json](https://spartan.ng/documentation/components-json), and [Autocomplete](https://spartan.ng/components/autocomplete).

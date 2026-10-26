@@ -41,7 +41,10 @@
     "preview:layal-center": "node scripts/serve.mjs layal-center",
     "dev:m5": "npm run dev --workspace=m5",
     "build:m5": "turbo build --filter=m5",
-    "preview:m5": "node scripts/serve.mjs m5"
+    "preview:m5": "node scripts/serve.mjs m5",
+    "dev:gov-center": "npm run dev --workspace=gov-center",
+    "build:gov-center": "turbo build --filter=gov-center",
+    "preview:gov-center": "node scripts/serve.mjs gov-center"
   },
   "dependencies": {
     "@angular/cdk": "22.2.3",

@@ -1,31 +1,31 @@
-# قوائم التنقل الخاصة بكل مركز
+﻿# Center navigation
 
-المسارات تحدد الصفحات، و`navigation` تحدد ترتيب الروابط والمجموعات الظاهرة للمستخدم. تجميع روابط بالقائمة لا يحتاج route للمجموعة، ولا يغيّر عناوين الصفحات.
+Routes connect URLs to pages. Navigation controls the links and groups shown in the menu. Grouping links does not require a route for the group or change the pages' URLs.
 
-أنشئ `apps/<center>/src/navigation.ts`:
+Create or edit `apps/<center>/src/navigation.ts`:
 
 ```ts
 import type { CenterNavItem } from '@workspace/core';
 
 export const navigation: CenterNavItem[] = [
-  { kind: 'link', id: 'home', label: 'الرئيسية', path: '' },
+  { kind: 'link', id: 'home', label: 'Home', path: '' },
   { kind: 'link', id: 'aurora', label: 'Aurora', path: 'aurora' },
   {
     kind: 'group',
     id: 'transactions',
-    label: 'المعاملات',
+    label: 'Transactions',
     children: [
       {
         kind: 'link',
         id: 'personal-inbox',
-        label: 'معاملاتي',
+        label: 'My transactions',
         path: 'inbox/personal',
         badge: 'personal',
       },
       {
         kind: 'link',
         id: 'group-inbox',
-        label: 'معاملات المجموعة',
+        label: 'Group transactions',
         path: 'inbox/group',
         badge: 'group',
       },
@@ -34,50 +34,58 @@ export const navigation: CenterNavItem[] = [
 ];
 ```
 
-داخل `config/module.ts` استورد `navigation` ومرّره إلى كائن `defineCenter` الحالي، بجانب `routes` و`pages`:
+In `config/module.ts`, import `navigation` and pass it to the existing `defineCenter` object alongside `routes` and `pages`:
 
 ```ts
 import { navigation } from '../navigation';
 ```
 
-`navigation: undefined` يستخدم القائمة القديمة، بما فيها روابط الـroutes التي لها `label`. تعريف مصفوفة يملك القائمة كاملة؛ لا تضاف الروابط القديمة تلقائياً فوقها. `navigation: []` يخفي كل الروابط. مولّد المراكز يجهز ملف `navigation.ts` بقيمة `undefined` للمحافظة على البداية الافتراضية.
+The settings have different meanings:
 
-## الأيقونات الافتراضية
+- `navigation: undefined`: use the default menu, including extension routes that have a label.
+- A navigation array: define the entire menu. Default links are not added automatically.
+- `navigation: []`: show no links.
 
-| العنصر بدون `icon`       | الأيقونة                |
-| ------------------------ | ----------------------- |
-| رابط صفحة بالمستوى الأول | `phosphorFileText`      |
-| مجموعة بأي عمق           | `phosphorTreeStructure` |
-| رابط ابن داخل مجموعة     | `phosphorArrowLeft`     |
+The center generator creates `navigation.ts` with an `undefined` value to preserve the default starting menu.
 
-يمكن تجاوز الأيقونة بإضافة `icon` لعنصر محدد. اسم الأيقونة يجب أن يكون مسجلاً في `AppIcon` داخل مكتبة UI. تعريف `icon` في navigation مستقل عن تعريف الأيقونة القديم في routes.
+## Default icons
 
-## العرض والسلوك
+| Entry without an icon     | Default icon            |
+| ------------------------- | ----------------------- |
+| Top-level page link       | `phosphorFileText`      |
+| Group at any depth        | `phosphorTreeStructure` |
+| Child link inside a group | `phosphorArrowLeft`     |
 
-- Sidebar الموسع والموبايل: مجموعات قابلة للفتح والطي مع روابط متداخلة.
-- Navbar: قائمة CDK منسدلة، مع قوائم فرعية للمجموعات المتداخلة.
-- Sidebar المطوي أو الشريط المصغر بصفحة المعاملة: قوائم منبثقة بجانب الأيقونة.
-- تغيير التخطيط لا يغير الصفحة أو تعريف القائمة.
-- يميّز الرابط الحالي ويفتح مجموعاته في القائمة الجانبية. `exact: true` يمنع اعتبار المسارات الأبناء تطابقاً؛ الرئيسية تطابق تام افتراضياً.
-- القوائم المنسدلة تدعم لوحة المفاتيح وEscape واستعادة التركيز وRTL عبر CDK وHelm. في RTL يُفتح submenu بالسهم الأيسر.
-- اختيار رابط داخل لوحة الموبايل يغلقها.
-- `badge: 'personal'` يعرض عدد معاملات المستخدم، و`badge: 'group'` يعرض عدد معاملات المركز الحالي، دون فحص اسم المركز.
+Set `icon` on an entry to override its default. The name must be registered in the UI package's `AppIcon`. Navigation icons are independent of icons on route definitions.
 
-المعرّفات `id` فريدة في القائمة كلها، بأحرف لاتينية صغيرة وأرقام وشرطات. المجموعات لا تكون فارغة. `path` نسبي إلى `/centers/<id>`، دون `/` في البداية أو `..` أو URL خارجي. يرفض التكوين المعرّفات المتعارضة والمسارات التي تخرج عن نطاق المركز.
+## Display and behavior
 
-الروابط يجب أن تكون مسجلة في routing. إخفاء رابط من القائمة لا يمنع الوصول إليه، ولا يحل محل التحقق من صلاحية العمليات عند بناء النظام الفعلي.
+- Expanded sidebar and mobile navigation: expandable groups with nested links.
+- Navbar: CDK dropdown menus, including submenus for nested groups.
+- Collapsed sidebar and compact transaction rail: popup menus next to the icons.
+- Changing shells preserves the current page and uses the same navigation definition.
+- The active link is highlighted and its sidebar groups open automatically. `exact: true` excludes child paths from matching; the home link matches exactly by default.
+- CDK and Helm handle keyboard navigation, Escape, focus restoration, and RTL. In RTL, the left arrow opens a submenu.
+- Choosing a link closes the mobile navigation sheet.
+- `badge: 'personal'` shows the user's transaction count. `badge: 'group'` shows the current center's group count, without checking the center's name.
 
-مثال حي مع مجموعة متداخلة موجود في `apps/layal-center/src/navigation.ts`. المراكز التي لم تمرر `navigation` تحافظ على القائمة الافتراضية.
+IDs must be unique across the full tree and use lowercase Latin letters, digits, and hyphens. Groups cannot be empty. Paths are relative to `/centers/<id>` and cannot start with `/`, contain parent-directory traversal, or point to an external URL. Configuration validation rejects duplicate IDs and paths outside the center.
 
-## صفحات ليال التجريبية
+Links must point to registered routes. Hiding a link does not block access to a page or replace authorization in a real system.
 
-كل صفحة لها مجلد مستقل داخل `apps/layal-center/src/pages`، ومسار مسجل في `routes.ts`. طريقة ظهور الرابط وأيقونته معرفتان في `navigation.ts`:
+See `apps/layal-center/src/navigation.ts` for a working nested example. Centers without custom navigation keep the default menu.
 
-| الصفحة          | المسار النسبي   | مكان الرابط     | الأيقونة                          |
-| --------------- | --------------- | --------------- | --------------------------------- |
-| عن المركز       | `about`         | مباشر (flat)    | الافتراضية للصفحة                 |
-| فريق العمل      | `team`          | مباشر (flat)    | مخصصة: `phosphorUsers`            |
-| الأسئلة الشائعة | `guide/faq`     | ضمن دليل المركز | الافتراضية للابن                  |
-| التواصل         | `guide/contact` | ضمن دليل المركز | مخصصة: `phosphorUserCircleDashed` |
+## Layal demo pages
 
-مجموعة «دليل المركز» لا تعرف `icon`، لذلك تأخذ أيقونة المجموعة الافتراضية. ليس لها صفحة أو route خاص بها؛ الضغط عليها يفتح روابطها فقط. هذه الصفحات أمثلة بمحتوى تجريبي، ويمكن تعديل كل واحدة من ملف HTML داخل مجلدها.
+Each page has a folder under `apps/layal-center/src/pages` and a route in `routes.ts`. Its menu placement and icon come from `navigation.ts`:
+
+| Page    | Relative path   | Menu placement                | Icon                               |
+| ------- | --------------- | ----------------------------- | ---------------------------------- |
+| About   | `about`         | Top-level link                | Default page icon                  |
+| Team    | `team`          | Top-level link                | Custom: `phosphorUsers`            |
+| FAQ     | `guide/faq`     | Inside the center guide group | Default child icon                 |
+| Contact | `guide/contact` | Inside the center guide group | Custom: `phosphorUserCircleDashed` |
+
+The center guide group has no explicit icon, so it receives the default group icon. It has no page or route of its own; clicking it opens the child links. The pages contain sample content that can be edited in their HTML files.
+
+The labels in this guide are English explanations. They do not change the application's localized UI labels.

@@ -761,6 +761,110 @@
           "builder": "@angular/build:unit-test"
         }
       }
+    },
+    "gov-center": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:class": {
+          "skipTests": true
+        },
+        "@schematics/angular:component": {
+          "skipTests": true
+        },
+        "@schematics/angular:directive": {
+          "skipTests": true
+        },
+        "@schematics/angular:guard": {
+          "skipTests": true
+        },
+        "@schematics/angular:interceptor": {
+          "skipTests": true
+        },
+        "@schematics/angular:pipe": {
+          "skipTests": true
+        },
+        "@schematics/angular:resolver": {
+          "skipTests": true
+        },
+        "@schematics/angular:service": {
+          "skipTests": true
+        }
+      },
+      "root": "apps/gov-center",
+      "sourceRoot": "apps/gov-center/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "apps/gov-center/src/main.ts",
+            "tsConfig": "apps/gov-center/tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "apps/gov-center/public",
+                "output": "/assets"
+              }
+            ],
+            "styles": ["apps/gov-center/src/styles.css"],
+            "outputPath": "dist/apps/gov-center",
+            "index": "apps/gov-center/src/index.html",
+            "allowedCommonJsDependencies": ["exceljs"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1MB",
+                  "maximumError": "2MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "apps/gov-center/src/environments/environment.ts",
+                  "with": "apps/gov-center/src/environments/environment.production.ts"
+                }
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            },
+            "test": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "gov-center:build:production"
+            },
+            "development": {
+              "buildTarget": "gov-center:build:development"
+            },
+            "test": {
+              "buildTarget": "gov-center:build:test"
+            }
+          },
+          "defaultConfiguration": "test",
+          "options": {
+            "port": 5206
+          }
+        }
+      }
     }
   }
 }

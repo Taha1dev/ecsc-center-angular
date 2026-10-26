@@ -9,6 +9,7 @@ import { centerTheme, hexColor, themeCss } from './center-theme.mjs';
 import { workspaceApps, workspaceRoot } from './workspace-apps.mjs';
 
 const templates = path.join(path.dirname(fileURLToPath(import.meta.url)), 'templates/center');
+const defaultIdentityDirectory = path.join(workspaceRoot, 'assets/branding/default-center');
 const json = (value) => JSON.stringify(value, null, 2) + '\n';
 const html = (value) =>
   value.replace(
@@ -42,7 +43,27 @@ export function centerName(value) {
   return name;
 }
 
+export function hasVisualIdentity(value) {
+  const answer = value?.trim().toLowerCase();
+  if (!['y', 'n'].includes(answer)) throw new Error('Enter y or n.');
+  return answer === 'y';
+}
+
 export async function createCenterPlan(root, options) {
+  const usesDefaultIdentity = options.visualIdentity === false;
+  if (usesDefaultIdentity) {
+    if (['primary', 'secondary', 'logo'].some((key) => options[key] !== undefined))
+      throw new Error('Default identity cannot be combined with --primary, --secondary or --logo.');
+    const defaults = JSON.parse(
+      fs.readFileSync(path.join(defaultIdentityDirectory, 'brand.json'), 'utf8'),
+    );
+    options = {
+      ...options,
+      primary: defaults.primary,
+      secondary: defaults.secondary,
+      logo: path.join(defaultIdentityDirectory, defaults.logo),
+    };
+  }
   const id = centerId(options.id),
     name = centerName(options.name);
   const tokens = centerTheme(options.primary, options.secondary);
@@ -129,8 +150,8 @@ export async function createCenterPlan(root, options) {
     );
   }
   app(
-    `public/brands/${id}/pattern.svg`,
-    `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640"><defs><pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse"><path d="M0 40h80M40 0v80" fill="none" stroke="${tokens['brand-200']}" stroke-width="1"/><circle cx="40" cy="40" r="5" fill="${tokens.secondary}"/></pattern></defs><path fill="url(#grid)" d="M0 0h640v640H0z"/></svg>\n`,
+    `public/brands/${id}/stars-pattern.png`,
+    fs.readFileSync(path.join(defaultIdentityDirectory, 'stars-pattern.png')),
   );
   app('package.json', json(appPackage));
   app(
@@ -174,8 +195,8 @@ export async function createCenterPlan(root, options) {
       logo: `${assets}/${logo}`,
       source: `${assets}/${logo}`,
       favicon: `${assets}/${logo}`,
-      loginPattern: `${assets}/pattern.svg`,
-      patternKind: 'circuit',
+      loginPattern: `${assets}/stars-pattern.png`,
+      patternKind: 'stars',
     }).trim()} satisfies CenterProfile;\n`,
   );
   for (const file of ['module.ts', 'services.ts'])
@@ -204,7 +225,7 @@ export async function createCenterPlan(root, options) {
   );
   app(
     'README.md',
-    `# ${name}\n\nGenerated center: \`${id}\`.\n\n- Development: \`npm run dev:${id}\` — http://localhost:${port}\n- Build with dependencies: \`npm run build:${id}\`\n- Production preview after building: \`npm run preview:${id}\` — http://localhost:${port + 100}\n\nThe catalog, fees, decisions and demo data are illustrative only. Replace \`src/config/services.ts\` and \`reports.ts\` with approved definitions. The shared fourteen sections and both shells are inherited without product redesign.\n\nBrand inputs and derived tokens are in \`brand.json\`; the applied theme is \`src/brand.css\`. The requested colors are stored in brand-950/highlight-500; action and link colors may be darkened for contrast. Text ink, focus indicators and chart colors are derived for contrast. Shared status colors remain unchanged.\n\n${options.logo ? 'The supplied logo was copied unchanged.' : 'The SVG is a temporary geometric marker. Replace it with the authentic center logo.'} Update \`src/config/center.ts\` and the favicon in \`src/index.html\` if asset filenames change.\n\nRegister optional sections, action forms, routes or replacement pages in \`src/config/module.ts\`. No global center union is required.\n`,
+    `# ${id}\n\nGenerated center: \`${id}\`.\n\n- Development: \`npm run dev:${id}\` — http://localhost:${port}\n- Build with dependencies: \`npm run build:${id}\`\n- Production preview after building: \`npm run preview:${id}\` — http://localhost:${port + 100}\n\nThe catalog, fees, decisions and demo data are illustrative only. Replace \`src/config/services.ts\` and \`reports.ts\` with approved definitions. The shared fourteen sections and both shells are inherited without product redesign.\n\nBrand inputs and derived tokens are in \`brand.json\`; the applied theme is \`src/brand.css\`. The requested colors are stored in brand-950/highlight-500; action and link colors may be darkened for contrast. Text ink, focus indicators and chart colors are derived for contrast. Shared status colors remain unchanged.\n\n${usesDefaultIdentity ? 'The default identity logo was copied unchanged and is also used as the favicon.' : options.logo ? 'The supplied logo was copied unchanged.' : 'The SVG is a temporary geometric marker. Replace it with the authentic center logo.'} Update \`src/config/center.ts\` and the favicon in \`src/index.html\` if asset filenames change.\n\nRegister optional sections, action forms, routes or replacement pages in \`src/config/module.ts\`. No global center union is required.\n`,
   );
   const smoke = `tests/e2e/${id}.generated.spec.ts`;
   put(
@@ -246,7 +267,7 @@ for (const shell of ['sidebar', 'navbar']) {
     if (typeof content === 'string' && !file.endsWith('.svg'))
       files.set(file, await format(content, { ...prettier, filepath: path.join(root, file) }));
   }
-  return { id, name, port, files };
+  return { id, name, port, files, usesDefaultIdentity };
 }
 
 export function applyCenterPlan(root, plan) {
@@ -287,6 +308,7 @@ async function main() {
       primary: { type: 'string' },
       secondary: { type: 'string' },
       logo: { type: 'string' },
+      'visual-identity': { type: 'string' },
       'dry-run': { type: 'boolean' },
       'skip-install': { type: 'boolean' },
       help: { type: 'boolean', short: 'h' },
@@ -295,7 +317,8 @@ async function main() {
   if (values.help) {
     console.log(
       'npm run center:new -- <id-or-name> [--name "Center name"]\n' +
-        'Options: --id slug --primary "#397b73" --secondary "#baa97d" --logo path\n' +
+        'Options: --id slug --visual-identity y|n --primary "#397b73" --secondary "#baa97d" --logo path\n' +
+        '         n uses assets/branding/default-center; y uses your colors and optional logo.\n' +
         '         --dry-run (no writes/install) --skip-install (run npm install yourself)',
     );
     return;
@@ -321,16 +344,26 @@ async function main() {
     const input = positionals[0];
     const suppliedId = values.id ?? (input && /^[a-z][a-z0-9-]*$/.test(input) ? input : undefined);
     if (suppliedId) centerId(suppliedId);
-    const primary = await ask(values.primary, 'Primary color (HEX, e.g. #397b73): ', hexColor);
-    const secondary = await ask(
-      values.secondary,
-      'Secondary color (HEX, e.g. #baa97d): ',
-      hexColor,
+    // Preserve existing non-interactive calls that already supply custom branding flags.
+    const inferredIdentity =
+      !rl && [values.primary, values.secondary, values.logo].some((value) => value !== undefined)
+        ? 'y'
+        : undefined;
+    const visualIdentity = await ask(
+      values['visual-identity'] ?? inferredIdentity,
+      'Does this center have a defined visual identity? (y/n): ',
+      hasVisualIdentity,
     );
+    let primary = values.primary,
+      secondary = values.secondary;
+    if (visualIdentity) {
+      primary = await ask(primary, 'Primary color (HEX, e.g. #397b73): ', hexColor);
+      secondary = await ask(secondary, 'Secondary color (HEX, e.g. #baa97d): ', hexColor);
+    }
     const id = await ask(suppliedId, 'Center ID (e.g. new-center): ', centerId);
     const display = values.name ?? (input !== suppliedId ? input : undefined);
     const name = await ask(display, 'Center name: ', centerName);
-    options = { id, name, primary, secondary, logo: values.logo };
+    options = { id, name, visualIdentity, primary, secondary, logo: values.logo };
   } finally {
     rl?.close();
   }
@@ -364,9 +397,11 @@ async function main() {
   console.log(
     `\nCreated ${plan.id}. ${values['skip-install'] ? 'Run npm install --ignore-scripts, then ' : ''}npm run dev:${plan.id}\n` +
       `http://localhost:${plan.port}\nEdit apps/${plan.id}/src/config/services.ts for approved services.\n` +
-      (values.logo
-        ? 'Your logo was copied unchanged.'
-        : 'Replace the temporary marker with the authentic logo.'),
+      (plan.usesDefaultIdentity
+        ? 'The default identity logo is used for both the center logo and favicon.'
+        : values.logo
+          ? 'Your logo was copied unchanged.'
+          : 'Replace the temporary marker with the authentic logo.'),
   );
 }
 

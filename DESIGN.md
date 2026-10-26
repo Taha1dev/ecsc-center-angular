@@ -1,16 +1,18 @@
 # Service Center Workspace — ECSC / M3 / JUS design system
 
+Documentation labels below are English translations of the localized UI text. They do not change the application language.
+
 ## 1. Product identity and visual thesis
 
-This is the employee application of the receiving service centers, not the upstream Hader/حاضر platform. Hader forwards transactions; a source label may mention it. The app title, login, navigation, logos, dashboard and reports carry the selected center's identity.
+This is the employee application of the receiving service centers, not the upstream Hader platform. Hader forwards transactions; a source label may mention it. The app title, login, navigation, logos, dashboard and reports carry the selected center's identity.
 
 Three independently built Angular CLI apps, one shared screen/component system, **three fully implemented center modules**:
 
-| ID     | Center                | Brand anchors                        | UI calibration                         | Asset                          |
-| ------ | --------------------- | ------------------------------------ | -------------------------------------- | ------------------------------ |
-| `ecsc` | مركز البوابة          | Blue `#2a3887`, orange `#f88f1f`     | Primary `#33418c`, secondary `#e78927` | `ecsc.png`                     |
-| `m3`   | مركز المصالح العقارية | Green `#41827a`, gold `#baa97d`      | Primary `#397b73`, secondary `#baa97d` | Extracted emblem from `m3.jpg` |
-| `jus`  | مركز العدل            | Deep green `#002623`, gold `#b9a77a` | Primary `#002623`, secondary `#b9a77a` | Supplied `jus.png`             |
+| ID     | Center                   | Brand anchors                        | UI calibration                         | Asset                          |
+| ------ | ------------------------ | ------------------------------------ | -------------------------------------- | ------------------------------ |
+| `ecsc` | Gateway Center           | Blue `#2a3887`, orange `#f88f1f`     | Primary `#33418c`, secondary `#e78927` | `ecsc.png`                     |
+| `m3`   | Property Services Center | Green `#41827a`, gold `#baa97d`      | Primary `#397b73`, secondary `#baa97d` | Extracted emblem from `m3.jpg` |
+| `jus`  | Justice Center           | Deep green `#002623`, gold `#b9a77a` | Primary `#002623`, secondary `#b9a77a` | Supplied `jus.png`             |
 
 Both should feel precise, confident, contemporary and comfortably readable. Color, composition, real data hierarchy and varied charts provide visual interest. No marketing landing page, default template, faded palette or excessive decoration. ECSC is energetic blue/orange; M3 is composed green/gold with equally clear contrast. They share layout, type, spacing, controls and interactions rather than becoming two unrelated redesigns.
 
@@ -36,15 +38,15 @@ Status meanings below are **fixed across both centers**. Center green must not b
 
 ### Status semantics — one mapping everywhere
 
-| State / meaning                             | Semantic set | Example Arabic labels                              |
-| ------------------------------------------- | ------------ | -------------------------------------------------- |
-| Draft / unassigned / neutral metadata       | `neutral`    | مسودة، غير مسندة، عادية                            |
-| Received / claimed / processing             | `info`       | واردة، مستلمة، قيد المعالجة                        |
-| Waiting for payment / completion / approval | `warning`    | بانتظار الدفع، بانتظار الاستكمال، بانتظار الموافقة |
-| Successful completion / paid / accepted     | `success`    | منجزة، مدفوعة، مقبولة                              |
-| Rejected / cancelled / failed / overdue     | `danger`     | مرفوضة، ملغاة، فشل، متأخرة                         |
+| State / meaning                             | Semantic set | Label meanings (English)                                 |
+| ------------------------------------------- | ------------ | -------------------------------------------------------- |
+| Draft / unassigned / neutral metadata       | `neutral`    | Draft, Unassigned, Normal                                |
+| Received / claimed / processing             | `info`       | Received, Claimed, In progress                           |
+| Waiting for payment / completion / approval | `warning`    | Awaiting payment, Awaiting completion, Awaiting approval |
+| Successful completion / paid / accepted     | `success`    | Completed, Paid, Accepted                                |
+| Rejected / cancelled / failed / overdue     | `danger`     | Rejected, Cancelled, Failed, Overdue                     |
 
-`متأخرة` is an independent deadline attribute, not a lifecycle state. A request can be `قيد المعالجة` and `متأخرة`; render two distinct labels. Urgency is independent too: an `عاجلة` priority label uses warning, not a full red row. Fee payment state and transaction lifecycle must not be conflated.
+`Overdue` is an independent deadline attribute, not a lifecycle state. A request can be `In progress` and `Overdue`; render two distinct labels. Urgency is independent too: an `Urgent` priority label uses warning, not a full red row. Fee payment state and transaction lifecycle must not be conflated.
 
 Implement `StatusBadge` from a central map: background `*-soft`, text `*-foreground`, border `*-border`, optional meaningful icon. No colored cells that obscure text. Alerts, activity events and status charts reuse this map. Categorical charts use the fixed five chart tokens and visible legends; they do not define business state colors.
 
@@ -90,7 +92,7 @@ Build reusable product wrappers:
 - `FilterPanel`: dynamic field layout, clear apply/reset actions, optional advanced controls, applied-filter chips.
 - `DataTable`: header, column configuration, row selection, sort, pagination, density, action column.
 - `StatusBadge` / `PriorityBadge`: centralized text, icon and semantic style.
-- `ActionMenu` / `ActionToolbar`: typed action descriptors; one primary action, up to two frequent secondary actions, remaining actions in a menu. Optional `group: { id, label, order? }` and `intent` preserve older flat callers. Group labels are compact and muted, with icons beside items and exactly one separator between populated groups. Product groups are العرض والتفاصيل، المعالجة، إجراءات إضافية. Ordinary actions stay neutral, navigation uses primary, consequential actions use warning, destructive actions use danger. Disabled reasons and existing confirmation dialogs remain intact. Spartan Brain and Angular CDK handle RTL collision positioning, arrow-key traversal, disabled-item skipping and focus restoration.
+- `ActionMenu` / `ActionToolbar`: typed action descriptors; one primary action, up to two frequent secondary actions, remaining actions in a menu. Optional `group: { id, label, order? }` and `intent` preserve older flat callers. Group labels are compact and muted, with icons beside items and exactly one separator between populated groups. Product groups are View and details, Processing, Additional actions. Ordinary actions stay neutral, navigation uses primary, consequential actions use warning, destructive actions use danger. Disabled reasons and existing confirmation dialogs remain intact. Spartan Brain and Angular CDK handle RTL collision positioning, arrow-key traversal, disabled-item skipping and focus restoration.
 - `FieldGroup`, `KeyValueList`, `EntityCard`, `DocumentCard`, `PaymentSummary`, `ActivityTimeline`.
 - `MetricCard`, `ChartPanel`, `ChartLegend`, consistent tooltip treatment.
 - `EmptyState`, `ErrorState`, `LoadingState`, form feedback and contextual notices.
@@ -104,9 +106,9 @@ Two application layout variants must be available across all authenticated route
 1. **SidebarShell** (default): right-side branded deep blue/green navigation + light topbar. Expanded/collapsed sidebar, clear active page, counts, compact center selector, user account, notifications and breadcrumbs.
 2. **NavbarShell**: horizontal center-branded navigation along the top, light secondary context/action bar, no persistent global sidebar. Include accessible dropdown groupings when necessary.
 
-Two centers × two navigational layouts are required. Shell choice is independent of center choice, and neither is a dark/light toggle. Keep the same route and content, filters, actions and typography in both. Use a small labelled view selector (`طريقة العرض` → `شريط جانبي` / `شريط علوي`) in the account menu or header; persist only this device preference. No duplicated pages. A demo center selector exposes both identities, changing center-specific metadata/data together.
+Two centers × two navigational layouts are required. Shell choice is independent of center choice, and neither is a dark/light toggle. Keep the same route and content, filters, actions and typography in both. Use a small labelled view selector (`Layout` → `Sidebar` / `Navbar`) in the account menu or header; persist only this device preference. No duplicated pages. A demo center selector exposes both identities, changing center-specific metadata/data together.
 
-Global destinations: الرئيسية، بريد المستخدم، بريد المجموعة، التقارير. A currently opened transaction is shown through breadcrumbs and an appropriate current context; avoid requiring users to choose a generic ID-less إدارة المعاملة route. A recent demo transaction link can be exposed in the demo entry.
+Global destinations: Home, Personal inbox, Group inbox, Reports. A currently opened transaction is shown through breadcrumbs and an appropriate current context; avoid requiring users to choose a generic ID-less Transaction management route. A recent demo transaction link can be exposed in the demo entry.
 
 At small widths both variants collapse to a real mobile navigation sheet. Login uses a separate AuthLayout without application navigation. Branding uses the selected center name and its supplied authentic symbol. No Hader wordmark or fabricated government emblem.
 
@@ -114,7 +116,7 @@ At small widths both variants collapse to a real mobile navigation sheet. Login 
 
 A confident, credible employee login, with generous focus on the form, an understated center-branded deep blue/green region and a restrained orange (ECSC) or gold (M3) accent. The validated login route determines the center; the login form has no center selector. The same form/layout is reused. Desktop: split composition with about 42% brand region and 58% form region; mobile: compact brand header and full-width form. No stock photo or large hero.
 
-Arabic username/email and password labels, password visibility, remember-device and help remain. One primary `تسجيل الدخول` button submits the local prototype even with blank fields, by click or Enter. No separate demo bypass, credential persistence or authentication request. The identity panel contains only the authentic logo, center title and a decorative static pattern at 12% opacity. ECSC uses original orthogonal circuit traces inspired by [WebberUI circuit lines](https://webberui.com/en/docs/circuit-lines-background); M3 repeats the supplied transparent star strip without changing its geometry.
+Arabic username/email and password labels, password visibility, remember-device and help remain. One primary `Sign in` button submits the local prototype even with blank fields, by click or Enter. No separate demo bypass, credential persistence or authentication request. The identity panel contains only the authentic logo, center title and a decorative static pattern at 12% opacity. ECSC uses original orthogonal circuit traces inspired by [WebberUI circuit lines](https://webberui.com/en/docs/circuit-lines-background); M3 repeats the supplied transparent star strip without changing its geometry.
 
 ## 8. Homepage dashboard
 
@@ -148,9 +150,9 @@ Search filters are a substantial, first-class part of the page: ID/person search
 
 Table behavior: sorting, optional columns, pagination, row selection, comfortable/compact density and overflow-safe cells. Default columns: checkbox, transaction ID/type, applicant, service group, status, current step, received date, deadline/priority, employee where relevant, action menu. Center identity may be an optional metadata column, not a redundant default column. Choose a readable essential subset on narrower screens and retain the full desktop table inside horizontal scroll.
 
-All rows are scoped to the selected center. ECSC types may include agency inquiries, vehicle services and entry permits; M3 includes cadastral statements, property-record extracts and ownership-transfer transactions. Each row resolves dynamic actions from its fixture, e.g. فتح، استلام، متابعة، تحويل، طلب استكمال، عرض سجل النشاط. One row may have two actions and another seven. Show a frequent action directly only when useful; remaining actions in a menu. Opening the transaction ID navigates reliably. Header bulk actions reflect selected IDs and eligibility; explain skipped records and do not silently mutate them.
+All rows are scoped to the selected center. ECSC types may include agency inquiries, vehicle services and entry permits; M3 includes cadastral statements, property-record extracts and ownership-transfer transactions. Each row resolves dynamic actions from its fixture, e.g. Open, Claim, Follow up, Transfer, Request completion, View activity log. One row may have two actions and another seven. Show a frequent action directly only when useful; remaining actions in a menu. Opening the transaction ID navigates reliably. Header bulk actions reflect selected IDs and eligibility; explain skipped records and do not silently mutate them.
 
-Provide saved-view chips such as الكل، غير المستلمة، قيد المعالجة، المتأخرة. Counts derive from fixtures and active scope. Searching does not discard input focus. Refresh has a brief loading state and preserves applied filters and selection of existing rows.
+Provide saved-view chips such as All, Unclaimed, In progress, Overdue. Counts derive from fixtures and active scope. Searching does not discard input focus. Refresh has a brief loading state and preserves applied filters and selection of existing rows.
 
 ## 10. Transaction workspace — at least 14 sections
 
@@ -158,24 +160,24 @@ Route identity and fixture keys include the center ID; opening a transaction fro
 
 Do not squeeze 14 labels into a horizontal tab strip. Use a grouped contextual section navigator, about 190–220px at wide widths. Keep the main section large. At 1280px reduce or collapse the global sidebar before sacrificing the content. At tablet/mobile use a section picker or navigation sheet. A compact context rail for recent activity/fees is optional when space permits; don't create three permanent narrow columns.
 
-Groups: بيانات الطلب، المستندات، الشؤون المالية، المعالجة والمتابعة.
+Groups: Request data, Documents, Finance, Processing and follow-up.
 
-| Section               | Preferred data presentation                      | Representative interaction                       |
-| --------------------- | ------------------------------------------------ | ------------------------------------------------ |
-| نظرة عامة             | Key-value summary + workflow + recent events     | Follow next action, reveal full details          |
-| مقدّمو الطلب          | Person/company cards; lead applicant identified  | Add/edit person in dialog, contextual menu       |
-| الأطراف والوكالات     | Linked entity cards or compact relationship list | View party/agency in drawer                      |
-| حقول المعاملة         | Label/value groups, typed field controls         | Edit field or group; each field retains actions  |
-| الوثائق المطلوبة      | Checklist with provided/missing/optional text    | Add local demo document, inspect requirement     |
-| المرفقات              | Document cards/list with metadata                | Preview, local file selection, contextual action |
-| الدفعات               | Payment summary + true multi-record table        | Create initial/final payment; local confirmation |
-| الرسوم                | Itemized fee list/table + totals                 | Inspect a fee, demo adjustment dialog            |
-| المبالغ المعادة       | Compact refund list with status                  | View/create illustrative refund                  |
-| القرارات              | Decision cards with author/date/body             | Add/view decision with confirmation              |
-| الإجراءات             | Available-action list grouped by purpose         | Open each action's corresponding flow            |
-| الملاحظات             | Internal note thread / activity-style cards      | Add/edit local note, resolve a note              |
-| سجل النشاط والتحويلات | Chronological timeline with event filters        | Inspect event, filter actor/type                 |
-| الطباعة والمخرجات     | Document template cards + preview panel          | Configure template, print preview                |
+| Section                | Preferred data presentation                      | Representative interaction                       |
+| ---------------------- | ------------------------------------------------ | ------------------------------------------------ |
+| Overview               | Key-value summary + workflow + recent events     | Follow next action, reveal full details          |
+| Applicants             | Person/company cards; lead applicant identified  | Add/edit person in dialog, contextual menu       |
+| Parties and agencies   | Linked entity cards or compact relationship list | View party/agency in drawer                      |
+| Transaction fields     | Label/value groups, typed field controls         | Edit field or group; each field retains actions  |
+| Required documents     | Checklist with provided/missing/optional text    | Add local demo document, inspect requirement     |
+| Attachments            | Document cards/list with metadata                | Preview, local file selection, contextual action |
+| Payments               | Payment summary + true multi-record table        | Create initial/final payment; local confirmation |
+| Fees                   | Itemized fee list/table + totals                 | Inspect a fee, demo adjustment dialog            |
+| Refunds                | Compact refund list with status                  | View/create illustrative refund                  |
+| Decisions              | Decision cards with author/date/body             | Add/view decision with confirmation              |
+| Actions                | Available-action list grouped by purpose         | Open each action's corresponding flow            |
+| Notes                  | Internal note thread / activity-style cards      | Add/edit local note, resolve a note              |
+| Activity and transfers | Chronological timeline with event filters        | Inspect event, filter actor/type                 |
+| Print and output       | Document template cards + preview panel          | Configure template, print preview                |
 
 Single record: use an entity card or labelled detail group. True comparable collections: use a table. Long narrative/history: use timeline/cards. Do not force every section into a DataTable. Every record retains its own actions regardless of presentation.
 
@@ -185,13 +187,13 @@ Section badges count items and signal missing requirements only when meaningful.
 
 Each center gets meaningful report definitions: ECSC service/employee/beneficiary reports, M3 cadastral/property/fee/processing reports, plus shared generic reports. Reports initially display a searchable directory, not a dashboard of completed graphs. Prominent autocomplete/combobox at the top, suggested reports when empty, filtered suggestions as the user types, keyboard navigation and enter selection. Also show browsable report cards/list with category, description and an explicit choose action.
 
-Example categories: المعاملات، الموظفون، المستفيدون، المالية. Include 8–12 report fixtures with materially different parameter sets.
+Example categories: Transactions, Employees, Beneficiaries, Finance. Include 8–12 report fixtures with materially different parameter sets.
 
 Choosing a report opens a consistent form panel or dialog with report-specific controls. Date range may be required by one report and optional/absent in another. Service group/team, status, employee, transaction type, payment type and grouping are descriptor-driven within the selected center.
 
-Two controls are **always present and placed last**: `نوع ملف التقرير` and `اسم الملف`. CSV and Excel generate real local downloads; PDF remains a clearly labelled preview. Date range is not universally mandatory. Changing report clears incompatible old parameters while preserving valid shared ones deliberately.
+Two controls are **always present and placed last**: `Report file type` and `Filename`. CSV and Excel generate real local downloads; PDF remains a clearly labelled preview. Date range is not universally mandatory. Changing report clears incompatible old parameters while preserving valid shared ones deliberately.
 
-Primary flow: select report → fill valid parameters → `إنشاء معاينة` → brief pending state → ready preview/results. Include return/edit parameters, one empty-result example and a retryable simulated error example. Clearly identify illustrative output; no fake claim that a real system report was exported.
+Primary flow: select report → fill valid parameters → `Create preview` → brief pending state → ready preview/results. Include return/edit parameters, one empty-result example and a retryable simulated error example. Clearly identify illustrative output; no fake claim that a real system report was exported.
 
 ## 12. Responsive and quality gates
 
@@ -252,11 +254,11 @@ Current implementation references: [Spartan Brain and Helm](https://spartan.ng),
 
 ## Transaction workspace and attention refinement
 
-On wide desktop, the contextual rail is 286px and uses a multiple-open Spartan Brain accordion: بيانات الطلب، المستندات، الشؤون المالية، المعالجة والمتابعة. Every section has its own Phosphor icon and a relevant count/status badge. Navigation opens the active group without closing others; collapsing retains the URL section and open form draft. Below 1536px the accessible section picker replaces the rail. The sidebar shell automatically contracts to an icon rail between 1024 and 1535px on transaction pages, preserving working space.
+On wide desktop, the contextual rail is 286px and uses a multiple-open Spartan Brain accordion: Request data, Documents, Finance, Processing and follow-up. Every section has its own Phosphor icon and a relevant count/status badge. Navigation opens the active group without closing others; collapsing retains the URL section and open form draft. Below 1536px the accessible section picker replaces the rail. The sidebar shell automatically contracts to an icon rail between 1024 and 1535px on transaction pages, preserving working space.
 
-Comparable applicants, linked parties, documents and refunds use shared CollectionView tables/cards. Both views share records, selection and actions; the mounted table retains sorting and column settings during view changes. Payments and fees remain genuine tables. Narrative notes and activity retain their appropriate layout. Entity/document cards use a tinted icon header, clear identity, readable values and a separated action footer. Editable inputs have Arabic examples; unavailable read-only data uses غير متوفر.
+Comparable applicants, linked parties, documents and refunds use shared CollectionView tables/cards. Both views share records, selection and actions; the mounted table retains sorting and column settings during view changes. Payments and fees remain genuine tables. Narrative notes and activity retain their appropriate layout. Entity/document cards use a tinted icon header, clear identity, readable values and a separated action footer. Editable inputs have Arabic examples; unavailable read-only data uses Unavailable.
 
-The attention panel has intrinsic height and shows up to five unique center/date-scoped transactions, including all applicable reasons, deadline and eligible claim action. Categories filter locally; عرض الكل opens the corresponding inbox with the same receipt-date scope. Claim uses the existing confirmation and updates the center store, counts, inbox and activity. Empty states remain compact.
+The attention panel has intrinsic height and shows up to five unique center/date-scoped transactions, including all applicable reasons, deadline and eligible claim action. Categories filter locally; View all opens the corresponding inbox with the same receipt-date scope. Claim uses the existing confirmation and updates the center store, counts, inbox and activity. Empty states remain compact.
 
 ## Independent center apps
 

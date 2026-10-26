@@ -1,0 +1,6 @@
+// This file controls the menu links, groups, labels, icons and their order.
+// Each link points to a page registered in routes.ts or provided by the shared app.
+// Keep undefined to use the default menu, or set an array to define the entire menu.
+// Removing a link from the menu does not remove the page or block access to it.
+import type { CenterNavItem } from '@workspace/core';
+export const navigation: readonly CenterNavItem[] | undefined = undefined;

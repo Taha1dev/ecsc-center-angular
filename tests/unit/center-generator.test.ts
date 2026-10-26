@@ -2,7 +2,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, expect, it, vi } from 'vitest';
-import { applyCenterPlan, centerId, createCenterPlan } from '../../scripts/create-center.mjs';
+import {
+  applyCenterPlan,
+  centerId,
+  createCenterPlan,
+  hasVisualIdentity,
+} from '../../scripts/create-center.mjs';
 import { centerTheme, contrast, hexColor } from '../../scripts/center-theme.mjs';
 import { workspaceApps } from '../../scripts/workspace-apps.mjs';
 import { applyCenterDeletion, deleteCenterPlan } from '../../scripts/delete-center.mjs';
@@ -30,6 +35,43 @@ const options = {
   primary: '#397b73',
   secondary: '#baa97d',
 };
+
+it('accepts only y/n answers for the visual identity question', () => {
+  expect(hasVisualIdentity('y')).toBe(true);
+  expect(hasVisualIdentity(' N ')).toBe(false);
+  for (const answer of ['', 'yes', 'no', 'maybe'])
+    expect(() => hasVisualIdentity(answer)).toThrow('y or n');
+});
+
+it('copies the default image unchanged and uses it for both logo and favicon', async () => {
+  const root = fixture();
+  const plan = await createCenterPlan(root, {
+    id: options.id,
+    name: options.name,
+    visualIdentity: false,
+  });
+  const base = 'apps/new-center';
+  expect(plan.usesDefaultIdentity).toBe(true);
+  expect(plan.files.get(`${base}/public/brands/new-center/logo.webp`)).toEqual(
+    fs.readFileSync('assets/branding/default-center/id.webp'),
+  );
+  const brand = JSON.parse(plan.files.get(`${base}/brand.json`));
+  expect(brand.primary).toBe('#002623');
+  expect(brand.secondary).toBe('#988561');
+  expect(brand.tokens['brand-950']).toBe('#002623');
+  const profile = plan.files.get(`${base}/src/config/center.ts`);
+  expect(profile).toMatch(/logo:\s*["']\/assets\/brands\/new-center\/logo.webp["']/);
+  expect(profile).toMatch(/favicon:\s*["']\/assets\/brands\/new-center\/logo.webp["']/);
+  expect(plan.files.get(`${base}/src/index.html`)).toContain('/assets/brands/new-center/logo.webp');
+});
+
+it('rejects custom branding flags when the default identity is selected', async () => {
+  const root = fixture();
+  await expect(createCenterPlan(root, { ...options, visualIdentity: false })).rejects.toThrow(
+    'Default identity cannot be combined',
+  );
+  expect(fs.existsSync(path.join(root, 'apps/new-center'))).toBe(false);
+});
 
 it('generates an isolated app, registers all tasks and discovers it without changing existing apps', async () => {
   const root = fixture();
@@ -86,6 +128,16 @@ it('generates an isolated app, registers all tasks and discovers it without chan
   expect(
     fs.readFileSync(path.join(root, 'apps/new-center/src/config/module.ts'), 'utf8'),
   ).not.toContain('propertyFields');
+  // Localized display names must not change the documentation language.
+  expect(fs.readFileSync(path.join(root, 'apps/new-center/README.md'), 'utf8')).not.toMatch(
+    /\p{Script=Arabic}/u,
+  );
+  expect(fs.readFileSync(path.join(root, 'apps/new-center/src/config/center.ts'), 'utf8')).toMatch(
+    /patternKind:\s*["']stars["']/,
+  );
+  expect(
+    fs.readFileSync(path.join(root, 'apps/new-center/public/brands/new-center/stars-pattern.png')),
+  ).toEqual(fs.readFileSync('assets/branding/default-center/stars-pattern.png'));
   expect(
     fs.readFileSync(path.join(root, 'tests/e2e/new-center.generated.spec.ts'), 'utf8'),
   ).toContain('1536');

@@ -70,13 +70,13 @@ The center generator creates the environment files, app configuration and bootst
 
 ## Working example: JSONPlaceholder
 
-Layal and test-center have a **تجربة API** menu link at `/centers/<center>/api-examples`. Both test and production environments for these two centers currently point to `https://jsonplaceholder.typicode.com` for this example.
+Layal and test-center have an **API demo** menu link at `/centers/<center>/api-examples` (the application uses a localized label). Both test and production environments for these two centers currently point to `https://jsonplaceholder.typicode.com` for this example.
 
 - `packages/data-access/src/demo-api/json-placeholder.service.ts` owns the HTTP requests and validates responses with Zod. `getPosts()`, `getUsers()` and `getTodos()` call different endpoints using the same injected base address. JSONPlaceholder does not have a products endpoint.
 - `packages/core/src/features/api-examples/` owns the shared display and loading/error state. Switching resources cancels the previous request; a failed refresh preserves the last successful result for that resource.
 - `apps/layal-center/src/pages/api-examples/` starts on posts. `apps/test-center/src/pages/api-examples/` starts on users. Each center registers its own route and reuses the same page.
 
-Run `npm run dev:layal-center` or `npm run dev:test-center` and open the menu link. Resource buttons and **إعادة الجلب** send new GET requests. The browser's Network panel shows `/posts?_limit=12`, `/users`, and `/todos?_limit=12`. Only the returned sample records are counted in the UI.
+Run `npm run dev:layal-center` or `npm run dev:test-center` and open the menu link. Resource buttons and **Reload** (localized in the application) send new GET requests. The browser's Network panel shows `/posts?_limit=12`, `/users`, and `/todos?_limit=12`. Only the returned sample records are counted in the UI.
 
 These are real HTTP requests for public sample data, separate from the local transaction demo. When replacing the example with your backend, update the environment addresses and implement services matching that backend's contracts.
 

@@ -115,6 +115,7 @@ export function centerTheme(primaryValue, secondaryValue) {
     ring: darkenForContrast(primary, background, 3),
     muted: mix(primary, '#ffffff', 0.94),
     border: mix(primary, '#ffffff', 0.84),
+    // Border contrast only; control backgrounds use the shared card surface.
     input: darkenForContrast(primary, '#ffffff', 3),
     'surface-subtle': mix(primary, '#ffffff', 0.985),
     divider: mix(primary, '#ffffff', 0.9),

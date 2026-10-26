@@ -1,24 +1,24 @@
-# دليل تطوير المراكز والمكتبات المشتركة
+﻿# Developing centers and shared libraries
 
-هذا الدليل يشرح الوضع الحالي، ويميّز عنه التغييرات المعمارية المقترحة. لا يفترض أن خصوصية مركز معيّن هي قاعدة لكل المراكز. الشاشات والبيانات الحالية نقطة بداية تجريبية؛ قواعد العمل الإنتاجية تُحدد وتُبنى لاحقاً.
+This guide describes the current workspace and marks proposed changes separately. One center's behavior is not a rule for every center. Existing screens and sample data are a starting point; real business requirements still need to be defined.
 
-## 1. من يملك ماذا؟
+## 1. Decide who owns the feature
 
-| المكان                     | المسؤولية                                                    | مثال                           |
-| -------------------------- | ------------------------------------------------------------ | ------------------------------ |
-| `apps/<center>/src`        | الصفحات والتخصيصات والتكاملات الخاصة بمركز                   | صفحة محلية أو نموذج خاص        |
-| `packages/ui/src`          | أدوات العرض العامة وSpartan وpipes/directives العامة للواجهة | Button، Dialog، بطاقة عامة     |
-| `packages/core/src`        | ميزات وصفحات ومكونات المنتج المشتركة                         | صفحة عملاء مشتركة              |
-| `packages/data-access/src` | الاتصال بمصادر البيانات وstate والـadapters المشتركة         | خدمة API ومخزن بيانات          |
-| `packages/domain/src`      | الأنواع وقواعد العمل الخالصة من Angular                      | نوع Customer ودالة تحقق مشتركة |
+| Location                   | Responsibility                                      | Example                              |
+| -------------------------- | --------------------------------------------------- | ------------------------------------ |
+| `apps/<center>/src`        | Center-specific pages, extensions, and integrations | Local page or custom form            |
+| `packages/ui/src`          | General display components and UI pipes/directives  | Card, field, dialog                  |
+| `packages/core/src`        | Shared product pages, features, and components      | Shared customer page                 |
+| `packages/data-access/src` | Shared data services, state, and adapters           | API service or store                 |
+| `packages/domain/src`      | Types and business rules independent of Angular     | Customer type or validation function |
 
-كون الكود مشتركاً لا يعني استخدامه إجبارياً في كل تطبيق. يمكن بناء ميزة مشتركة وتجربتها أولاً من تطبيق واحد، ثم استيرادها من بقية التطبيقات لاحقاً. مشاركة الشيفرة لا تشارك حالة الذاكرة بين التطبيقات المستقلة.
+Shared code does not have to be used by every application. A shared feature can be tried in one application before others adopt it. Sharing source files does not share runtime state between independently running apps.
 
-اسم `core` هنا يعني مكتبة ميزات المنتج المشترك، وليس فقط services كما في بعض مشاريع Angular.
+Here, `core` means shared product features. It is not a general folder for all services.
 
-## 2. ترتيب ميزة جديدة
+## 2. Organize a feature
 
-الهيكل التالي اقتراح للمجلدات الجديدة؛ لا يتطلب نقل الملفات القديمة:
+The following is an example for new code, not a request to move existing files:
 
 ```text
 apps/<center>/src/features/customers/
@@ -44,74 +44,73 @@ libs/ui/
   <spartan-component>/src/
 ```
 
-كل ما يتعلق بميزة واحدة يبقى قربها. أدوات العرض العامة فقط توضع في `ui`. مكوّن يعرف Customer أو Transaction أو صلاحيات المنتج مكانه `core` أو التطبيق، حتى لو كان قابلاً لإعادة الاستخدام.
+Keep related feature code close together. Only general UI elements belong in `ui`. A component that understands customer workflows, transactions, or product permissions belongs in `core` or the application.
 
-## 3. كيف تُقرأ أوامر التوليد؟
+## 3. Generate files
 
-### اختصار إنشاء مكوّن أو صفحة داخل مركز
-
-للاستعمال المباشر بدون npm، فعّل الاختصار مرة واحدة في كل تيرمنال PowerShell جديد:
+Enable the workspace command once per PowerShell terminal:
 
 ```powershell
 .\dev.ps1
-ng g c --ecsc customer-card
-ng g page --ecsc customers
-ng g c --ecsc customer-card --path=features/customers/components --dry-run
 ```
 
-`dev.ps1` يعرّف دالة `ng` داخل جلسة PowerShell الحالية فقط، دون تعديل PATH أو profile المستخدم أو تثبيت Angular العالمي. اسم المكوّن يكتب بدون شرطة في بدايته. لإنهاء التفعيل أغلق التيرمنال أو نفّذ `Remove-Item Function:\ng`. يبقى أمر npm التالي متاحاً دون تفعيل:
+Then use short commands:
 
-```powershell
-npm.cmd run ng -- g --ecsc c customer-card
-npm.cmd run ng -- g --ecsc page customers
-npm.cmd run ng -- g --ecsc c customer-card --path=features/customers/components
+```sh
+ng g c customer-card
+ng g s customers-api
+ng g p display-name
+ng g d busy
 ```
 
-الأول ينشئ `apps/ecsc/src/components/customer-card/`، والثاني `apps/ecsc/src/pages/customers/`. `--path` اختياري ونسبته إلى `src` الخاص بالمركز. استبدل `--ecsc` باسم أي تطبيق، مثل `--m3` أو `--new-center`. ويمكن كتابة `--center=ecsc` أو `--center-name=ecsc` بدلاً منه. يُضاف `--style=none` و`--skip-tests` افتراضياً ويمكن تجاوزهما بخيارات CLI الصريحة. استعمل `--dry-run` للمعاينة دون إنشاء ملفات.
+The wrapper asks whether the code belongs to **Centers** or **Packages**. Center choices are discovered from the registered applications that exist on disk.
 
-الاختصار مضاف إلى أمر npm المحلي، وليس أمر `ng` المثبت عالمياً. أوامر Angular العادية التي لا تختار مركزاً تبقى كما هي، بما فيها `--project=ui`. إنشاء صفحة لا يسجل route تلقائياً.
+For shared services, the default package is `data-access`; `core` is the other choice. For shared components, pipes, and directives, the default is `ui`; `core` is the other choice.
 
-نفذ الأوامر من جذر المستودع. `ecsc` في الأمثلة اسم مشروع اختير للتوضيح فقط؛ استبدله باسم أي تطبيق موجود في `angular.json`.
+Services are always injectable and generated without tests. Pipes and directives also skip test files. Components created through the picker have separate TS/HTML files and skip tests by default.
 
-```powershell
-npm.cmd run ng -- g c customer-card --project=ecsc --path=apps/ecsc/src/features/customers/components --style=none --skip-tests --dry-run
+You can skip the questions when you know the target:
+
+```sh
+ng g c --center-name=new-center customer-card
+ng g page --center-name=new-center customers
+ng g s customers-api --project=data-access
+ng g p display-name --project=ui
+ng g d busy --project=ui
 ```
 
-- `g c`: اختصار generate component.
-- `--project`: مشروع Angular المالك للملف، وليس اسم مجلد اعتباطياً.
-- `--path`: مكان الإنشاء من جذر workspace. تحديده يتجنب إنشاء `src/app` غير الموجود في التنظيم الحالي.
-- `--style=none`: استخدام Tailwind دون ملف CSS إضافي.
-- `--skip-tests`: يتجنب اختبار القالب الافتراضي فقط؛ أضف اختبارات السلوك الفعلي عند الحاجة ضمن تنظيم الاختبارات الحالي.
-- `--dry-run`: يعرض الملفات دون كتابتها. احذفه عندما تقرر الإنشاء.
-- `--flat`: يلغي المجلد الإضافي باسم العنصر.
+Replace `new-center` with an existing application's ID. The shortcut `page` creates a component under `pages`; it does not register a route.
 
-نستخدم `npm.cmd` لتفادي تفسير npm.ps1 لبعض الخيارات في Windows PowerShell. إذا كان `ng` متاحاً مباشرة يمكنك تنفيذ نفس الأمر ابتداءً من `ng g`.
+Common options:
 
-## 4. مكوّن خاص بمركز
+- `--path`: select a folder. With a center selector it is relative to the center's `src`. With `--project` or the package picker it is relative to the repository root.
+- `--style=css`: generate a component stylesheet. Center shortcuts default to `--style=none` because the project uses Tailwind.
+- `--dry-run`: preview files without writing them.
+- `--no-skip-tests`: include a component/page test file. Services, pipes, and directives always skip tests through this wrapper.
 
-```powershell
-npm.cmd run ng -- g c customer-card --project=ecsc --path=apps/ecsc/src/features/customers/components --style=none --skip-tests
-npm.cmd run ng -- g c customers-page --project=ecsc --path=apps/ecsc/src/features/customers/pages --flat --style=none --skip-tests
+Without the PowerShell shortcut, replace `ng` with `node scripts/ng.mjs`. A global Angular CLI alone does not provide the workspace picker or center shortcuts. See the root [README](../README.md) for the full options table.
+
+## 4. Create a center-specific component and page
+
+```sh
+ng g c --center-name=new-center customer-card --path=features/customers/components
+ng g page --center-name=new-center customers --path=features/customers/pages
 ```
 
-الملفات:
+The component files are:
 
 ```text
-apps/ecsc/src/features/customers/components/customer-card/customer-card.ts
-apps/ecsc/src/features/customers/components/customer-card/customer-card.html
-apps/ecsc/src/features/customers/pages/customers-page.ts
-apps/ecsc/src/features/customers/pages/customers-page.html
+apps/new-center/src/features/customers/components/customer-card/customer-card.ts
+apps/new-center/src/features/customers/components/customer-card/customer-card.html
 ```
 
-مثال `customer-card.ts`:
+An example `customer-card.ts`:
 
 ```ts
 import { Component, input } from '@angular/core';
-import { HlmButton } from '@workspace/ui';
 
 @Component({
   selector: 'app-customer-card',
-  imports: [HlmButton],
   templateUrl: './customer-card.html',
 })
 export class CustomerCard {
@@ -119,71 +118,72 @@ export class CustomerCard {
 }
 ```
 
+In `customer-card.html`:
+
 ```html
 <article class="rounded-panel border bg-card p-4">
   <p>{{ name() }}</p>
-  <button hlmBtn type="button">عرض</button>
 </article>
 ```
 
-زر العرض هنا مثال تركيبي يحتاج ربطه بحدث/رابط عند بناء السلوك الحقيقي. الأفضل حذف الزر إلى أن يصبح له إجراء.
-
-في `customers-page.ts`:
+The page imports the component:
 
 ```ts
 import { Component } from '@angular/core';
-import { CustomerCard } from '../components/customer-card/customer-card';
+import { CustomerCard } from '../../components/customer-card/customer-card';
 
 @Component({
-  selector: 'app-customers-page',
+  selector: 'app-customers',
   imports: [CustomerCard],
-  templateUrl: './customers-page.html',
+  templateUrl: './customers.html',
 })
-export class CustomersPage {}
+export class Customers {}
 ```
+
+In `customers.html`:
 
 ```html
-<h1>العملاء</h1>
-<app-customer-card name="اسم تجريبي" />
+<h1>Customers</h1>
+<app-customer-card name="Example customer" />
 ```
 
-الـcomponent الصغير يُستورد في `imports` ويستخدم بالـselector. لا يحتاج route أو تسجيل ضمن `centerModule`. الصفحة مكوّن Angular أيضاً؛ تسمية Page تعني أنها عادةً مرتبطة بمسار.
+A child component needs an entry in the parent's `imports` and its selector in the template. It does not need a route or registration in `centerModule`. A page is also an Angular component; its role is usually to render at a route.
 
-## 5. إظهار صفحة محلية بالـrouting الحالي
+## 5. Register a local page
 
-في `apps/ecsc/src/routes.ts`، أضف إلى `extensions` مع الحفاظ على التسجيلات الموجودة:
+Add the page to `apps/new-center/src/routes.ts`, preserving existing entries:
 
 ```ts
 import type { CenterPages, CenterRoute } from '@workspace/core';
-import { CustomersPage } from './features/customers/pages/customers-page';
+import { Customers } from './features/customers/pages/customers/customers';
 
 export const extensions: CenterRoute[] = [
-  { path: 'customers', label: 'العملاء', component: CustomersPage },
+  { path: 'customers', label: 'Customers', component: Customers },
 ];
 export const pages: CenterPages = {};
 ```
 
-ملف `config/module.ts` الحالي يمرر `routes: extensions` و`pages` بالفعل. النتيجة هي `/centers/ecsc/customers`، و`label` يضيف رابطاً في التنقل الحالي. مجرد إنشاء صفحة لا يضيف route تلقائياً.
+The generated `config/module.ts` already passes `routes: extensions` and `pages`. The URL becomes `/centers/new-center/customers`.
 
-`pages` مخصص لاستبدال صفحة افتراضية مع الاحتفاظ بمسارها؛ مثلاً `pages.dashboard` يستبدل محتوى الرئيسية ولا ينشئ URL جديداً.
+A route label adds a menu link only when the application uses default navigation. With custom navigation, add its menu link separately. See [center navigation](center-navigation.md).
 
-## 6. حدود نظام الروابط الحالي وملكية الروابط مستقبلاً
+`pages` replaces a built-in page at its existing URL. For example, `pages.dashboard` replaces dashboard content rather than creating a new URL.
 
-لتخصيص القائمة دون تغيير routes، أصبح متاحاً `CenterModule.navigation`: ملف مستقل يحدد روابط ومجموعات متداخلة لكل مركز. راجع [دليل التنقل والأيقونات الافتراضية](center-navigation.md). القائمة الخاصة تستبدل القائمة الافتراضية بالكامل؛ `label` ضمن routes يضاف إلى القائمة فقط عندما لا يحدد المركز navigation خاصة.
+## 6. Current routing limits and a possible next step
 
-حالياً `packages/core/src/bootstrap.ts` ينشئ المسارات الرئيسية عبر `centerRoutes()` ثم يستدعي `provideRouter()` داخل `startCenter()`. ملفات `apps/*/src/routes.ts` ليست بعدُ ملفات Angular `Routes` مستقلة كاملة.
+`packages/core/src/bootstrap.ts` creates the main routes with `centerRoutes()` and registers the router inside `startCenter()`. Application `routes.ts` files currently provide extensions and replacements; they are not independent Angular `Routes` definitions.
 
-نوع `CenterRoute` الحالي يحتوي `path`, `label`, `icon`, `component` فقط. لا يمرر `children`, `loadChildren`, `loadComponent`, guards أو route providers. التنقل الافتراضي ومقدمة `/centers/<id>` ثابتان أيضاً.
+The current `CenterRoute` contract supports `path`, `label`, `icon`, and `component`. It does not forward `children`, `loadChildren`, `loadComponent`, guards, or route providers. The `/centers/<id>` prefix is also part of the current shared routing.
 
-لهدف اختلاف المراكز جذرياً، التصميم المقترح هو:
+If applications need completely different routing structures, a possible change is:
 
-- كل تطبيق يملك `app.routes.ts` من نوع Angular `Routes`.
-- مكتبة `core` تصدر الصفحات المشتركة ومصانع المسارات الاختيارية.
-- bootstrap يقبل routes التطبيق أو يفصل إعداد providers المشتركة عن التسجيل الفعلي للـRouter.
-- كل تطبيق يحدد التنقل المناسب لمساراته، مع توافق login/logout والروابط الداخلية.
-- الصفحات المشتركة تستقبل سياسة الروابط عند الحاجة بدل افتراض مقدمة URL ثابتة.
+- Let each application own an Angular `Routes` array.
+- Keep shared pages and optional route factories in `core`.
+- Accept app-owned routes at bootstrap, or separate common providers from router registration.
+- Let each app define navigation that matches its routes.
+- Pass navigation policies to shared pages when they need to build links.
 
-مثال على شكل routes بعد تنفيذ هذا الفصل، وليس وصفاً لواجهة `startCenter` الحالية:
+For example, after implementing that separation:
 
 ```ts
 import type { Routes } from '@angular/router';
@@ -193,31 +193,25 @@ export const routes: Routes = [
   {
     path: 'customers',
     loadComponent: () =>
-      import('./features/customers/pages/customers-page').then((m) => m.CustomersPage),
+      import('./features/customers/pages/customers/customers').then((m) => m.Customers),
   },
 ];
 ```
 
-تطبيق آخر يستطيع اختيار `/clients` أو بنية متداخلة مختلفة، واستيراد نفس صفحة العملاء المشتركة. لا يستدعي التطبيق `provideRouter()` ثانية فوق `startCenter()` الحالي؛ يجب تعديل نقطة التهيئة المشتركة أولاً. لا يحتاج اختلاف routes إلى نسخ مكتبة UI.
+This is a proposal, not the current `startCenter` API. Do not register a second router over the existing bootstrap to imitate it. Another application could choose `/clients` or nested routes while reusing the same page. Different routes do not require a duplicate UI library.
 
-## 7. مكوّن عام تصنعه بنفسك
+## 7. Build a general shared component
 
-```powershell
-npm.cmd run ng -- g c status-card --project=ui --path=packages/ui/src/components --style=none --skip-tests
-```
+Run `ng g c status-card`, choose **Packages**, then **ui**. The files go under `packages/ui/src/components/status-card`.
 
-مثال مكوّن عام لا يعرف قواعد المنتج:
+In `status-card.ts`:
 
 ```ts
 import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-status-card',
-  template: `<section class="rounded-panel border bg-card p-4">
-    <h2 class="font-semibold">{{ title() }}</h2>
-    <p class="text-muted-foreground">{{ description() }}</p>
-    <ng-content />
-  </section>`,
+  templateUrl: './status-card.html',
 })
 export class StatusCard {
   readonly title = input.required<string>();
@@ -225,54 +219,52 @@ export class StatusCard {
 }
 ```
 
-عند استخدام template inline بهذا الشكل، يمكن حذف ملف HTML المولد غير المستخدم.
+In `status-card.html`:
 
-أضف إلى `packages/ui/src/index.ts`:
+```html
+<section class="rounded-panel border bg-card p-4">
+  <h2 class="font-semibold">{{ title() }}</h2>
+  <p class="text-muted-foreground">{{ description() }}</p>
+  <ng-content />
+</section>
+```
+
+Export it from `packages/ui/src/index.ts`:
 
 ```ts
 export * from './components/status-card/status-card';
 ```
 
-ثم بأي مركز أو مكوّن ضمن core:
+Consumers import it from `@workspace/ui`, add it to `imports`, and use its selector. Use relative imports within one library and public package imports across library boundaries.
 
-```ts
-import { StatusCard } from '@workspace/ui';
+## 8. Build a shared product page
+
+Choose **Packages**, then **core** when running the component/page picker. For a feature-specific location, use an explicit path:
+
+```sh
+ng g c customers-page --project=core --path=packages/core/src/features/customers/pages --inline-template=false --flat=false --style=none --skip-tests
 ```
 
-أضفه إلى `imports` واستخدمه في القالب. هذا مكوّن مشترك حتى لو لم يُختبر إلا من مركز واحد في البداية. داخل نفس المكتبة استعمل استيراداً نسبياً، وبين المكتبات استعمل اسم الحزمة العام.
-
-## 8. صفحة أو مكوّن منتج مشترك
-
-```powershell
-npm.cmd run ng -- g c customers-page --project=core --path=packages/core/src/features/customers/pages --inline-template=false --flat=false --style=none --skip-tests
-npm.cmd run ng -- g c customer-card --project=core --path=packages/core/src/features/customers/components --style=none --skip-tests
-```
-
-صدّر الصفحة التي تحتاجها التطبيقات من `packages/core/src/index.ts`:
+Export the page from `packages/core/src/index.ts` when applications need it:
 
 ```ts
 export { CustomersPage } from './features/customers/pages/customers-page/customers-page';
 ```
 
-يمكن لكل تطبيق أن يستورد `CustomersPage` من `@workspace/core` ويسجلها في مساراته. المكونات الداخلية التي لا تستعملها التطبيقات مباشرة لا تحتاج تصديراً عاماً. لا يوجد route لمكتبة `core` لمجرد وجود صفحة فيها؛ التطبيق يجب أن يستخدم الصفحة أو مسارات الميزة.
+Each application can import it from `@workspace/core` and register it in its own routes. Internal feature components do not need public exports unless external consumers use them. A page existing in a library does not create a URL on its own.
 
-## 9. Services المشتركة والمحلية
+## 9. Services and API access
 
-خدمة بيانات مشتركة:
+Use `ng g s customers-api` and choose the target. For direct selection:
 
-```powershell
-npm.cmd run ng -- g s customers-api --project=data-access --path=packages/data-access/src/customers --injectable --type=service --skip-tests
+```sh
+ng g s customers-api --project=data-access
+ng g s customer-draft --center-name=new-center --path=features/customers/services
 ```
 
-سيُنشئ `packages/data-access/src/customers/customers-api.service.ts`. صدّرها من `packages/data-access/src/index.ts` ثم استخدم `inject(CustomersApiService)` عند الحاجة. `--injectable` ينتج `@Injectable` صراحةً وفق نسخة CLI المثبتة.
+The wrapper supplies injectable generation, the service filename suffix, and test skipping.
 
-خدمة خاصة بميزة داخل مركز:
-
-```powershell
-npm.cmd run ng -- g s customer-draft --project=ecsc --path=apps/ecsc/src/features/customers/services --injectable --type=service --skip-tests
-```
-
-مثال حالتها:
+A simple state service:
 
 ```ts
 import { Injectable, signal } from '@angular/core';
@@ -283,19 +275,15 @@ export class CustomerDraftService {
 }
 ```
 
-في الصفحة: `readonly draft = inject(CustomerDraftService)`. الخدمات تضاف إلى نظام DI؛ لا تضعها في مصفوفة `imports` الخاصة بالمكونات. `providedIn: 'root'` يعني نسخة لكل تطبيق Angular مشغّل، وليس نسخة واحدة لكل المستودع. لو أردت حالة جديدة لكل صفحة، قدم الخدمة في `providers` الخاصة بالصفحة بدلاً من الاعتماد على نسخة root.
+Use `inject(CustomerDraftService)` in the page. Services belong in dependency injection, not the component's `imports`. `providedIn: 'root'` gives each running Angular application its own instance, not one shared instance across the repository. For state owned by a particular page instance, provide the service on that page.
 
-خدمة HTTP تستورد `HttpClient` من `@angular/common/http` تحتاج إعلان `@angular/common` في حزمة المكتبة التي تستورده مباشرة، حتى لو كانت مثبتة في الجذر. bootstrap الحالي يوفر `provideHttpClient()` بالفعل. عند فصل bootstrap لاحقاً حافظ عليه لكل تطبيق يحتاج HTTP.
+Shared API services inject `API_CONFIG` and use `HttpClient`. Each application provides the address from its environment through `app.config.ts`. Shared pages should not receive base URLs through inputs or import an application's environment file. See [API configuration](api-configuration.md) for the working JSONPlaceholder example and adapter guidance.
 
-القواعد الخالصة المشتركة تكتب كدوال وأنواع في `domain`؛ لا تولّد Angular Service داخل `domain`. المنطق الخاص بمركز يبقى في تطبيقه أو adapter خاص به، ويُمرر للمشترك عبر عقد واضح بدلاً من فحص اسم المركز.
+The common bootstrap already provides `HttpClient`. Packages must still declare direct dependencies for imports they use, including `@angular/common` for HTTP. Pure rules belong in `domain`, not an Angular service. Center-specific behavior stays local or is supplied through an adapter contract.
 
-## 10. Custom pipes
+## 10. Pipes
 
-Pipe عام للعرض:
-
-```powershell
-npm.cmd run ng -- g p display-name --project=ui --path=packages/ui/src/pipes --type-separator=. --skip-tests
-```
+Run `ng g p display-name`, choose **Packages**, then **ui**:
 
 ```ts
 import { Pipe, type PipeTransform } from '@angular/core';
@@ -303,38 +291,28 @@ import { Pipe, type PipeTransform } from '@angular/core';
 @Pipe({ name: 'displayName' })
 export class DisplayNamePipe implements PipeTransform {
   transform(value: string | null | undefined): string {
-    return value?.trim() || 'غير متوفر';
+    return value?.trim() || 'Unavailable';
   }
 }
 ```
 
-صدّره من `packages/ui/src/index.ts`:
+Export it from `packages/ui/src/index.ts`:
 
 ```ts
 export * from './pipes/display-name.pipe';
 ```
 
-ثم استورده من `@workspace/ui` وأضفه إلى `imports` الخاصة بالمكوّن:
+Import it from `@workspace/ui` and add it to the consuming component's `imports`:
 
 ```html
 {{ customerName | displayName }}
 ```
 
-Pipe خاص بمركز:
+A local pipe can be generated with `ng g p short-reference --center-name=new-center`. A shared product-aware pipe belongs in `core`. Pipes should not make API calls or hide mutation rules.
 
-```powershell
-npm.cmd run ng -- g p short-reference --project=ecsc --path=apps/ecsc/src/features/customers/pipes --type-separator=. --skip-tests
-```
+## 11. Directives
 
-استورده نسبياً من مكونات نفس المركز. Pipe يعتمد على مفاهيم المنتج المشتركة مكانه `core` وليس `ui`. لا تستخدم pipe لقراءة API أو إخفاء قواعد تعديل البيانات.
-
-## 11. Custom directives
-
-Directive عامة للعرض:
-
-```powershell
-npm.cmd run ng -- g d busy --project=ui --path=packages/ui/src/directives --type=directive --skip-tests
-```
+Run `ng g d busy`, choose **Packages**, then **ui**:
 
 ```ts
 import { Directive, input } from '@angular/core';
@@ -348,88 +326,67 @@ export class BusyDirective {
 }
 ```
 
-صدّره من `packages/ui/src/index.ts`، ثم أضفه إلى `imports`:
+Export it from `packages/ui/src/index.ts` and add it to `imports` where needed:
 
 ```html
-<section [appBusy]="loading()">محتوى الصفحة</section>
+<section [appBusy]="loading()">Page content</section>
 ```
 
-هذه directive تعلن حالة الانشغال فقط؛ لا تمنع النقر تلقائياً.
+This directive announces busy state; it does not disable clicks. A center-specific directive can be generated with `ng g d read-only --center-name=new-center`. Generating it does not automatically add it to every page.
 
-Directive خاصة بمركز:
+## 12. Shared Spartan components
 
-```powershell
-npm.cmd run ng -- g d read-only --project=ecsc --path=apps/ecsc/src/features/customers/directives --type=directive --skip-tests
-```
-
-المولد ينشئ الهيكل، وأنت تضيف السلوك. المكان واسم المشروع يحددان الملكية، ولا يضيفها المولد تلقائياً لكل الصفحات.
-
-## 12. Spartan مشتركة على مستوى المستودع
-
-Spartan مثبتة بالطريقة الرسمية: Brain اعتماد مشترك، وCLI يولّد Helm داخل `libs/ui` بنمط `maia` حسب `components.json`. كل المراكز تستخدم نفس المصادر من `@spartan-ng/helm/<component>`. راجع [دليل Spartan في المشروع](spartan-ui.md).
-
-المكتبة مثبتة أصلاً: `@spartan-ng/brain@1.8.0`. هي معلنة في الجذر وضمن حزمة UI. لا تحتاج إعادة تثبيتها لكل مركز جديد.
-
-`BrnButton` يوفّر السلوك، و`HlmButton` العالمي في `libs/ui/button` يوفّر التنسيق. المستهلك يستخدم:
-
-```ts
-import { HlmButton } from '@spartan-ng/helm/button';
-```
-
-ثم `imports: [HlmButton]` و`<button hlmBtn>حفظ</button>`. ألوان المركز تأتي من semantic tokens، فلا تحتاج نسخ زر لكل هوية.
-
-مكونات المنتج داخل `packages/ui`، مثل `AppField` و`AppSelect`، تركّب عناصر Helm العالمية. استيراد `HlmButton` من `@workspace/ui` يبقى متاحاً للتوافق ويشير لنفس الصنف العالمي؛ لا توجد نسخة Helm قديمة مكررة داخل الحزمة.
-
-CLI Spartan مثبت. هو يدعم Angular CLI رسمياً، ووجود اعتماديات Nx داخله لا يغير إعداد تشغيل المشروع الذي يبقى Angular CLI + Turbo.
-
-لإضافة مكوّن:
+Brain provides behavior; Helm sources live in root `libs/ui`, generated with the `maia` style. Every center uses the same sources through `@spartan-ng/helm/<component>`. Do not reinstall them for each center.
 
 ```sh
 ng g @spartan-ng/cli:ui accordion
-ng g @spartan-ng/cli:ui button
 ```
 
-أو شغّل `ng g @spartan-ng/cli:ui` واختر عدة عناصر تفاعلياً. ملف `components.json` في الجذر يحدد `componentsPath: "libs/ui"` و`importAlias: "@spartan-ng/helm"`. مثلاً Accordion يولّد في `libs/ui/accordion/src` ويُستورد من `@spartan-ng/helm/accordion`. لا تحدد مركزاً عند إضافة عنصر مشترك.
+Or run `ng g @spartan-ng/cli:ui` to choose multiple components. Do not select a center. `components.json` controls the output folder and alias.
 
-ملفات `libs/ui` تحتفظ ببنية Spartan الرسمية، بما فيها القوالب inline وLucide. قاعدة المجلد وملف HTML المنفصل تطبّق على مكوناتنا داخل `packages`. الربط مع Tailwind وpreset مشترك في `globals.css`، والفحص المخصص هو `npm run typecheck:spartan`. لا تشغّل مولد theme لتبديل ألوان المراكز؛ ثيماتها مهيأة بالفعل.
+For a button, import `HlmButton` from `@spartan-ng/helm/button`, add it to `imports`, and use `<button hlmBtn>Save</button>`. The existing `@workspace/ui` compatibility export refers to the same class. `AppField` and `AppSelect` compose these global primitives.
 
-## 13. الاعتماديات وحدود الاستيراد
+Keep official Spartan source structure, including its inline templates and generated icons. The matching-folder and external-HTML rule applies to owned components in `packages`. Shared styles connect Tailwind and the preset for all centers. Use `npm run typecheck:spartan` to check the primitives. Do not run a theme generator over existing center branding just to add a component.
 
-- `apps` تستطيع استيراد `core`, `ui`, `data-access`, `domain`.
-- `core` يستطيع استيراد الثلاثة الآخرين.
-- `data-access` يستورد `domain`.
-- `ui` لا يعرف خدمات المنتج وبياناته؛ الاستثناء الحالي من domain هو أدوات التاريخ العامة.
-- `domain` لا يستورد Angular.
-- لا تستورد مكتبة من تطبيق، ولا تجعل تطبيقاً يستورد ملفات تطبيق آخر.
-- الربط بين الحزم يمر عبر `src/index.ts`، وليس مسار ملف داخلي.
+Spartan CLI dependencies do not change the workspace's Angular CLI and Turbo orchestration. See the [Spartan guide](spartan-ui.md).
 
-عند إضافة مكتبة npm أعلنها في `package.json` الخاص بالـworkspace الذي يستوردها مباشرة، مع الحفاظ على ملف القفل الواحد. وجودها في `node_modules` بالجذر لا يعني أن واجهاتها متاحة تلقائياً في قوالب Angular.
+## 13. Dependencies and exports
 
-`ng-package.json` يحدد نقطة تصدير المكتبة ومسار بنائها، وليس تسجيل المكونات أو DI أو routes. لا تعدله عند كل مكوّن جديد؛ حدّث `src/index.ts` عندما تريد تصدير العنصر للمستهلكين.
+- Applications may import `core`, `ui`, `data-access`, and `domain`.
+- `core` may import the other three libraries.
+- `data-access` may import `domain`.
+- `ui` has no product services or data dependencies; its domain exception is generic date utilities.
+- `domain` does not import Angular.
+- Shared packages do not import applications, and applications do not import one another's source.
+- Cross-package imports use public exports rather than private file paths.
 
-## 14. كيف نبدأ من مركز واحد ثم نعمم؟
+Declare npm dependencies in the package that directly imports them and keep one root lockfile. A package being present in root `node_modules` does not make its components available in Angular templates.
 
-1. اختر الميزة الأولى وعرّف ما هو تجريبي وما هو متطلب حقيقي.
-2. اكتب الواجهة العامة القابلة لإعادة الاستخدام في `ui`.
-3. اكتب الأنواع والقواعد المتفق على عموميتها في `domain`، والقراءة والتحديث والحالة المشتركة في `data-access`.
-4. إذا كانت صفحة المنتج عامة فعلاً، ابنها في `core` وفعّلها من مركز واحد أولاً.
-5. ما زال غير مؤكد العمومية؟ ابدأ به محلياً داخل feature المركز؛ عند ثبوت المشاركة انقل الجزء المشترك وعدّل imports بدل نسخه إلى تطبيق ثانٍ.
-6. أبقِ المسارات والهوية والاختلافات الحقيقية في التطبيق. مرر الاختلافات كـinputs/إعدادات/عقود adapters أو providers حسب الحالة.
-7. عند تشغيل المركز الثاني يستهلك التنفيذ المشترك نفسه، مع بياناته وتخصيصاته. لا يصبح ترتيب routes أو أسماء URLs ملزماً له لمجرد مشاركة الصفحة.
+`ng-package.json` controls a library's entry point and build output. It does not register components, services, or routes. Usually, adding a public component means updating `src/index.ts`, not changing `ng-package.json`.
 
-## 15. التحقق
+## 14. Start with one center, then share confirmed behavior
 
-أمثلة توليد Angular في هذا الدليل راجعت مساراتها باستخدام `--dry-run` على CLI المشروع. هي أمثلة تعليمية لم تُضف تلقائياً إلى التطبيقات. فصل ملكية routing المقترح لم يُنفذ في هذا الدليل.
+1. Choose the first feature and distinguish sample behavior from real requirements.
+2. Put general UI in `ui`.
+3. Put confirmed shared rules/types in `domain`, and common reads, mutations, and state in `data-access`.
+4. If a product page is already known to be shared, build it in `core` and enable it in one center first.
+5. If sharing is uncertain, start locally. Extract the agreed common part later and update imports rather than copying it into a second app.
+6. Keep routes, branding, and real differences in the applications. Supply variation through inputs, typed configuration, adapters, or providers.
+7. Other centers can use the shared implementation with their own data and extensions. Sharing a page does not require identical route names or menu layouts.
 
-عند تنفيذ ميزة فعلية:
+## 15. Verification
 
-```powershell
+These examples describe how to add code; they are not features automatically installed in the applications. The routing separation proposed above has not been implemented by this guide.
+
+Use checks appropriate to the actual change:
+
+```sh
 npm run typecheck
 npm run lint
 npm test
 npm run build
 ```
 
-أضف فحوص المتصفح الملائمة للتغيير. تفاصيل التحقق الكاملة في [VALIDATION.md](VALIDATION.md).
+Add relevant browser checks for visual and workflow changes. See [VALIDATION.md](VALIDATION.md) for details.
 
-مراجع: [Angular CLI](https://angular.dev/cli/generate)، [Angular Routes](https://angular.dev/guide/routing/define-routes)، [Spartan CLI](https://spartan.ng/documentation/cli).
+References: [Angular CLI](https://angular.dev/cli/generate), [Angular routes](https://angular.dev/guide/routing/define-routes), and [Spartan CLI](https://spartan.ng/documentation/cli).

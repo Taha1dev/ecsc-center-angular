@@ -7,11 +7,11 @@ MCP usage are recorded in [angular-migration.md](angular-migration.md).
 
 ## Applications and identity
 
-| App  | Identity              | Data/catalog                                                       | Assets/customizations                                                                         |
-| ---- | --------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| ecsc | مركز البوابة          | Agency/vehicle/entry sample catalog; 48 transactions               | Blue/orange authentic symbol, circuit login SVG, standard logo dimensions                     |
-| m3   | مركز المصالح العقارية | Registry/ownership/property sample catalog; 48 transactions        | Green/gold extracted emblem, preserved source JPG, authentic stars; app-owned fields renderer |
-| jus  | مركز العدل            | ECSC-derived sample definitions, separately scoped 48 transactions | Supplied unchanged emblem, stars, wide 400x200 responsive login logo                          |
+| App  | Identity                 | Data/catalog                                                       | Assets/customizations                                                                         |
+| ---- | ------------------------ | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| ecsc | Gateway Center           | Agency/vehicle/entry sample catalog; 48 transactions               | Blue/orange authentic symbol, circuit login SVG, standard logo dimensions                     |
+| m3   | Property Services Center | Registry/ownership/property sample catalog; 48 transactions        | Green/gold extracted emblem, preserved source JPG, authentic stars; app-owned fields renderer |
+| jus  | Justice Center           | ECSC-derived sample definitions, separately scoped 48 transactions | Supplied unchanged emblem, stars, wide 400x200 responsive login logo                          |
 
 All three apps own profile, service catalog, demo definitions, reports, composition module,
 route/page registration, CSS brands and assets. Their current extra-route/page replacement
@@ -108,22 +108,22 @@ All are registered components with descriptor order/group/count/visibility/icons
 hidden or unsupported service-section IDs show recovery. Group accordions support multiple
 open groups and open the active group without closing others; smaller widths use a picker.
 
-| ID           | Arabic heading        | Presentation                                             | Workflows to preserve                                                                     |
-| ------------ | --------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| overview     | نظرة عامة             | Labelled details, finance and document summary, activity | Links to payments/requirements, next actions, identity/lifecycle/priority/deadline/stages |
-| applicants   | مقدّمو الطلب          | Collection/table/cards, lead badge                       | Add/edit name/kind/identifier/phone, shared row/card action, selection                    |
-| parties      | الأطراف والوكالات     | Linked collection/table/cards                            | Reference/agency view sheet; empty-state wording                                          |
-| fields       | حقول المعاملة         | Typed field label/value groups                           | Field-specific edit, values retained on rejection; M3 app-owned renderer/count override   |
-| requirements | الوثائق المطلوبة      | Required/provided/optional checklist                     | Missing document attachment flow tied to requirement ID                                   |
-| attachments  | المرفقات              | Document collection with metadata                        | File selection retains demo metadata, preview/info sheet, empty/add state                 |
-| payments     | الدفعات               | Summary and actual multi-record table                    | Create initial/final payment, inspect/pay existing record, confirmed local behavior       |
-| fees         | الرسوم                | Total and itemized table                                 | Inspect/adjust specific fee, typed amount and activity                                    |
-| refunds      | المبالغ المعادة       | Collection/cards/table and status                        | Create illustrative refund, inspect request, approved/waiting state                       |
-| decisions    | القرارات              | Authored narrative cards                                 | Add/inspect decision, confirmation, empty state                                           |
-| actions      | الإجراءات             | Available-action cards                                   | Descriptor presentation/disabled reasons, corresponding dialog/sheet                      |
-| notes        | الملاحظات             | Internal narrative thread                                | Add/edit, resolve/reopen with correct record, author/status/activity                      |
-| activity     | سجل النشاط والتحويلات | Chronological timeline                                   | Actor and system/edit/transfer filters, empty result                                      |
-| output       | الطباعة والمخرجات     | Template cards and preview sheet                         | إيصال استلام / ملخص المعاملة / بيان الرسوم; template choice and illustrative preview      |
+| ID           | Arabic heading         | Presentation                                             | Workflows to preserve                                                                     |
+| ------------ | ---------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| overview     | Overview               | Labelled details, finance and document summary, activity | Links to payments/requirements, next actions, identity/lifecycle/priority/deadline/stages |
+| applicants   | Applicants             | Collection/table/cards, lead badge                       | Add/edit name/kind/identifier/phone, shared row/card action, selection                    |
+| parties      | Parties and agencies   | Linked collection/table/cards                            | Reference/agency view sheet; empty-state wording                                          |
+| fields       | Transaction fields     | Typed field label/value groups                           | Field-specific edit, values retained on rejection; M3 app-owned renderer/count override   |
+| requirements | Required documents     | Required/provided/optional checklist                     | Missing document attachment flow tied to requirement ID                                   |
+| attachments  | Attachments            | Document collection with metadata                        | File selection retains demo metadata, preview/info sheet, empty/add state                 |
+| payments     | Payments               | Summary and actual multi-record table                    | Create initial/final payment, inspect/pay existing record, confirmed local behavior       |
+| fees         | Fees                   | Total and itemized table                                 | Inspect/adjust specific fee, typed amount and activity                                    |
+| refunds      | Refunds                | Collection/cards/table and status                        | Create illustrative refund, inspect request, approved/waiting state                       |
+| decisions    | Decisions              | Authored narrative cards                                 | Add/inspect decision, confirmation, empty state                                           |
+| actions      | Actions                | Available-action cards                                   | Descriptor presentation/disabled reasons, corresponding dialog/sheet                      |
+| notes        | Notes                  | Internal narrative thread                                | Add/edit, resolve/reopen with correct record, author/status/activity                      |
+| activity     | Activity and transfers | Chronological timeline                                   | Actor and system/edit/transfer filters, empty result                                      |
+| output       | Print and output       | Template cards and preview sheet                         | Receipt / Transaction summary / Fee statement; template choice and illustrative preview   |
 
 Transaction action forms: claim, status, completion, transfer, applicant, field, document,
 payment, fee, refund, decision, note, print and activity. Keep typed form drafts and command
@@ -138,19 +138,19 @@ apps/*/src/config/reports.ts and UI export/calendar utilities.
 
 | ID        | Title                    | Parameters/behavior                                             |
 | --------- | ------------------------ | --------------------------------------------------------------- |
-| report-1  | المعاملات اليومية        | Required range, group, status; transactions                     |
-| report-2  | أحمال فرق المعالجة       | Team, group; no universal required date                         |
-| report-3  | أداء الموظفين            | Required range, owner                                           |
-| report-4  | المعاملات المتأخرة       | Team, status; overdue criterion                                 |
-| report-5  | المستفيدون الفعليون      | Group; completed criterion and unique beneficiary output        |
-| report-6  | المسجلون الجدد           | Required range; deliberate empty-result example                 |
-| report-7  | تحصيل الرسوم             | Required range, group, payment type; financial output           |
-| report-8  | الدفعات والمبالغ المعادة | Owner, grouping; deliberate retryable failure; financial output |
+| report-1  | Daily transactions       | Required range, group, status; transactions                     |
+| report-2  | Processing team workload | Team, group; no universal required date                         |
+| report-3  | Employee performance     | Required range, owner                                           |
+| report-4  | Overdue transactions     | Team, status; overdue criterion                                 |
+| report-5  | Active beneficiaries     | Group; completed criterion and unique beneficiary output        |
+| report-6  | New registrations        | Required range; deliberate empty-result example                 |
+| report-7  | Fee collection           | Required range, group, payment type; financial output           |
+| report-8  | Payments and refunds     | Owner, grouping; deliberate retryable failure; financial output |
 | report-9  | App specialty 1          | Required range, group, dependent type                           |
 | report-10 | App specialty 2          | Status, type                                                    |
 
-ECSC/JUS specialties: خدمات الوكالات والمركبات; تصاريح الدخول.
-M3 specialties: حركة السجل العقاري; نقل الملكية والبيانات العقارية.
+ECSC/JUS specialties: Agency and vehicle services; Entry permits.
+M3 specialties: Property registry activity; Ownership transfers and property data.
 
 Searchable keyboard combobox, category filtering and directory cards lead to the chosen
 report. Parameters preserve only intentionally compatible values. File type/name are

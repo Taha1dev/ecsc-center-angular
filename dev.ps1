@@ -9,4 +9,4 @@ $workspaceNgFunction = {
     & $workspaceNodeCommand $workspaceNgScript @args
 }.GetNewClosure()
 Set-Item -Path Function:\global:ng -Value $workspaceNgFunction
-Write-Host 'Workspace ng enabled for this terminal. Example: ng g c --ecsc customer-card'
+Write-Host 'Workspace ng enabled for this terminal. Examples: ng g s customers-api / ng g c customer-card'

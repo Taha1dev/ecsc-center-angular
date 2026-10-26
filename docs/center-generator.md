@@ -1,100 +1,120 @@
-# إنشاء مركز جديد
+﻿# Creating a center
 
-من جذر المشروع شغّل:
+Run from the repository root:
 
 ```sh
 npm run center:new -- new-center
 ```
 
-المولّد يسألك بالترتيب عن **Primary** ثم **Secondary** بصيغة HEX مثل `#397b73` أو `#abc`، ثم الاسم الظاهر بالعربية. استخدم معرّفاً تقنياً بحروف إنجليزية صغيرة وأرقام وشرطات مثل `new-center`.
+The generator first asks `Does this center have a defined visual identity? (y/n):`.
 
-يمكن تمرير الاسم العربي مباشرة؛ سيطلب المولّد المعرّف التقني بعد اللونين:
+- Answer `n` to skip the color questions and use primary `#002623`, secondary `#988561`, and `assets/branding/default-center/id.webp` for both the logo and favicon.
+- Answer `y` to enter primary and secondary HEX colors, such as `#397b73` or `#abc`.
 
-```sh
-npm run center:new -- "مركز الخدمات الجديد"
-```
-
-للتشغيل دون أسئلة، أو لمراجعة النتيجة قبل الكتابة:
+It then asks for `Center name`, the display name. Use a technical ID with lowercase Latin letters, digits, and hyphens, such as `new-center`. You can also pass a quoted display name and supply the technical ID when prompted:
 
 ```sh
-node scripts/create-center.mjs new-center --name "مركز الخدمات الجديد" --primary "#397b73" --secondary "#baa97d" --dry-run
+npm run center:new -- "New Service Center"
 ```
 
-احذف `--dry-run` للإنشاء. عند تمرير flags في Windows PowerShell استخدم `npm.cmd run center:new -- ...` أو أمر `node` المباشر لتفادي تفسير npm.ps1 للخيارات.
+## Preview or run without questions
 
-خيارات إضافية:
+Custom identity:
 
-- `--logo "C:/assets/logo.png"`: نسخ شعار حقيقي محلي دون تغييره. الصيغ: SVG/PNG/JPEG/WebP/ICO.
-- `--skip-install`: إنشاء الملفات فقط؛ شغّل بعدها `npm install --ignore-scripts` من الجذر لتحديث ملف القفل وروابط workspaces.
-- `--help`: عرض الاستخدام.
+```sh
+node scripts/create-center.mjs new-center --name "New Service Center" --visual-identity y --primary "#397b73" --secondary "#baa97d" --dry-run
+```
 
-المولّد ينشئ تطبيقاً مستقلاً في `apps/<id>` ويسجل Angular CLI وnpm وTurbo، ويختار زوج منافذ غير مستخدم ضمن إعدادات المشروع. المعاينة وPlaywright يكتشفان التطبيقات تلقائياً من `angular.json`. يتم إنشاء اختبار متصفح للمركز الجديد يشمل كلا التخطيطين وعروض 390/768/1280/1536 وكل أقسام المعاملة الأربعة عشر. اختيار المنفذ لا يفحص البرامج الأخرى المشغلة على جهازك.
+Default identity:
 
-يتم التحقق من المدخلات والتعارضات وإعداد جميع الملفات قبل الكتابة. لا يوجد خيار للكتابة فوق مركز موجود. `--dry-run` لا يكتب ملفات ولا يشغّل التثبيت. بعد الإنشاء العادي يشغّل المولّد `npm install --ignore-scripts` لتحديث ملف القفل الوحيد والروابط. إذا فشل التثبيت تبقى الملفات المنشأة ويطبع أمر الاستكمال.
+```sh
+node scripts/create-center.mjs new-center --name "New Center" --visual-identity n --dry-run
+```
 
-الهوية المولّدة تستخدم Alexandria وRTL والتخطيطات المشتركة الحالية. يتم اشتقاق درجات الألوان والأسطح وحالات التحويم وألوان النص والتركيز والرسوم. يحفظ `brand.json` الألوان المدخلة والتوكنات الناتجة، ويطبق `src/brand.css` الثيم. قد تُغمّق درجة Primary المستخدمة للأزرار والروابط لتحقيق تباين مقروء، مع حفظ اللون الأصلي في `brand-500`. ألوان حالات النجاح والخطأ والانتظار تبقى مشتركة.
+Remove `--dry-run` to create the files. Do not combine `--visual-identity n` with `--primary`, `--secondary`, or `--logo`. Older non-interactive commands that supply custom colors without the identity flag still work.
 
-دون `--logo` يتم إنشاء علامة هندسية مؤقتة، وليست شعاراً رسمياً. استبدلها بشعار المركز الأصلي قبل اعتماد الهوية. الخدمات والرسوم والقرارات والبيانات المولّدة أمثلة توضيحية؛ عدّل `src/config/services.ts` و`reports.ts` وفق المتطلبات المعتمدة. لا يتم نسخ خدمات أو شعارات M3 أو JUS.
+When passing flags through npm in Windows PowerShell, use `npm.cmd run center:new -- ...` or the direct `node` command to avoid npm.ps1 option-forwarding issues.
 
-بعد الإنشاء:
+Additional options:
+
+- `--logo "C:/assets/logo.png"`: copy a supplied local logo unchanged. Supported formats: SVG, PNG, JPEG, WebP, and ICO.
+- `--skip-install`: create files without installing. Run `npm install --ignore-scripts` afterward to update the root lockfile and workspace links.
+- `--help`: show usage.
+
+## What gets created
+
+The generator creates `apps/<id>`, registers Angular CLI, npm, and Turbo tasks, and chooses development/preview ports not already assigned in the workspace configuration. Preview and Playwright discovery read `angular.json` rather than a fixed center list. Port selection does not check other programs running on your machine.
+
+It creates a browser smoke test covering both shells, widths of 390/768/1280/1536px, and the transaction sections. It also creates routes, navigation, API configuration, and test/production environment files.
+
+Inputs and conflicts are checked before writing. Existing centers cannot be overwritten. `--dry-run` writes nothing and does not install dependencies. A normal run uses `npm install --ignore-scripts` to update the single lockfile and workspace links. If installation fails, the files remain and the generator prints the command to finish setup.
+
+## Branding and sample data
+
+Generated centers use Alexandria, RTL, and the existing shared layouts. All new centers use the shared stars login pattern, copied unchanged into their own public brand folder.
+
+`brand.json` records the selected colors and derived tokens; `src/brand.css` applies them. The supplied primary remains the branded background at `brand-950`, and the supplied secondary is stored at `highlight-500`. Action colors can be adjusted for readable contrast. Shared status colors keep their common meaning across brands.
+
+For a custom identity without `--logo`, the generator creates a temporary geometric marker. Replace it with the actual logo before adopting that identity. For the default identity, it copies the shared image to `public/brands/<id>/logo.webp` and uses it as both logo and favicon.
+
+Catalogs, fees, decisions, and generated data are examples. Replace `src/config/services.ts` and `reports.ts` with approved definitions.
+
+After creation:
 
 ```sh
 npm run dev:new-center
-npm run typecheck
-npm run lint
-npm test
-npm run build
-npm run test:e2e
 ```
 
-للبناء والمعاينة الخاصة بالمركز:
+Build and preview just that center:
 
 ```sh
 npm run build:new-center
 npm run preview:new-center
 ```
 
-## بيئات المراكز الجديدة
+Use the checks appropriate to your changes. See [validation](VALIDATION.md) for the available commands.
 
-المولّد يجهز ملفين:
+## Environments and API settings
 
-- `apps/<id>/src/environments/environment.ts`: إعدادات التيست (`production: false`).
-- `apps/<id>/src/environments/environment.production.ts`: إعدادات الإنتاج (`production: true`).
+Each center has:
 
-كلا الملفين يصدر كائن `environment` بنفس الخصائص. أضف أي إعدادات مستقبلية للمركز إلى الملفين، واستورد دائماً `environment.ts`، مثلاً من `src/main.ts`:
+- `apps/<id>/src/environments/environment.ts`: test settings, with `production: false`.
+- `apps/<id>/src/environments/environment.production.ts`: production settings, with `production: true`.
+
+Both export an `environment` object with matching properties. Add new settings to both files. Always import the base environment file:
 
 ```ts
 import { environment } from './environments/environment';
 ```
 
-`npm run dev:<id>` يستخدم إعداد `test` افتراضياً. `npm run build:<id>` يستخدم `production` ويستبدل الملف تلقائياً عبر `fileReplacements`.
+`npm run dev:<id>` defaults to the test configuration. `npm run build:<id>` uses production and replaces the environment file through `fileReplacements`.
 
-لبناء نسخة تيست لمركز جديد:
-
-```sh
-npm run ng -- build new-center --configuration=test
-```
-
-هذا الإعداد موجود أيضاً في المراكز الحالية. يحتوي كلا ملفَي البيئة على `apiBaseUrl`، ويربطه `src/app.config.ts` تلقائياً مع `API_CONFIG` المشترك. عدّل عنوان التيست والإنتاج لكل مركز؛ القيمة الأولية `/api` تحتاج API أو proxy على نفس النطاق. راجع [إعداد API](api-configuration.md) للمثال الكامل.
-
-## حذف مركز مولّد
+After enabling the workspace CLI with `.\dev.ps1`, build a test version with:
 
 ```sh
-npm run center:delete -- test-center
+ng build new-center --configuration=test
 ```
 
-يعرض الأمر مجلد المركز واختباره المولّد ومجلد build إن وجد، ثم يطلب كتابة العبارة كاملة:
+Both files contain `apiBaseUrl`. `src/app.config.ts` supplies it through the shared `API_CONFIG` token. Set the addresses for your backend; the initial `/api` value needs an API or proxy on the same origin. See [API configuration](api-configuration.md).
+
+## Delete a generated center
+
+```sh
+npm run center:delete -- new-center
+```
+
+The command lists the app folder, generated test, and build output, then requires this exact confirmation:
 
 ```text
-delete test-center center
+delete new-center center
 ```
 
-أي إجابة أخرى تلغي العملية. لا يوجد خيار لتجاوز التأكيد، ولا يتم الحذف من إدخال غير تفاعلي. يُحذف مجلد التطبيق بما فيه تخصيصاتك، والاختبار المولّد وناتج build، وتزال تسجيلاته من Angular وnpm وTurbo ويُحدّث ملف القفل وروابط npm تلقائياً. المراكز الأصلية ECSC/M3/JUS محفوظة ولا يحذفها هذا الأمر.
+Any other response cancels. There is no confirmation bypass, and deletion requires an interactive terminal. Confirming removes the app, including local customizations, its generated test, and build output. It also removes Angular/npm/Turbo registrations and updates workspace links and the lockfile. The original applications protected by the deletion script cannot be removed with this tool.
 
-على Windows، أوقف سيرفر التطوير أو المعاينة الخاص بالمركز بـ `Ctrl+C` قبل الحذف. يستخدم الأمر نسخة احتياطية مؤقتة بدلاً من نقل مجلد التطبيق، ويعيد محاولة الحذف عند الأقفال المؤقتة. إذا بقي المجلد مقفلاً يعيد الملفات والإعدادات ويطبع تعليمات إغلاق العمليات ثم إعادة الأمر. إذا تعذّر الاسترجاع نفسه يحتفظ بالنسخة الاحتياطية ويطبع مسارها للاستعادة.
+On Windows, stop the center's development or preview server with `Ctrl+C` first. The tool backs up files without renaming the app directory and retries temporary file locks. If a persistent lock prevents deletion, it restores files/settings and explains which processes to close. If recovery itself fails, it preserves the backup and prints its path.
 
-للمراجعة فقط دون تغيير أو تأكيد:
+Preview deletion without changing anything:
 
 ```sh
-node scripts/delete-center.mjs test-center --dry-run
+node scripts/delete-center.mjs new-center --dry-run
 ```
