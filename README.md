@@ -51,6 +51,8 @@ Examples naming an app are not a required center registry. Use an existing ID fr
 
 Services are generated injectable and without tests. The complete picker behavior, destinations, and generation flags are in the [development guide](docs/development-guide.md).
 
+Inside `apps/<id>`, run `npm run build:dev` for development/test, or `npm run build` for production. After running `.\dev.ps1` at the root, `ng build` inside a center folder also builds that center for production. See [build commands and environments](docs/api-configuration.md#run-and-build).
+
 Build output for a center is `dist/apps/<id>/browser/`. Imported library code is included in the application build; libraries do not need separate hosting. Hosting must support SPA route fallback. This repository does not deploy anything automatically.
 
 ## Project map

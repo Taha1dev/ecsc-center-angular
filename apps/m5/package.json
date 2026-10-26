@@ -6,7 +6,8 @@
     "dev": "ng serve m5",
     "build": "ng build m5",
     "typecheck": "ngc -p tsconfig.app.json --noEmit",
-    "preview": "node ../../scripts/serve.mjs m5"
+    "preview": "node ../../scripts/serve.mjs m5",
+    "build:dev": "ng build m5 --configuration=test"
   },
   "dependencies": {
     "@workspace/core": "*",

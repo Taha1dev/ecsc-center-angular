@@ -58,15 +58,43 @@ This setup does not replace the in-memory adapter, send requests, or add authent
 
 ## Run and build
 
-```sh
-ng serve layal-center
-ng build layal-center --configuration=test
-npm run build:layal-center
+Enable `ng` from the repository root, then enter the center you want to build. Replace `test-center` with your center's folder:
+
+```powershell
+.\dev.ps1
+cd apps/test-center
 ```
 
-Serving defaults to test. The last command builds the center and its dependencies for production. Rebuild after changing an environment value; these are build-time settings.
+Build with the development/test environment:
 
-The center generator creates the environment files, app configuration and bootstrap wiring for every new center.
+```sh
+npm run build:dev
+```
+
+Build for production:
+
+```sh
+npm run build
+```
+
+Or, from the same center folder, use Angular directly for the production build:
+
+```sh
+ng build
+```
+
+| Command inside a center folder | Configuration          | Environment file            | Build behavior                           |
+| ------------------------------ | ---------------------- | --------------------------- | ---------------------------------------- |
+| `npm run build:dev`            | `test`                 | `environment.ts`            | Unoptimized build with source maps       |
+| `npm run build` or `ng build`  | `production` (default) | `environment.production.ts` | Optimized build with hashed output files |
+
+Both builds include the shared source code used by that application and write to `dist/apps/<center>/browser/` at the repository root. Building again replaces the previous output; development and production do not have separate output folders. The local commands do not build other center applications.
+
+To start the development server from the center folder, use `npm run dev`. To preview the files you just built, use `npm run preview`. Preview does not rebuild or select an environment; run the desired build first.
+
+From the repository root, `npm run build:<center>` remains available for a production build through Turbo, including library build tasks. Use the actual center ID in place of `<center>`.
+
+Rebuild after changing an environment value; these are build-time settings. The generator creates the environment files, production file replacement, API wiring, and both npm build scripts for every new center.
 
 ## Working example: JSONPlaceholder
 

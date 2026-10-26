@@ -74,6 +74,8 @@ npm run preview:new-center
 
 Use the checks appropriate to your changes. See [validation](VALIDATION.md) for the available commands.
 
+Inside `apps/<id>`, use `npm run build:dev` for the test environment, or `npm run build` for production. After enabling `ng` with `.\dev.ps1` at the root, `ng build` inside that same center folder also selects its production build. See [local build commands and environments](api-configuration.md#run-and-build).
+
 ## Environments and API settings
 
 Each center has:

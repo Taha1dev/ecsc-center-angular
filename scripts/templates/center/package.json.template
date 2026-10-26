@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "ng serve __CENTER_ID__",
     "build": "ng build __CENTER_ID__",
+    "build:dev": "ng build __CENTER_ID__ --configuration=test",
     "typecheck": "ngc -p tsconfig.app.json --noEmit",
     "preview": "node ../../scripts/serve.mjs __CENTER_ID__"
   },

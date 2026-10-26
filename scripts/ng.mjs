@@ -246,7 +246,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     const result = spawnSync(
       process.execPath,
       [path.join(workspaceRoot, 'node_modules/@angular/cli/bin/ng.js'), ...args],
-      { cwd: workspaceRoot, stdio: 'inherit' },
+      // Let Angular infer the application from the current folder for bare builds.
+      { cwd: args[0] === 'build' ? process.cwd() : workspaceRoot, stdio: 'inherit' },
     );
     if (result.error) throw result.error;
     process.exitCode = result.status ?? 1;

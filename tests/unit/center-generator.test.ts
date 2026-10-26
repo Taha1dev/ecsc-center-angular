@@ -176,6 +176,11 @@ it('generates an isolated app, registers all tasks and discovers it without chan
     ).toMatch(/apiBaseUrl: ['"]\/api['"]/);
   const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
   expect(pkg.scripts['build:new-center']).toBe('turbo build --filter=new-center');
+  const appPackage = JSON.parse(
+    fs.readFileSync(path.join(root, 'apps/new-center/package.json'), 'utf8'),
+  );
+  expect(appPackage.scripts.build).toBe('ng build new-center');
+  expect(appPackage.scripts['build:dev']).toBe('ng build new-center --configuration=test');
   const turbo = JSON.parse(fs.readFileSync(path.join(root, 'turbo.json'), 'utf8'));
   expect(turbo.tasks['new-center#build'].outputs).toEqual(['../../dist/apps/new-center/**']);
   expect(

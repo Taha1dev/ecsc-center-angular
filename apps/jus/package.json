@@ -6,7 +6,8 @@
     "dev": "ng serve jus",
     "build": "ng build jus",
     "typecheck": "ngc -p tsconfig.app.json --noEmit",
-    "preview": "node ../../scripts/serve.mjs jus"
+    "preview": "node ../../scripts/serve.mjs jus",
+    "build:dev": "ng build jus --configuration=test"
   },
   "dependencies": {
     "@workspace/core": "*",

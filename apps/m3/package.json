@@ -6,7 +6,8 @@
     "dev": "ng serve m3",
     "build": "ng build m3",
     "typecheck": "ngc -p tsconfig.app.json --noEmit",
-    "preview": "node ../../scripts/serve.mjs m3"
+    "preview": "node ../../scripts/serve.mjs m3",
+    "build:dev": "ng build m3 --configuration=test"
   },
   "dependencies": {
     "@workspace/core": "*",
