@@ -1,85 +1,37 @@
 ﻿# Service Center Workspace
 
-A reusable Angular workspace for independently configured service-center applications. There is no fixed center list or count. Applications share libraries while keeping their own identity, configuration, data integrations, and extensions.
+Each center is an independent Angular application with its own identity, settings, pages, and data integration. Shared packages provide reusable code; they do not share live state between running applications.
 
-## Start here
+## Run an existing center
 
-Use a Node.js version supported by `package.json` (`engines.node`) and the npm version in its `packageManager` field. Install dependencies once from the repository root:
+Open a terminal at the repository root, where `package.json` lives. Use a Node.js version accepted by its `engines.node` field and the npm version in `packageManager`. Then install dependencies:
 
 ```sh
 npm ci
 ```
 
-Start one application, replacing the example ID with an existing center:
+Open `angular.json` and find a project with `projectType: "application"` whose folder exists under `apps/`. Run `npm run` to see its scripts, then start it with `npm run dev:<id>`, replacing `<id>` with that project's ID. Open the URL printed in the terminal.
 
-```sh
-npm run dev:test-center
-```
-
-Or run all configured workspace development tasks:
-
-```sh
-npm run dev
-```
-
-The terminal prints application URLs. Ports are configured in `angular.json`, not fixed by this guide. `npm run` lists the available scripts. `npm start` is a convenience alias for one example application; it does not select a platform-wide default center.
-
-On PowerShell, enable the local `ng` shortcut once per terminal:
+Enable the local shortcut once in each PowerShell terminal:
 
 ```powershell
 .\dev.ps1
-ng g s customers-api
 ```
 
-The command asks whether the code belongs to a center or a shared package. Run `.\dev.ps1` again in each new PowerShell terminal before using `ng`.
+The chapters use `ng` after this setup. On other shells, use `npm run ng --` in place of `ng`, from the repository root. Both use the workspace shortcuts; a global Angular CLI alone does not provide them.
 
-## Common tasks
+## Read in order
 
-| Task                                  | Command                                        |
-| ------------------------------------- | ---------------------------------------------- |
-| Create a center                       | `npm run center:new -- new-center`             |
-| Create a service                      | `ng g s customers-api`                         |
-| Create a component                    | `ng g c customer-card`                         |
-| Create a pipe or directive            | `ng g p display-name` / `ng g d busy`          |
-| Create a page in a known center       | `ng g page --center-name=new-center customers` |
-| Add a Spartan primitive               | `ng g @spartan-ng/cli:ui accordion`            |
-| Build one center and its dependencies | `npm run build:test-center`                    |
-| Preview its production build          | `npm run preview:test-center`                  |
-| Build every workspace package         | `npm run build`                                |
+1. **README**: install dependencies and run an existing application.
+2. [01 - Workspace](docs/01-workspace.md): choose where code belongs and follow application startup.
+3. [02 - Create a center](docs/02-create-center.md): generate an application and configure its identity.
+4. [03 - Generate code](docs/03-generate-code.md): create and use components, services, pipes, directives, and Spartan controls.
+5. [04 - Pages and navigation](docs/04-pages-and-navigation.md): give a page a URL and a menu entry.
+6. [05 - Data and API](docs/05-data-and-api.md): configure an address, make a request, and show its result.
+7. [06 - Build and check](docs/06-build-and-check.md): build, preview, test, and remove a disposable center.
 
-Examples naming an app are not a required center registry. Use an existing ID from `angular.json` or create one first. New pages still need route registration and, when wanted, a menu link.
+The walkthrough uses **`guide-center`** as an example ID. It is not an application you must keep or a fixed platform registry. Use an unused ID for your work; applications are discovered from configuration and files on disk.
 
-Services are generated injectable and without tests. The complete picker behavior, destinations, and generation flags are in the [development guide](docs/development-guide.md).
+[Optional MCP setup](docs/mcp-setup.md) is available separately; it is not needed to follow the chapters.
 
-Inside `apps/<id>`, run `npm run build:dev` for development/test, or `npm run build` for production. After running `.\dev.ps1` at the root, `ng build` inside a center folder also builds that center for production. See [build commands and environments](docs/api-configuration.md#run-and-build).
-
-Build output for a center is `dist/apps/<id>/browser/`. Imported library code is included in the application build; libraries do not need separate hosting. Hosting must support SPA route fallback. This repository does not deploy anything automatically.
-
-## Project map
-
-| Location               | Role                                                               |
-| ---------------------- | ------------------------------------------------------------------ |
-| `apps/<id>`            | Independent applications and their local configuration/features    |
-| `packages/domain`      | Shared framework-independent types and rules                       |
-| `packages/data-access` | Shared data contracts, adapters, services, and state               |
-| `packages/ui`          | Generic UI controls, shared styles, and display utilities          |
-| `packages/core`        | Shared product features, layouts, and composition contracts        |
-| `libs/ui`              | Owned Spartan Helm source shared by applications                   |
-| `assets`               | Source assets copied by tooling; not a global served public folder |
-| `scripts`              | Workspace tooling and neutral center templates                     |
-
-Existing applications include demo workflows and sample data. Their catalogs, palettes, URLs, and business rules are not universal requirements. Most transaction data is currently in memory; public API examples do not turn the platform into a production backend or authentication system.
-
-## Guides
-
-- [Create your first center: illustrated walkthrough](docs/guides/create-center.md)
-- [Architecture and ownership](docs/ARCHITECTURE.md)
-- [Development examples and generator options](docs/development-guide.md)
-- [Create/delete a center and choose its identity](docs/center-generator.md)
-- [Routes and navigation menus](docs/center-navigation.md)
-- [API configuration and adapters](docs/api-configuration.md)
-- [Spartan components](docs/spartan-ui.md)
-- [Current visual system](DESIGN.md)
-- [Verification commands and limits](docs/VALIDATION.md)
-- [Optional project-local MCP setup](docs/mcp-setup.md)
-- [Agent instructions](AGENTS.md)
+**Continue to [01 - Workspace](docs/01-workspace.md).**
